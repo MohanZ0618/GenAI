@@ -1,0 +1,5 @@
+bank_transaction_id,bank_account_id,transaction_date,posted_date,transaction_type,amount,currency,direction,bank_reference,counterparty_token,payment_reference,status,source_system
+BT_NEW_NORMAL_1,SYNTHETIC_ACCOUNT_NORMAL,2026-09-07,2026-09-07,payment,600.00,USD,debit,BANK_REF_NORMAL_1,SYNTHETIC_ACCOUNT_NORMAL,REF_NEW_NORMAL_1,posted,Synthetic-Manual-Test
+BT_NEW_DUP_1,SYNTHETIC_ACCOUNT_DUP,2026-09-07,2026-09-07,payment,1000.00,USD,debit,BANK_REF_DUP_1,SYNTHETIC_ACCOUNT_DUP,REF_NEW_DUP_1,posted,Synthetic-Manual-Test
+BT_NEW_DUP_2,SYNTHETIC_ACCOUNT_DUP,2026-09-10,2026-09-10,payment,1000.00,USD,debit,BANK_REF_DUP_2,SYNTHETIC_ACCOUNT_DUP,REF_NEW_DUP_2,posted,Synthetic-Manual-Test
+BT_NEW_FEE_1,SYNTHETIC_ACCOUNT_FEE,2026-09-07,2026-09-07,payment,1180.00,USD,debit,BANK_REF_FEE_1,SYNTHETIC_ACCOUNT_FEE,REF_NEW_FEE_1,posted,Synthetic-Manual-Test

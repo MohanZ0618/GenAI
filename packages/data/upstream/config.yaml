@@ -1,0 +1,52 @@
+seed: 42
+output_dir: data
+
+date_range:
+  start: 2025-01-01
+  end: 2026-06-30
+
+scale:
+  vendors: 500
+  employees: 120
+  purchase_orders: 5000
+  invoices: 8000
+  payments: 6000
+  cases_per_failure: 100
+  non_failure_cases: 750
+
+generation:
+  po_backed_invoice_rate: 0.62
+  paid_invoice_rate: 0.75
+  vendor_change_rate: 0.08
+  recurring_invoice_rate: 0.12
+  currencies:
+    USD: 0.78
+    EUR: 0.10
+    GBP: 0.06
+    CAD: 0.04
+    JPY: 0.02
+  payment_methods:
+    ACH: 0.66
+    wire: 0.17
+    check: 0.12
+    virtual_card: 0.05
+  bank_accounts:
+    - BANK_ACCT_OPERATING_USD
+    - BANK_ACCT_DISBURSEMENTS_USD
+    - BANK_ACCT_GLOBAL
+  po_tolerance_percent: 2.0
+  ach_clearing_business_days: 3
+  wire_clearing_business_days: 1
+  check_clearing_business_days: 10
+
+splits:
+  train: 0.60
+  validation: 0.20
+  test: 0.20
+  challenge_fraction: 0.10
+
+output:
+  write_clean_data: true
+  write_full_benchmark: true
+  include_internal_provenance: true
+

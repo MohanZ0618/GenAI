@@ -1,0 +1,56 @@
+{
+  "name": "Manual import sample",
+  "asOf": "2026-06-30T23:59:59Z",
+  "clearingDays": 10,
+  "currency": "USD",
+  "coverage": {
+    "vendors": {
+      "status": "complete",
+      "from": "2024-01-01T00:00:00Z",
+      "to": "2026-06-30T23:59:59Z"
+    },
+    "vendor_change_log": {
+      "status": "complete",
+      "from": "2024-01-01T00:00:00Z",
+      "to": "2026-06-30T23:59:59Z"
+    },
+    "invoices": {
+      "status": "complete",
+      "from": "2024-01-01T00:00:00Z",
+      "to": "2026-06-30T23:59:59Z"
+    },
+    "payments": {
+      "status": "complete",
+      "from": "2024-01-01T00:00:00Z",
+      "to": "2026-06-30T23:59:59Z"
+    },
+    "payment_allocations": {
+      "status": "complete",
+      "from": "2024-01-01T00:00:00Z",
+      "to": "2026-06-30T23:59:59Z"
+    },
+    "gl_entries": {
+      "status": "complete",
+      "from": "2024-01-01T00:00:00Z",
+      "to": "2026-06-30T23:59:59Z"
+    },
+    "bank_transactions": {
+      "status": "complete",
+      "from": "2024-01-01T00:00:00Z",
+      "to": "2026-06-30T23:59:59Z"
+    },
+    "bank_statements": {
+      "status": "complete",
+      "from": "2024-01-01T00:00:00Z",
+      "to": "2026-06-30T23:59:59Z"
+    },
+    "audit_log": {
+      "status": "complete",
+      "from": "2024-01-01T00:00:00Z",
+      "to": "2026-06-30T23:59:59Z"
+    }
+  },
+  "focusPaymentIds": [
+    "PAY_0426017"
+  ]
+}

@@ -1,0 +1,11 @@
+journal_id,journal_line_id,transaction_type,source_transaction_id,posting_date,accounting_period,gl_account,debit,credit,currency,department,cost_center,memo,source_system
+JE_NEW_NORMAL_1,JEL_NEW_NORMAL_1_debit,payment,PAY_NEW_NORMAL_01,2026-09-07,2026-09,200000-ACCOUNTS-PAYABLE,600.00,0.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test
+JE_NEW_NORMAL_1,JEL_NEW_NORMAL_1_credit,payment,PAY_NEW_NORMAL_01,2026-09-07,2026-09,100000-CASH,0.00,600.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test
+JE_NEW_DUP_1,JEL_NEW_DUP_1_debit,payment,PAY_NEW_DUP_01,2026-09-07,2026-09,200000-ACCOUNTS-PAYABLE,1000.00,0.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test
+JE_NEW_DUP_1,JEL_NEW_DUP_1_credit,payment,PAY_NEW_DUP_01,2026-09-07,2026-09,100000-CASH,0.00,1000.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test
+JE_NEW_DUP_2,JEL_NEW_DUP_2_debit,payment,PAY_NEW_DUP_02,2026-09-10,2026-09,200000-ACCOUNTS-PAYABLE,1000.00,0.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test
+JE_NEW_DUP_2,JEL_NEW_DUP_2_credit,payment,PAY_NEW_DUP_02,2026-09-10,2026-09,100000-CASH,0.00,1000.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test
+JE_NEW_MISSING_1,JEL_NEW_MISSING_1_debit,payment,PAY_NEW_MISSING_01,2026-09-07,2026-09,200000-ACCOUNTS-PAYABLE,800.00,0.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test
+JE_NEW_MISSING_1,JEL_NEW_MISSING_1_credit,payment,PAY_NEW_MISSING_01,2026-09-07,2026-09,100000-CASH,0.00,800.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test
+JE_NEW_FEE_1,JEL_NEW_FEE_1_debit,payment,PAY_NEW_FEE_01,2026-09-07,2026-09,200000-ACCOUNTS-PAYABLE,1200.00,0.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test
+JE_NEW_FEE_1,JEL_NEW_FEE_1_credit,payment,PAY_NEW_FEE_01,2026-09-07,2026-09,100000-CASH,0.00,1200.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test

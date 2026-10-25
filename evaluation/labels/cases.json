@@ -1,0 +1,1360 @@
+[
+  {
+    "packet": "Review packet 001",
+    "split": "development",
+    "paymentId": "PAY_0426017",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F06_INVOICE_PAID_TWICE",
+    "evidenceIds": [
+      "INV_0423541",
+      "PAY_0423732",
+      "PAY_0426017",
+      "BT_0426080"
+    ],
+    "evidenceTables": [
+      "invoices",
+      "payment_allocations",
+      "payments",
+      "bank_transactions"
+    ],
+    "rootCause": "A second payment run did not recognize that the invoice had already been fully settled.",
+    "upstreamCaseId": "RCA_000081",
+    "vendorGroup": "VND_042324"
+  },
+  {
+    "packet": "Review packet 002",
+    "split": "development",
+    "paymentId": "PAY_0426018",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F06_INVOICE_PAID_TWICE",
+    "evidenceIds": [
+      "INV_0427563",
+      "PAY_0421335",
+      "PAY_0426018",
+      "BT_0426081"
+    ],
+    "evidenceTables": [
+      "invoices",
+      "payment_allocations",
+      "payments",
+      "bank_transactions"
+    ],
+    "rootCause": "A second payment run did not recognize that the invoice had already been fully settled.",
+    "upstreamCaseId": "RCA_000082",
+    "vendorGroup": "VND_042094"
+  },
+  {
+    "packet": "Review packet 003",
+    "split": "development",
+    "paymentId": "PAY_0426019",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F06_INVOICE_PAID_TWICE",
+    "evidenceIds": [
+      "INV_0427256",
+      "PAY_0421313",
+      "PAY_0426019",
+      "BT_0426082"
+    ],
+    "evidenceTables": [
+      "invoices",
+      "payment_allocations",
+      "payments",
+      "bank_transactions"
+    ],
+    "rootCause": "A second payment run did not recognize that the invoice had already been fully settled.",
+    "upstreamCaseId": "RCA_000083",
+    "vendorGroup": "VND_042149"
+  },
+  {
+    "packet": "Review packet 004",
+    "split": "development",
+    "paymentId": "PAY_0426020",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F06_INVOICE_PAID_TWICE",
+    "evidenceIds": [
+      "INV_0424563",
+      "PAY_0423562",
+      "PAY_0426020",
+      "BT_0426083"
+    ],
+    "evidenceTables": [
+      "invoices",
+      "payment_allocations",
+      "payments",
+      "bank_transactions"
+    ],
+    "rootCause": "A second payment run did not recognize that the invoice had already been fully settled.",
+    "upstreamCaseId": "RCA_000084",
+    "vendorGroup": "VND_042124"
+  },
+  {
+    "packet": "Review packet 005",
+    "split": "development",
+    "paymentId": "PAY_0426021",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F06_INVOICE_PAID_TWICE",
+    "evidenceIds": [
+      "INV_0427287",
+      "PAY_0425683",
+      "PAY_0426021",
+      "BT_0426084"
+    ],
+    "evidenceTables": [
+      "invoices",
+      "payment_allocations",
+      "payments",
+      "bank_transactions"
+    ],
+    "rootCause": "A second payment run did not recognize that the invoice had already been fully settled.",
+    "upstreamCaseId": "RCA_000085",
+    "vendorGroup": "VND_042157"
+  },
+  {
+    "packet": "Review packet 006",
+    "split": "development",
+    "paymentId": "PAY_0426022",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F06_INVOICE_PAID_TWICE",
+    "evidenceIds": [
+      "INV_0426692",
+      "PAY_0422045",
+      "PAY_0426022",
+      "BT_0426085"
+    ],
+    "evidenceTables": [
+      "invoices",
+      "payment_allocations",
+      "payments",
+      "bank_transactions"
+    ],
+    "rootCause": "A second payment run did not recognize that the invoice had already been fully settled.",
+    "upstreamCaseId": "RCA_000086",
+    "vendorGroup": "VND_042261"
+  },
+  {
+    "packet": "Review packet 007",
+    "split": "development",
+    "paymentId": "PAY_0426023",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F06_INVOICE_PAID_TWICE",
+    "evidenceIds": [
+      "INV_0422747",
+      "PAY_0425460",
+      "PAY_0426023",
+      "BT_0426086"
+    ],
+    "evidenceTables": [
+      "invoices",
+      "payment_allocations",
+      "payments",
+      "bank_transactions"
+    ],
+    "rootCause": "A second payment run did not recognize that the invoice had already been fully settled.",
+    "upstreamCaseId": "RCA_000087",
+    "vendorGroup": "VND_042166"
+  },
+  {
+    "packet": "Review packet 008",
+    "split": "development",
+    "paymentId": "PAY_0426024",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F06_INVOICE_PAID_TWICE",
+    "evidenceIds": [
+      "INV_0423154",
+      "PAY_0425304",
+      "PAY_0426024",
+      "BT_0426087"
+    ],
+    "evidenceTables": [
+      "invoices",
+      "payment_allocations",
+      "payments",
+      "bank_transactions"
+    ],
+    "rootCause": "A second payment run did not recognize that the invoice had already been fully settled.",
+    "upstreamCaseId": "RCA_000088",
+    "vendorGroup": "VND_042096"
+  },
+  {
+    "packet": "Review packet 009",
+    "split": "heldout",
+    "paymentId": "PAY_0426027",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F06_INVOICE_PAID_TWICE",
+    "evidenceIds": [
+      "INV_0426681",
+      "PAY_0424094",
+      "PAY_0426027",
+      "BT_0426090"
+    ],
+    "evidenceTables": [
+      "invoices",
+      "payment_allocations",
+      "payments",
+      "bank_transactions"
+    ],
+    "rootCause": "A second payment run did not recognize that the invoice had already been fully settled.",
+    "upstreamCaseId": "RCA_000091",
+    "vendorGroup": "VND_042034"
+  },
+  {
+    "packet": "Review packet 010",
+    "split": "heldout",
+    "paymentId": "PAY_0426028",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F06_INVOICE_PAID_TWICE",
+    "evidenceIds": [
+      "INV_0423529",
+      "PAY_0425519",
+      "PAY_0426028",
+      "BT_0426091"
+    ],
+    "evidenceTables": [
+      "invoices",
+      "payment_allocations",
+      "payments",
+      "bank_transactions"
+    ],
+    "rootCause": "A second payment run did not recognize that the invoice had already been fully settled.",
+    "upstreamCaseId": "RCA_000092",
+    "vendorGroup": "VND_042262"
+  },
+  {
+    "packet": "Review packet 011",
+    "split": "heldout",
+    "paymentId": "PAY_0426029",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F06_INVOICE_PAID_TWICE",
+    "evidenceIds": [
+      "INV_0421809",
+      "PAY_0421201",
+      "PAY_0426029",
+      "BT_0426092"
+    ],
+    "evidenceTables": [
+      "invoices",
+      "payment_allocations",
+      "payments",
+      "bank_transactions"
+    ],
+    "rootCause": "A second payment run did not recognize that the invoice had already been fully settled.",
+    "upstreamCaseId": "RCA_000093",
+    "vendorGroup": "VND_042462"
+  },
+  {
+    "packet": "Review packet 012",
+    "split": "heldout",
+    "paymentId": "PAY_0426030",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F06_INVOICE_PAID_TWICE",
+    "evidenceIds": [
+      "INV_0422798",
+      "PAY_0420891",
+      "PAY_0426030",
+      "BT_0426093"
+    ],
+    "evidenceTables": [
+      "invoices",
+      "payment_allocations",
+      "payments",
+      "bank_transactions"
+    ],
+    "rootCause": "A second payment run did not recognize that the invoice had already been fully settled.",
+    "upstreamCaseId": "RCA_000094",
+    "vendorGroup": "VND_042103"
+  },
+  {
+    "packet": "Review packet 013",
+    "split": "development",
+    "paymentId": "PAY_0424562",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F11_VENDOR_MASTER_CHANGE_CONFLICT",
+    "evidenceIds": [
+      "VND_042296",
+      "CHG_0420041",
+      "PAY_0424562",
+      "BT_0424612",
+      "EVT_0447105"
+    ],
+    "evidenceTables": [
+      "vendors",
+      "vendor_change_log",
+      "payments",
+      "bank_transactions",
+      "audit_log"
+    ],
+    "rootCause": "The payment system retained a stale vendor bank-account snapshot after a verified master-data change.",
+    "upstreamCaseId": "RCA_000161",
+    "vendorGroup": "VND_042296"
+  },
+  {
+    "packet": "Review packet 014",
+    "split": "development",
+    "paymentId": "PAY_0421804",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F11_VENDOR_MASTER_CHANGE_CONFLICT",
+    "evidenceIds": [
+      "VND_042066",
+      "CHG_0420042",
+      "PAY_0421804",
+      "BT_0421821",
+      "EVT_0447106"
+    ],
+    "evidenceTables": [
+      "vendors",
+      "vendor_change_log",
+      "payments",
+      "bank_transactions",
+      "audit_log"
+    ],
+    "rootCause": "The payment system retained a stale vendor bank-account snapshot after a verified master-data change.",
+    "upstreamCaseId": "RCA_000162",
+    "vendorGroup": "VND_042066"
+  },
+  {
+    "packet": "Review packet 015",
+    "split": "development",
+    "paymentId": "PAY_0420274",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F11_VENDOR_MASTER_CHANGE_CONFLICT",
+    "evidenceIds": [
+      "VND_042054",
+      "CHG_0420043",
+      "PAY_0420274",
+      "BT_0420276",
+      "EVT_0447107"
+    ],
+    "evidenceTables": [
+      "vendors",
+      "vendor_change_log",
+      "payments",
+      "bank_transactions",
+      "audit_log"
+    ],
+    "rootCause": "The payment system retained a stale vendor bank-account snapshot after a verified master-data change.",
+    "upstreamCaseId": "RCA_000163",
+    "vendorGroup": "VND_042054"
+  },
+  {
+    "packet": "Review packet 016",
+    "split": "development",
+    "paymentId": "PAY_0424752",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F11_VENDOR_MASTER_CHANGE_CONFLICT",
+    "evidenceIds": [
+      "VND_042329",
+      "CHG_0420044",
+      "PAY_0424752",
+      "BT_0424805",
+      "EVT_0447108"
+    ],
+    "evidenceTables": [
+      "vendors",
+      "vendor_change_log",
+      "payments",
+      "bank_transactions",
+      "audit_log"
+    ],
+    "rootCause": "The payment system retained a stale vendor bank-account snapshot after a verified master-data change.",
+    "upstreamCaseId": "RCA_000164",
+    "vendorGroup": "VND_042329"
+  },
+  {
+    "packet": "Review packet 017",
+    "split": "development",
+    "paymentId": "PAY_0421973",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F11_VENDOR_MASTER_CHANGE_CONFLICT",
+    "evidenceIds": [
+      "VND_042023",
+      "CHG_0420045",
+      "PAY_0421973",
+      "BT_0421991",
+      "EVT_0447109"
+    ],
+    "evidenceTables": [
+      "vendors",
+      "vendor_change_log",
+      "payments",
+      "bank_transactions",
+      "audit_log"
+    ],
+    "rootCause": "The payment system retained a stale vendor bank-account snapshot after a verified master-data change.",
+    "upstreamCaseId": "RCA_000165",
+    "vendorGroup": "VND_042023"
+  },
+  {
+    "packet": "Review packet 018",
+    "split": "development",
+    "paymentId": "PAY_0423072",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F11_VENDOR_MASTER_CHANGE_CONFLICT",
+    "evidenceIds": [
+      "VND_042294",
+      "CHG_0420046",
+      "PAY_0423072",
+      "BT_0423102",
+      "EVT_0447110"
+    ],
+    "evidenceTables": [
+      "vendors",
+      "vendor_change_log",
+      "payments",
+      "bank_transactions",
+      "audit_log"
+    ],
+    "rootCause": "The payment system retained a stale vendor bank-account snapshot after a verified master-data change.",
+    "upstreamCaseId": "RCA_000166",
+    "vendorGroup": "VND_042294"
+  },
+  {
+    "packet": "Review packet 019",
+    "split": "development",
+    "paymentId": "PAY_0420801",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F11_VENDOR_MASTER_CHANGE_CONFLICT",
+    "evidenceIds": [
+      "VND_042298",
+      "CHG_0420047",
+      "PAY_0420801",
+      "BT_0420808",
+      "EVT_0447111"
+    ],
+    "evidenceTables": [
+      "vendors",
+      "vendor_change_log",
+      "payments",
+      "bank_transactions",
+      "audit_log"
+    ],
+    "rootCause": "The payment system retained a stale vendor bank-account snapshot after a verified master-data change.",
+    "upstreamCaseId": "RCA_000167",
+    "vendorGroup": "VND_042298"
+  },
+  {
+    "packet": "Review packet 020",
+    "split": "development",
+    "paymentId": "PAY_0424784",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F11_VENDOR_MASTER_CHANGE_CONFLICT",
+    "evidenceIds": [
+      "VND_042279",
+      "CHG_0420048",
+      "PAY_0424784",
+      "BT_0424838",
+      "EVT_0447112"
+    ],
+    "evidenceTables": [
+      "vendors",
+      "vendor_change_log",
+      "payments",
+      "bank_transactions",
+      "audit_log"
+    ],
+    "rootCause": "The payment system retained a stale vendor bank-account snapshot after a verified master-data change.",
+    "upstreamCaseId": "RCA_000168",
+    "vendorGroup": "VND_042279"
+  },
+  {
+    "packet": "Review packet 021",
+    "split": "heldout",
+    "paymentId": "PAY_0420031",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F11_VENDOR_MASTER_CHANGE_CONFLICT",
+    "evidenceIds": [
+      "VND_042005",
+      "CHG_0420049",
+      "PAY_0420031",
+      "BT_0420032",
+      "EVT_0447113"
+    ],
+    "evidenceTables": [
+      "vendors",
+      "vendor_change_log",
+      "payments",
+      "bank_transactions",
+      "audit_log"
+    ],
+    "rootCause": "The payment system retained a stale vendor bank-account snapshot after a verified master-data change.",
+    "upstreamCaseId": "RCA_000169",
+    "vendorGroup": "VND_042005"
+  },
+  {
+    "packet": "Review packet 022",
+    "split": "heldout",
+    "paymentId": "PAY_0421953",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F11_VENDOR_MASTER_CHANGE_CONFLICT",
+    "evidenceIds": [
+      "VND_042147",
+      "CHG_0420052",
+      "PAY_0421953",
+      "BT_0421971",
+      "EVT_0447116"
+    ],
+    "evidenceTables": [
+      "vendors",
+      "vendor_change_log",
+      "payments",
+      "bank_transactions",
+      "audit_log"
+    ],
+    "rootCause": "The payment system retained a stale vendor bank-account snapshot after a verified master-data change.",
+    "upstreamCaseId": "RCA_000172",
+    "vendorGroup": "VND_042147"
+  },
+  {
+    "packet": "Review packet 023",
+    "split": "heldout",
+    "paymentId": "PAY_0424910",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F11_VENDOR_MASTER_CHANGE_CONFLICT",
+    "evidenceIds": [
+      "VND_042012",
+      "CHG_0420053",
+      "PAY_0424910",
+      "BT_0424964",
+      "EVT_0447117"
+    ],
+    "evidenceTables": [
+      "vendors",
+      "vendor_change_log",
+      "payments",
+      "bank_transactions",
+      "audit_log"
+    ],
+    "rootCause": "The payment system retained a stale vendor bank-account snapshot after a verified master-data change.",
+    "upstreamCaseId": "RCA_000173",
+    "vendorGroup": "VND_042012"
+  },
+  {
+    "packet": "Review packet 024",
+    "split": "heldout",
+    "paymentId": "PAY_0424764",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F11_VENDOR_MASTER_CHANGE_CONFLICT",
+    "evidenceIds": [
+      "VND_042248",
+      "CHG_0420054",
+      "PAY_0424764",
+      "BT_0424817",
+      "EVT_0447118"
+    ],
+    "evidenceTables": [
+      "vendors",
+      "vendor_change_log",
+      "payments",
+      "bank_transactions",
+      "audit_log"
+    ],
+    "rootCause": "The payment system retained a stale vendor bank-account snapshot after a verified master-data change.",
+    "upstreamCaseId": "RCA_000174",
+    "vendorGroup": "VND_042248"
+  },
+  {
+    "packet": "Review packet 025",
+    "split": "development",
+    "paymentId": "PAY_0420886",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F12_ERP_PAYMENT_MISSING_FROM_BANK",
+    "evidenceIds": [
+      "PAY_0420886",
+      "EVT_0447121"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "audit_log",
+      "gl_entries"
+    ],
+    "rootCause": "The ERP marked the payment complete, but the outbound payment file was never transmitted to the bank.",
+    "upstreamCaseId": "RCA_000177",
+    "vendorGroup": "VND_042355"
+  },
+  {
+    "packet": "Review packet 026",
+    "split": "development",
+    "paymentId": "PAY_0420496",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F12_ERP_PAYMENT_MISSING_FROM_BANK",
+    "evidenceIds": [
+      "PAY_0420496",
+      "EVT_0447122"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "audit_log",
+      "gl_entries"
+    ],
+    "rootCause": "The payment processor rejected the outbound batch before a bank instruction was created.",
+    "upstreamCaseId": "RCA_000178",
+    "vendorGroup": "VND_042250"
+  },
+  {
+    "packet": "Review packet 027",
+    "split": "development",
+    "paymentId": "PAY_0425535",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F12_ERP_PAYMENT_MISSING_FROM_BANK",
+    "evidenceIds": [
+      "PAY_0425535",
+      "EVT_0447123"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "audit_log",
+      "gl_entries"
+    ],
+    "rootCause": "The released payment timed out in the treasury transmission queue and never reached the bank.",
+    "upstreamCaseId": "RCA_000179",
+    "vendorGroup": "VND_042418"
+  },
+  {
+    "packet": "Review packet 028",
+    "split": "development",
+    "paymentId": "PAY_0424636",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F12_ERP_PAYMENT_MISSING_FROM_BANK",
+    "evidenceIds": [
+      "PAY_0424636",
+      "EVT_0447124"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "audit_log",
+      "gl_entries"
+    ],
+    "rootCause": "The ERP marked the payment complete, but the outbound payment file was never transmitted to the bank.",
+    "upstreamCaseId": "RCA_000180",
+    "vendorGroup": "VND_042255"
+  },
+  {
+    "packet": "Review packet 029",
+    "split": "development",
+    "paymentId": "PAY_0423441",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F12_ERP_PAYMENT_MISSING_FROM_BANK",
+    "evidenceIds": [
+      "PAY_0423441",
+      "EVT_0447125"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "audit_log",
+      "gl_entries"
+    ],
+    "rootCause": "The payment processor rejected the outbound batch before a bank instruction was created.",
+    "upstreamCaseId": "RCA_000181",
+    "vendorGroup": "VND_042030"
+  },
+  {
+    "packet": "Review packet 030",
+    "split": "development",
+    "paymentId": "PAY_0425974",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F12_ERP_PAYMENT_MISSING_FROM_BANK",
+    "evidenceIds": [
+      "PAY_0425974",
+      "EVT_0447126"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "audit_log",
+      "gl_entries"
+    ],
+    "rootCause": "The released payment timed out in the treasury transmission queue and never reached the bank.",
+    "upstreamCaseId": "RCA_000182",
+    "vendorGroup": "VND_042305"
+  },
+  {
+    "packet": "Review packet 031",
+    "split": "development",
+    "paymentId": "PAY_0424235",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F12_ERP_PAYMENT_MISSING_FROM_BANK",
+    "evidenceIds": [
+      "PAY_0424235",
+      "EVT_0447128"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "audit_log",
+      "gl_entries"
+    ],
+    "rootCause": "The payment processor rejected the outbound batch before a bank instruction was created.",
+    "upstreamCaseId": "RCA_000184",
+    "vendorGroup": "VND_042027"
+  },
+  {
+    "packet": "Review packet 032",
+    "split": "development",
+    "paymentId": "PAY_0422996",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F12_ERP_PAYMENT_MISSING_FROM_BANK",
+    "evidenceIds": [
+      "PAY_0422996",
+      "EVT_0447131"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "audit_log",
+      "gl_entries"
+    ],
+    "rootCause": "The payment processor rejected the outbound batch before a bank instruction was created.",
+    "upstreamCaseId": "RCA_000187",
+    "vendorGroup": "VND_042276"
+  },
+  {
+    "packet": "Review packet 033",
+    "split": "heldout",
+    "paymentId": "PAY_0420560",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F12_ERP_PAYMENT_MISSING_FROM_BANK",
+    "evidenceIds": [
+      "PAY_0420560",
+      "EVT_0447132"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "audit_log",
+      "gl_entries"
+    ],
+    "rootCause": "The released payment timed out in the treasury transmission queue and never reached the bank.",
+    "upstreamCaseId": "RCA_000188",
+    "vendorGroup": "VND_042426"
+  },
+  {
+    "packet": "Review packet 034",
+    "split": "heldout",
+    "paymentId": "PAY_0423978",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F12_ERP_PAYMENT_MISSING_FROM_BANK",
+    "evidenceIds": [
+      "PAY_0423978",
+      "EVT_0447134"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "audit_log",
+      "gl_entries"
+    ],
+    "rootCause": "The payment processor rejected the outbound batch before a bank instruction was created.",
+    "upstreamCaseId": "RCA_000190",
+    "vendorGroup": "VND_042022"
+  },
+  {
+    "packet": "Review packet 035",
+    "split": "heldout",
+    "paymentId": "PAY_0422832",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F12_ERP_PAYMENT_MISSING_FROM_BANK",
+    "evidenceIds": [
+      "PAY_0422832",
+      "EVT_0447135"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "audit_log",
+      "gl_entries"
+    ],
+    "rootCause": "The released payment timed out in the treasury transmission queue and never reached the bank.",
+    "upstreamCaseId": "RCA_000191",
+    "vendorGroup": "VND_042240"
+  },
+  {
+    "packet": "Review packet 036",
+    "split": "heldout",
+    "paymentId": "PAY_0423442",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F12_ERP_PAYMENT_MISSING_FROM_BANK",
+    "evidenceIds": [
+      "PAY_0423442",
+      "EVT_0447136"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "audit_log",
+      "gl_entries"
+    ],
+    "rootCause": "The ERP marked the payment complete, but the outbound payment file was never transmitted to the bank.",
+    "upstreamCaseId": "RCA_000192",
+    "vendorGroup": "VND_042381"
+  },
+  {
+    "packet": "Review packet 037",
+    "split": "development",
+    "paymentId": "PAY_0425100",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F14_BANK_ERP_AMOUNT_MISMATCH",
+    "evidenceIds": [
+      "PAY_0425100",
+      "BT_0425154",
+      "EVT_0447153"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "gl_entries",
+      "audit_log"
+    ],
+    "rootCause": "The processor netted a 35.00 USD fee that was not configured or posted to the GL.",
+    "upstreamCaseId": "RCA_000209",
+    "vendorGroup": "VND_042348"
+  },
+  {
+    "packet": "Review packet 038",
+    "split": "development",
+    "paymentId": "PAY_0420977",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F14_BANK_ERP_AMOUNT_MISMATCH",
+    "evidenceIds": [
+      "PAY_0420977",
+      "BT_0420985",
+      "EVT_0447154"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "gl_entries",
+      "audit_log"
+    ],
+    "rootCause": "The processor netted a 20.00 USD fee that was not configured or posted to the GL.",
+    "upstreamCaseId": "RCA_000210",
+    "vendorGroup": "VND_042323"
+  },
+  {
+    "packet": "Review packet 039",
+    "split": "development",
+    "paymentId": "PAY_0422702",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F14_BANK_ERP_AMOUNT_MISMATCH",
+    "evidenceIds": [
+      "PAY_0422702",
+      "BT_0422729",
+      "EVT_0447155"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "gl_entries",
+      "audit_log"
+    ],
+    "rootCause": "The processor netted a 15.00 EUR fee that was not configured or posted to the GL.",
+    "upstreamCaseId": "RCA_000211",
+    "vendorGroup": "VND_042266"
+  },
+  {
+    "packet": "Review packet 040",
+    "split": "development",
+    "paymentId": "PAY_0420272",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F14_BANK_ERP_AMOUNT_MISMATCH",
+    "evidenceIds": [
+      "PAY_0420272",
+      "BT_0420274",
+      "EVT_0447156"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "gl_entries",
+      "audit_log"
+    ],
+    "rootCause": "The processor netted a 25.00 EUR fee that was not configured or posted to the GL.",
+    "upstreamCaseId": "RCA_000212",
+    "vendorGroup": "VND_042412"
+  },
+  {
+    "packet": "Review packet 041",
+    "split": "development",
+    "paymentId": "PAY_0425884",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F14_BANK_ERP_AMOUNT_MISMATCH",
+    "evidenceIds": [
+      "PAY_0425884",
+      "BT_0425943",
+      "EVT_0447157"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "gl_entries",
+      "audit_log"
+    ],
+    "rootCause": "The processor netted a 20.00 USD fee that was not configured or posted to the GL.",
+    "upstreamCaseId": "RCA_000213",
+    "vendorGroup": "VND_042100"
+  },
+  {
+    "packet": "Review packet 042",
+    "split": "development",
+    "paymentId": "PAY_0424491",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F14_BANK_ERP_AMOUNT_MISMATCH",
+    "evidenceIds": [
+      "PAY_0424491",
+      "BT_0424541",
+      "EVT_0447158"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "gl_entries",
+      "audit_log"
+    ],
+    "rootCause": "The processor netted a 15.00 EUR fee that was not configured or posted to the GL.",
+    "upstreamCaseId": "RCA_000214",
+    "vendorGroup": "VND_042101"
+  },
+  {
+    "packet": "Review packet 043",
+    "split": "development",
+    "paymentId": "PAY_0420788",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F14_BANK_ERP_AMOUNT_MISMATCH",
+    "evidenceIds": [
+      "PAY_0420788",
+      "BT_0420795",
+      "EVT_0447159"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "gl_entries",
+      "audit_log"
+    ],
+    "rootCause": "The processor netted a 35.00 USD fee that was not configured or posted to the GL.",
+    "upstreamCaseId": "RCA_000215",
+    "vendorGroup": "VND_042026"
+  },
+  {
+    "packet": "Review packet 044",
+    "split": "development",
+    "paymentId": "PAY_0422764",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F14_BANK_ERP_AMOUNT_MISMATCH",
+    "evidenceIds": [
+      "PAY_0422764",
+      "BT_0422791",
+      "EVT_0447161"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "gl_entries",
+      "audit_log"
+    ],
+    "rootCause": "The processor netted a 25.00 USD fee that was not configured or posted to the GL.",
+    "upstreamCaseId": "RCA_000217",
+    "vendorGroup": "VND_042273"
+  },
+  {
+    "packet": "Review packet 045",
+    "split": "heldout",
+    "paymentId": "PAY_0425134",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F14_BANK_ERP_AMOUNT_MISMATCH",
+    "evidenceIds": [
+      "PAY_0425134",
+      "BT_0425188",
+      "EVT_0447162"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "gl_entries",
+      "audit_log"
+    ],
+    "rootCause": "The processor netted a 20.00 USD fee that was not configured or posted to the GL.",
+    "upstreamCaseId": "RCA_000218",
+    "vendorGroup": "VND_042052"
+  },
+  {
+    "packet": "Review packet 046",
+    "split": "heldout",
+    "paymentId": "PAY_0424744",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F14_BANK_ERP_AMOUNT_MISMATCH",
+    "evidenceIds": [
+      "PAY_0424744",
+      "BT_0424797",
+      "EVT_0447164"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "gl_entries",
+      "audit_log"
+    ],
+    "rootCause": "The processor netted a 35.00 USD fee that was not configured or posted to the GL.",
+    "upstreamCaseId": "RCA_000220",
+    "vendorGroup": "VND_042209"
+  },
+  {
+    "packet": "Review packet 047",
+    "split": "heldout",
+    "paymentId": "PAY_0422441",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F14_BANK_ERP_AMOUNT_MISMATCH",
+    "evidenceIds": [
+      "PAY_0422441",
+      "BT_0422464",
+      "EVT_0447165"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "gl_entries",
+      "audit_log"
+    ],
+    "rootCause": "The processor netted a 35.00 USD fee that was not configured or posted to the GL.",
+    "upstreamCaseId": "RCA_000221",
+    "vendorGroup": "VND_042368"
+  },
+  {
+    "packet": "Review packet 048",
+    "split": "heldout",
+    "paymentId": "PAY_0421581",
+    "expectedOutcome": "anomaly_supported",
+    "category": "F14_BANK_ERP_AMOUNT_MISMATCH",
+    "evidenceIds": [
+      "PAY_0421581",
+      "BT_0421593",
+      "EVT_0447166"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "gl_entries",
+      "audit_log"
+    ],
+    "rootCause": "The processor netted a 35.00 USD fee that was not configured or posted to the GL.",
+    "upstreamCaseId": "RCA_000222",
+    "vendorGroup": "VND_042315"
+  },
+  {
+    "packet": "Review packet 049",
+    "split": "development",
+    "paymentId": "PAY_0422142",
+    "expectedOutcome": "no_anomaly_supported",
+    "category": "NO_FAILURE",
+    "evidenceIds": [
+      "PAY_0422142",
+      "BT_0422162"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions"
+    ],
+    "rootCause": "Weekend days extend calendar elapsed time, while settlement remains within the configured business-day window.",
+    "upstreamCaseId": "RCA_000244",
+    "vendorGroup": "VND_042394"
+  },
+  {
+    "packet": "Review packet 050",
+    "split": "development",
+    "paymentId": "PAY_0422534",
+    "expectedOutcome": "no_anomaly_supported",
+    "category": "NO_FAILURE",
+    "evidenceIds": [
+      "PAY_0422534",
+      "BT_0422558"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions"
+    ],
+    "rootCause": "The posting occurs inside the configured ten-business-day check-clearing window.",
+    "upstreamCaseId": "RCA_000246",
+    "vendorGroup": "VND_042135"
+  },
+  {
+    "packet": "Review packet 051",
+    "split": "development",
+    "paymentId": "PAY_0424184",
+    "expectedOutcome": "no_anomaly_supported",
+    "category": "NO_FAILURE",
+    "evidenceIds": [
+      "PAY_0424184"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "payment_allocations"
+    ],
+    "rootCause": "Only one day has elapsed and the payment remains pending inside its method-specific clearing window.",
+    "upstreamCaseId": "RCA_000249",
+    "vendorGroup": "VND_042425"
+  },
+  {
+    "packet": "Review packet 052",
+    "split": "development",
+    "paymentId": "PAY_0425551",
+    "expectedOutcome": "no_anomaly_supported",
+    "category": "NO_FAILURE",
+    "evidenceIds": [
+      "PAY_0425551",
+      "BT_0425606",
+      "JE_0434096"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "gl_entries"
+    ],
+    "rootCause": "A documented 25-unit net-settlement fee has a valid balanced fee journal, so the difference is reconciled.",
+    "upstreamCaseId": "RCA_000250",
+    "vendorGroup": "VND_042479"
+  },
+  {
+    "packet": "Review packet 053",
+    "split": "development",
+    "paymentId": "PAY_0422340",
+    "expectedOutcome": "no_anomaly_supported",
+    "category": "NO_FAILURE",
+    "evidenceIds": [
+      "PAY_0422340",
+      "BT_0422362"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions"
+    ],
+    "rootCause": "Weekend days extend calendar elapsed time, while settlement remains within the configured business-day window.",
+    "upstreamCaseId": "RCA_000260",
+    "vendorGroup": "VND_042358"
+  },
+  {
+    "packet": "Review packet 054",
+    "split": "development",
+    "paymentId": "PAY_0423940",
+    "expectedOutcome": "no_anomaly_supported",
+    "category": "NO_FAILURE",
+    "evidenceIds": [
+      "PAY_0423940",
+      "BT_0423981"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions"
+    ],
+    "rootCause": "The posting occurs inside the configured ten-business-day check-clearing window.",
+    "upstreamCaseId": "RCA_000262",
+    "vendorGroup": "VND_042084"
+  },
+  {
+    "packet": "Review packet 055",
+    "split": "development",
+    "paymentId": "PAY_0423007",
+    "expectedOutcome": "no_anomaly_supported",
+    "category": "NO_FAILURE",
+    "evidenceIds": [
+      "PAY_0423007"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "payment_allocations"
+    ],
+    "rootCause": "Only one day has elapsed and the payment remains pending inside its method-specific clearing window.",
+    "upstreamCaseId": "RCA_000265",
+    "vendorGroup": "VND_042344"
+  },
+  {
+    "packet": "Review packet 056",
+    "split": "development",
+    "paymentId": "PAY_0425838",
+    "expectedOutcome": "no_anomaly_supported",
+    "category": "NO_FAILURE",
+    "evidenceIds": [
+      "PAY_0425838",
+      "INV_0420036",
+      "INV_0420200",
+      "BT_0425897"
+    ],
+    "evidenceTables": [
+      "payments",
+      "payment_allocations",
+      "invoices",
+      "bank_transactions"
+    ],
+    "rootCause": "The allocations sum exactly to a legitimate multi-invoice payment and its bank settlement.",
+    "upstreamCaseId": "RCA_000274",
+    "vendorGroup": "VND_042386"
+  },
+  {
+    "packet": "Review packet 057",
+    "split": "heldout",
+    "paymentId": "PAY_0424166",
+    "expectedOutcome": "no_anomaly_supported",
+    "category": "NO_FAILURE",
+    "evidenceIds": [
+      "PAY_0424166",
+      "BT_0424215"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions"
+    ],
+    "rootCause": "Weekend days extend calendar elapsed time, while settlement remains within the configured business-day window.",
+    "upstreamCaseId": "RCA_000276",
+    "vendorGroup": "VND_042321"
+  },
+  {
+    "packet": "Review packet 058",
+    "split": "heldout",
+    "paymentId": "PAY_0422424",
+    "expectedOutcome": "no_anomaly_supported",
+    "category": "NO_FAILURE",
+    "evidenceIds": [
+      "PAY_0422424",
+      "BT_0422447"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions"
+    ],
+    "rootCause": "The posting occurs inside the configured ten-business-day check-clearing window.",
+    "upstreamCaseId": "RCA_000278",
+    "vendorGroup": "VND_042483"
+  },
+  {
+    "packet": "Review packet 059",
+    "split": "heldout",
+    "paymentId": "PAY_0422418",
+    "expectedOutcome": "no_anomaly_supported",
+    "category": "NO_FAILURE",
+    "evidenceIds": [
+      "PAY_0422418"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "payment_allocations"
+    ],
+    "rootCause": "Only one day has elapsed and the payment remains pending inside its method-specific clearing window.",
+    "upstreamCaseId": "RCA_000281",
+    "vendorGroup": "VND_042082"
+  },
+  {
+    "packet": "Review packet 060",
+    "split": "heldout",
+    "paymentId": "PAY_0422206",
+    "expectedOutcome": "no_anomaly_supported",
+    "category": "NO_FAILURE",
+    "evidenceIds": [
+      "PAY_0422206",
+      "BT_0422227",
+      "JE_0434106"
+    ],
+    "evidenceTables": [
+      "payments",
+      "bank_transactions",
+      "gl_entries"
+    ],
+    "rootCause": "A documented 25-unit net-settlement fee has a valid balanced fee journal, so the difference is reconciled.",
+    "upstreamCaseId": "RCA_000282",
+    "vendorGroup": "VND_042429"
+  },
+  {
+    "packet": "Coverage packet 001",
+    "split": "stress",
+    "paymentId": "PAY_0426017",
+    "expectedOutcome": "insufficient_evidence",
+    "category": "DERIVED_INCOMPLETE_COVERAGE",
+    "evidenceIds": [],
+    "evidenceTables": []
+  },
+  {
+    "packet": "Coverage packet 002",
+    "split": "stress",
+    "paymentId": "PAY_0424562",
+    "expectedOutcome": "insufficient_evidence",
+    "category": "DERIVED_INCOMPLETE_COVERAGE",
+    "evidenceIds": [],
+    "evidenceTables": []
+  },
+  {
+    "packet": "Coverage packet 003",
+    "split": "stress",
+    "paymentId": "PAY_0426017",
+    "expectedOutcome": "insufficient_evidence",
+    "category": "DERIVED_INCOMPLETE_COVERAGE",
+    "evidenceIds": [],
+    "evidenceTables": []
+  },
+  {
+    "packet": "Coverage packet 004",
+    "split": "stress",
+    "paymentId": "PAY_0424562",
+    "expectedOutcome": "insufficient_evidence",
+    "category": "DERIVED_INCOMPLETE_COVERAGE",
+    "evidenceIds": [],
+    "evidenceTables": []
+  },
+  {
+    "packet": "Coverage packet 005",
+    "split": "stress",
+    "paymentId": "PAY_0426017",
+    "expectedOutcome": "insufficient_evidence",
+    "category": "DERIVED_INCOMPLETE_COVERAGE",
+    "evidenceIds": [],
+    "evidenceTables": []
+  },
+  {
+    "packet": "Coverage packet 006",
+    "split": "stress",
+    "paymentId": "PAY_0424562",
+    "expectedOutcome": "insufficient_evidence",
+    "category": "DERIVED_INCOMPLETE_COVERAGE",
+    "evidenceIds": [],
+    "evidenceTables": []
+  },
+  {
+    "packet": "Coverage packet 007",
+    "split": "stress",
+    "paymentId": "PAY_0426017",
+    "expectedOutcome": "insufficient_evidence",
+    "category": "DERIVED_INCOMPLETE_COVERAGE",
+    "evidenceIds": [],
+    "evidenceTables": []
+  },
+  {
+    "packet": "Coverage packet 008",
+    "split": "stress",
+    "paymentId": "PAY_0424562",
+    "expectedOutcome": "insufficient_evidence",
+    "category": "DERIVED_INCOMPLETE_COVERAGE",
+    "evidenceIds": [],
+    "evidenceTables": []
+  },
+  {
+    "packet": "Coverage packet 009",
+    "split": "stress",
+    "paymentId": "PAY_0426017",
+    "expectedOutcome": "insufficient_evidence",
+    "category": "DERIVED_INCOMPLETE_COVERAGE",
+    "evidenceIds": [],
+    "evidenceTables": []
+  },
+  {
+    "packet": "Coverage packet 010",
+    "split": "stress",
+    "paymentId": "PAY_0424562",
+    "expectedOutcome": "insufficient_evidence",
+    "category": "DERIVED_INCOMPLETE_COVERAGE",
+    "evidenceIds": [],
+    "evidenceTables": []
+  }
+]

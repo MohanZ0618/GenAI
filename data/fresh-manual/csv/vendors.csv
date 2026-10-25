@@ -1,0 +1,5 @@
+vendor_id,vendor_name,vendor_type,tax_id_hash,country,currency,payment_terms,default_payment_method,bank_account_token,bank_routing_token,vendor_status,created_at,updated_at,source_system
+VND_NEW_NORMAL,Synthetic Cedar Supplies,supplier,synthetic_normal,US,USD,NET30,wire,SYNTHETIC_ACCOUNT_NORMAL,SYNTHETIC_ROUTING,active,2026-08-01T09:00:00Z,2026-08-01T09:00:00Z,Synthetic-Manual-Test
+VND_NEW_DUP,Synthetic Maple Components,supplier,synthetic_dup,US,USD,NET30,wire,SYNTHETIC_ACCOUNT_DUP,SYNTHETIC_ROUTING,active,2026-08-01T09:00:00Z,2026-08-01T09:00:00Z,Synthetic-Manual-Test
+VND_NEW_MISSING,Synthetic Pine Logistics,supplier,synthetic_missing,US,USD,NET30,wire,SYNTHETIC_ACCOUNT_MISSING,SYNTHETIC_ROUTING,active,2026-08-01T09:00:00Z,2026-08-01T09:00:00Z,Synthetic-Manual-Test
+VND_NEW_FEE,Synthetic Birch Services,supplier,synthetic_fee,US,USD,NET30,wire,SYNTHETIC_ACCOUNT_FEE,SYNTHETIC_ROUTING,active,2026-08-01T09:00:00Z,2026-08-01T09:00:00Z,Synthetic-Manual-Test

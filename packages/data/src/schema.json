@@ -1,0 +1,197 @@
+{
+  "vendors": {
+    "columns": [
+      "vendor_id",
+      "vendor_name",
+      "vendor_type",
+      "tax_id_hash",
+      "country",
+      "currency",
+      "payment_terms",
+      "default_payment_method",
+      "bank_account_token",
+      "bank_routing_token",
+      "vendor_status",
+      "created_at",
+      "updated_at",
+      "source_system"
+    ],
+    "money": [],
+    "primaryKey": [
+      "vendor_id"
+    ]
+  },
+  "vendor_change_log": {
+    "columns": [
+      "change_id",
+      "vendor_id",
+      "field_changed",
+      "old_value",
+      "new_value",
+      "changed_at",
+      "changed_by",
+      "change_reason",
+      "source_system"
+    ],
+    "money": [],
+    "primaryKey": [
+      "change_id"
+    ]
+  },
+  "invoices": {
+    "columns": [
+      "invoice_id",
+      "vendor_id",
+      "po_id",
+      "invoice_number",
+      "invoice_date",
+      "received_date",
+      "due_date",
+      "currency",
+      "subtotal",
+      "tax",
+      "shipping",
+      "invoice_total",
+      "payment_terms",
+      "status",
+      "duplicate_reference",
+      "created_at",
+      "source_system"
+    ],
+    "money": [
+      "subtotal",
+      "tax",
+      "shipping",
+      "invoice_total"
+    ],
+    "primaryKey": [
+      "invoice_id"
+    ]
+  },
+  "payments": {
+    "columns": [
+      "payment_id",
+      "vendor_id",
+      "payment_date",
+      "payment_method",
+      "payment_currency",
+      "payment_amount",
+      "bank_account_id",
+      "payment_status",
+      "settlement_status",
+      "reference_number",
+      "created_at",
+      "source_system"
+    ],
+    "money": [
+      "payment_amount"
+    ],
+    "primaryKey": [
+      "payment_id"
+    ]
+  },
+  "payment_allocations": {
+    "columns": [
+      "payment_id",
+      "invoice_id",
+      "allocated_amount",
+      "allocation_date",
+      "source_system"
+    ],
+    "money": [
+      "allocated_amount"
+    ],
+    "primaryKey": [
+      "payment_id",
+      "invoice_id",
+      "allocation_date"
+    ]
+  },
+  "gl_entries": {
+    "columns": [
+      "journal_id",
+      "journal_line_id",
+      "transaction_type",
+      "source_transaction_id",
+      "posting_date",
+      "accounting_period",
+      "gl_account",
+      "debit",
+      "credit",
+      "currency",
+      "department",
+      "cost_center",
+      "memo",
+      "source_system"
+    ],
+    "money": [
+      "debit",
+      "credit"
+    ],
+    "primaryKey": [
+      "journal_line_id"
+    ]
+  },
+  "bank_transactions": {
+    "columns": [
+      "bank_transaction_id",
+      "bank_account_id",
+      "transaction_date",
+      "posted_date",
+      "transaction_type",
+      "amount",
+      "currency",
+      "direction",
+      "bank_reference",
+      "counterparty_token",
+      "payment_reference",
+      "status",
+      "source_system"
+    ],
+    "money": [
+      "amount"
+    ],
+    "primaryKey": [
+      "bank_transaction_id"
+    ]
+  },
+  "bank_statements": {
+    "columns": [
+      "bank_statement_id",
+      "bank_account_id",
+      "statement_date",
+      "opening_balance",
+      "closing_balance",
+      "total_debits",
+      "total_credits",
+      "source_system"
+    ],
+    "money": [
+      "opening_balance",
+      "closing_balance",
+      "total_debits",
+      "total_credits"
+    ],
+    "primaryKey": [
+      "bank_statement_id"
+    ]
+  },
+  "audit_log": {
+    "columns": [
+      "event_id",
+      "entity_type",
+      "entity_id",
+      "event_type",
+      "timestamp",
+      "actor_id",
+      "field",
+      "old_value",
+      "new_value",
+      "source_system"
+    ],
+    "money": [],
+    "primaryKey": [
+      "event_id"
+    ]
+  }
+}

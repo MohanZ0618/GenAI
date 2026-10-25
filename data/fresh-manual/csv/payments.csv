@@ -1,0 +1,6 @@
+payment_id,vendor_id,payment_date,payment_method,payment_currency,payment_amount,bank_account_id,payment_status,settlement_status,reference_number,created_at,source_system
+PAY_NEW_NORMAL_01,VND_NEW_NORMAL,2026-09-07,wire,USD,600.00,SYNTHETIC_ACCOUNT_NORMAL,completed,settled,REF_NEW_NORMAL_1,2026-09-07T09:00:00Z,Synthetic-Manual-Test
+PAY_NEW_DUP_01,VND_NEW_DUP,2026-09-07,wire,USD,1000.00,SYNTHETIC_ACCOUNT_DUP,completed,settled,REF_NEW_DUP_1,2026-09-07T09:00:00Z,Synthetic-Manual-Test
+PAY_NEW_DUP_02,VND_NEW_DUP,2026-09-10,wire,USD,1000.00,SYNTHETIC_ACCOUNT_DUP,completed,settled,REF_NEW_DUP_2,2026-09-10T09:00:00Z,Synthetic-Manual-Test
+PAY_NEW_MISSING_01,VND_NEW_MISSING,2026-09-07,wire,USD,800.00,SYNTHETIC_ACCOUNT_MISSING,completed,pending,REF_NEW_MISSING_1,2026-09-07T09:00:00Z,Synthetic-Manual-Test
+PAY_NEW_FEE_01,VND_NEW_FEE,2026-09-07,wire,USD,1200.00,SYNTHETIC_ACCOUNT_FEE,completed,settled,REF_NEW_FEE_1,2026-09-07T09:00:00Z,Synthetic-Manual-Test

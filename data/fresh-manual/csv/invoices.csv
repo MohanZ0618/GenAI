@@ -1,0 +1,5 @@
+invoice_id,vendor_id,po_id,invoice_number,invoice_date,received_date,due_date,currency,subtotal,tax,shipping,invoice_total,payment_terms,status,duplicate_reference,created_at,source_system
+INV_NEW_NORMAL,VND_NEW_NORMAL,PO_NEW_NORMAL,NEW-2026-NORMAL,2026-08-15,2026-08-15,2026-09-14,USD,600.00,0.00,0.00,600.00,NET30,paid,,2026-08-15T09:00:00Z,Synthetic-Manual-Test
+INV_NEW_DUP,VND_NEW_DUP,PO_NEW_DUP,NEW-2026-DUP,2026-08-15,2026-08-15,2026-09-14,USD,1000.00,0.00,0.00,1000.00,NET30,paid,,2026-08-15T09:00:00Z,Synthetic-Manual-Test
+INV_NEW_MISSING,VND_NEW_MISSING,PO_NEW_MISSING,NEW-2026-MISSING,2026-08-15,2026-08-15,2026-09-14,USD,800.00,0.00,0.00,800.00,NET30,paid,,2026-08-15T09:00:00Z,Synthetic-Manual-Test
+INV_NEW_FEE,VND_NEW_FEE,PO_NEW_FEE,NEW-2026-FEE,2026-08-15,2026-08-15,2026-09-14,USD,1200.00,0.00,0.00,1200.00,NET30,paid,,2026-08-15T09:00:00Z,Synthetic-Manual-Test

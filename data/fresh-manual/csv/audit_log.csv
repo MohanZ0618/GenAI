@@ -1,0 +1,3 @@
+event_id,entity_type,entity_id,event_type,timestamp,actor_id,field,old_value,new_value,source_system
+EVT_NEW_MISSING,payment,PAY_NEW_MISSING_01,payment_file_not_transmitted,2026-09-07T10:00:00Z,synthetic_processor,settlement_status,submitted,transmission_failed,Synthetic-Manual-Test
+EVT_NEW_FEE,payment,PAY_NEW_FEE_01,net_settlement_received,2026-09-07T10:00:00Z,synthetic_processor,settlement_status,submitted,net_1180_fee_20,Synthetic-Manual-Test

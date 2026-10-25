@@ -1,0 +1,2 @@
+vendor_id,vendor_name,vendor_type,tax_id_hash,country,currency,payment_terms,default_payment_method,bank_account_token,bank_routing_token,vendor_status,created_at,updated_at,source_system
+VND_042324,Synthetic Quartz Services 0324,supplier,d4b73ad8845f65ea45ab1fb9,US,USD,NET15,wire,BA_TKN_042_0000324,BR_TKN_0033,active,2024-03-29T10:00:00,2024-03-29T10:00:00,VendorManagement

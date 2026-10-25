@@ -1,0 +1,29 @@
+node_modules/
+dist/
+.local/
+.env
+.env.local
+.env.*.local
+test-results/
+playwright-report/
+__pycache__/
+*.pyc
+*.tsbuildinfo
+.venv/
+*.log
+!.env.example
+
+# Original onboarding/research materials are not part of the public app package.
+info/
+research/
+
+# Release excludes generated records and local packaging.
+release/
+evaluation/results/
+evaluation/screenshots/
+data/**/live-smoke.json
+data/**/validation.json
+submission/
+*.pptx
+*.docx
+*.webm

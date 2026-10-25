@@ -1,0 +1,72 @@
+{
+  "manifest": {
+    "name": "Fresh manual test - 2026-10-22",
+    "asOf": "2026-10-22T23:59:59Z",
+    "clearingDays": 10,
+    "currency": "USD",
+    "coverage": {
+      "vendors": {
+        "status": "complete",
+        "from": "2026-08-01T00:00:00Z",
+        "to": "2026-10-22T23:59:59Z"
+      },
+      "vendor_change_log": {
+        "status": "complete",
+        "from": "2026-08-01T00:00:00Z",
+        "to": "2026-10-22T23:59:59Z"
+      },
+      "invoices": {
+        "status": "complete",
+        "from": "2026-08-01T00:00:00Z",
+        "to": "2026-10-22T23:59:59Z"
+      },
+      "payments": {
+        "status": "complete",
+        "from": "2026-08-01T00:00:00Z",
+        "to": "2026-10-22T23:59:59Z"
+      },
+      "payment_allocations": {
+        "status": "complete",
+        "from": "2026-08-01T00:00:00Z",
+        "to": "2026-10-22T23:59:59Z"
+      },
+      "gl_entries": {
+        "status": "complete",
+        "from": "2026-08-01T00:00:00Z",
+        "to": "2026-10-22T23:59:59Z"
+      },
+      "bank_transactions": {
+        "status": "complete",
+        "from": "2026-08-01T00:00:00Z",
+        "to": "2026-10-22T23:59:59Z"
+      },
+      "bank_statements": {
+        "status": "complete",
+        "from": "2026-08-01T00:00:00Z",
+        "to": "2026-10-22T23:59:59Z"
+      },
+      "audit_log": {
+        "status": "complete",
+        "from": "2026-08-01T00:00:00Z",
+        "to": "2026-10-22T23:59:59Z"
+      }
+    },
+    "focusPaymentIds": [
+      "PAY_NEW_NORMAL_01",
+      "PAY_NEW_DUP_02",
+      "PAY_NEW_MISSING_01",
+      "PAY_NEW_FEE_01"
+    ]
+  },
+  "files": {
+    "vendors.csv": "vendor_id,vendor_name,vendor_type,tax_id_hash,country,currency,payment_terms,default_payment_method,bank_account_token,bank_routing_token,vendor_status,created_at,updated_at,source_system\r\nVND_NEW_NORMAL,Synthetic Cedar Supplies,supplier,synthetic_normal,US,USD,NET30,wire,SYNTHETIC_ACCOUNT_NORMAL,SYNTHETIC_ROUTING,active,2026-08-01T09:00:00Z,2026-08-01T09:00:00Z,Synthetic-Manual-Test\r\nVND_NEW_DUP,Synthetic Maple Components,supplier,synthetic_dup,US,USD,NET30,wire,SYNTHETIC_ACCOUNT_DUP,SYNTHETIC_ROUTING,active,2026-08-01T09:00:00Z,2026-08-01T09:00:00Z,Synthetic-Manual-Test\r\nVND_NEW_MISSING,Synthetic Pine Logistics,supplier,synthetic_missing,US,USD,NET30,wire,SYNTHETIC_ACCOUNT_MISSING,SYNTHETIC_ROUTING,active,2026-08-01T09:00:00Z,2026-08-01T09:00:00Z,Synthetic-Manual-Test\r\nVND_NEW_FEE,Synthetic Birch Services,supplier,synthetic_fee,US,USD,NET30,wire,SYNTHETIC_ACCOUNT_FEE,SYNTHETIC_ROUTING,active,2026-08-01T09:00:00Z,2026-08-01T09:00:00Z,Synthetic-Manual-Test\r\n",
+    "vendor_change_log.csv": "change_id,vendor_id,field_changed,old_value,new_value,changed_at,changed_by,change_reason,source_system\r\n",
+    "invoices.csv": "invoice_id,vendor_id,po_id,invoice_number,invoice_date,received_date,due_date,currency,subtotal,tax,shipping,invoice_total,payment_terms,status,duplicate_reference,created_at,source_system\r\nINV_NEW_NORMAL,VND_NEW_NORMAL,PO_NEW_NORMAL,NEW-2026-NORMAL,2026-08-15,2026-08-15,2026-09-14,USD,600.00,0.00,0.00,600.00,NET30,paid,,2026-08-15T09:00:00Z,Synthetic-Manual-Test\r\nINV_NEW_DUP,VND_NEW_DUP,PO_NEW_DUP,NEW-2026-DUP,2026-08-15,2026-08-15,2026-09-14,USD,1000.00,0.00,0.00,1000.00,NET30,paid,,2026-08-15T09:00:00Z,Synthetic-Manual-Test\r\nINV_NEW_MISSING,VND_NEW_MISSING,PO_NEW_MISSING,NEW-2026-MISSING,2026-08-15,2026-08-15,2026-09-14,USD,800.00,0.00,0.00,800.00,NET30,paid,,2026-08-15T09:00:00Z,Synthetic-Manual-Test\r\nINV_NEW_FEE,VND_NEW_FEE,PO_NEW_FEE,NEW-2026-FEE,2026-08-15,2026-08-15,2026-09-14,USD,1200.00,0.00,0.00,1200.00,NET30,paid,,2026-08-15T09:00:00Z,Synthetic-Manual-Test\r\n",
+    "payments.csv": "payment_id,vendor_id,payment_date,payment_method,payment_currency,payment_amount,bank_account_id,payment_status,settlement_status,reference_number,created_at,source_system\r\nPAY_NEW_NORMAL_01,VND_NEW_NORMAL,2026-09-07,wire,USD,600.00,SYNTHETIC_ACCOUNT_NORMAL,completed,settled,REF_NEW_NORMAL_1,2026-09-07T09:00:00Z,Synthetic-Manual-Test\r\nPAY_NEW_DUP_01,VND_NEW_DUP,2026-09-07,wire,USD,1000.00,SYNTHETIC_ACCOUNT_DUP,completed,settled,REF_NEW_DUP_1,2026-09-07T09:00:00Z,Synthetic-Manual-Test\r\nPAY_NEW_DUP_02,VND_NEW_DUP,2026-09-10,wire,USD,1000.00,SYNTHETIC_ACCOUNT_DUP,completed,settled,REF_NEW_DUP_2,2026-09-10T09:00:00Z,Synthetic-Manual-Test\r\nPAY_NEW_MISSING_01,VND_NEW_MISSING,2026-09-07,wire,USD,800.00,SYNTHETIC_ACCOUNT_MISSING,completed,pending,REF_NEW_MISSING_1,2026-09-07T09:00:00Z,Synthetic-Manual-Test\r\nPAY_NEW_FEE_01,VND_NEW_FEE,2026-09-07,wire,USD,1200.00,SYNTHETIC_ACCOUNT_FEE,completed,settled,REF_NEW_FEE_1,2026-09-07T09:00:00Z,Synthetic-Manual-Test\r\n",
+    "payment_allocations.csv": "payment_id,invoice_id,allocated_amount,allocation_date,source_system\r\nPAY_NEW_NORMAL_01,INV_NEW_NORMAL,600.00,2026-09-07,Synthetic-Manual-Test\r\nPAY_NEW_DUP_01,INV_NEW_DUP,1000.00,2026-09-07,Synthetic-Manual-Test\r\nPAY_NEW_DUP_02,INV_NEW_DUP,1000.00,2026-09-10,Synthetic-Manual-Test\r\nPAY_NEW_MISSING_01,INV_NEW_MISSING,800.00,2026-09-07,Synthetic-Manual-Test\r\nPAY_NEW_FEE_01,INV_NEW_FEE,1200.00,2026-09-07,Synthetic-Manual-Test\r\n",
+    "gl_entries.csv": "journal_id,journal_line_id,transaction_type,source_transaction_id,posting_date,accounting_period,gl_account,debit,credit,currency,department,cost_center,memo,source_system\r\nJE_NEW_NORMAL_1,JEL_NEW_NORMAL_1_debit,payment,PAY_NEW_NORMAL_01,2026-09-07,2026-09,200000-ACCOUNTS-PAYABLE,600.00,0.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test\r\nJE_NEW_NORMAL_1,JEL_NEW_NORMAL_1_credit,payment,PAY_NEW_NORMAL_01,2026-09-07,2026-09,100000-CASH,0.00,600.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test\r\nJE_NEW_DUP_1,JEL_NEW_DUP_1_debit,payment,PAY_NEW_DUP_01,2026-09-07,2026-09,200000-ACCOUNTS-PAYABLE,1000.00,0.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test\r\nJE_NEW_DUP_1,JEL_NEW_DUP_1_credit,payment,PAY_NEW_DUP_01,2026-09-07,2026-09,100000-CASH,0.00,1000.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test\r\nJE_NEW_DUP_2,JEL_NEW_DUP_2_debit,payment,PAY_NEW_DUP_02,2026-09-10,2026-09,200000-ACCOUNTS-PAYABLE,1000.00,0.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test\r\nJE_NEW_DUP_2,JEL_NEW_DUP_2_credit,payment,PAY_NEW_DUP_02,2026-09-10,2026-09,100000-CASH,0.00,1000.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test\r\nJE_NEW_MISSING_1,JEL_NEW_MISSING_1_debit,payment,PAY_NEW_MISSING_01,2026-09-07,2026-09,200000-ACCOUNTS-PAYABLE,800.00,0.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test\r\nJE_NEW_MISSING_1,JEL_NEW_MISSING_1_credit,payment,PAY_NEW_MISSING_01,2026-09-07,2026-09,100000-CASH,0.00,800.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test\r\nJE_NEW_FEE_1,JEL_NEW_FEE_1_debit,payment,PAY_NEW_FEE_01,2026-09-07,2026-09,200000-ACCOUNTS-PAYABLE,1200.00,0.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test\r\nJE_NEW_FEE_1,JEL_NEW_FEE_1_credit,payment,PAY_NEW_FEE_01,2026-09-07,2026-09,100000-CASH,0.00,1200.00,USD,Operations,TEST,Synthetic payment journal,Synthetic-Manual-Test\r\n",
+    "bank_transactions.csv": "bank_transaction_id,bank_account_id,transaction_date,posted_date,transaction_type,amount,currency,direction,bank_reference,counterparty_token,payment_reference,status,source_system\r\nBT_NEW_NORMAL_1,SYNTHETIC_ACCOUNT_NORMAL,2026-09-07,2026-09-07,payment,600.00,USD,debit,BANK_REF_NORMAL_1,SYNTHETIC_ACCOUNT_NORMAL,REF_NEW_NORMAL_1,posted,Synthetic-Manual-Test\r\nBT_NEW_DUP_1,SYNTHETIC_ACCOUNT_DUP,2026-09-07,2026-09-07,payment,1000.00,USD,debit,BANK_REF_DUP_1,SYNTHETIC_ACCOUNT_DUP,REF_NEW_DUP_1,posted,Synthetic-Manual-Test\r\nBT_NEW_DUP_2,SYNTHETIC_ACCOUNT_DUP,2026-09-10,2026-09-10,payment,1000.00,USD,debit,BANK_REF_DUP_2,SYNTHETIC_ACCOUNT_DUP,REF_NEW_DUP_2,posted,Synthetic-Manual-Test\r\nBT_NEW_FEE_1,SYNTHETIC_ACCOUNT_FEE,2026-09-07,2026-09-07,payment,1180.00,USD,debit,BANK_REF_FEE_1,SYNTHETIC_ACCOUNT_FEE,REF_NEW_FEE_1,posted,Synthetic-Manual-Test\r\n",
+    "bank_statements.csv": "bank_statement_id,bank_account_id,statement_date,opening_balance,closing_balance,total_debits,total_credits,source_system\r\nBS_NEW_NORMAL,SYNTHETIC_ACCOUNT_NORMAL,2026-10-22,10000.00,9400.00,600.00,0.00,Synthetic-Manual-Test\r\nBS_NEW_DUP,SYNTHETIC_ACCOUNT_DUP,2026-10-22,10000.00,8000.00,2000.00,0.00,Synthetic-Manual-Test\r\nBS_NEW_MISSING,SYNTHETIC_ACCOUNT_MISSING,2026-10-22,10000.00,10000.00,0.00,0.00,Synthetic-Manual-Test\r\nBS_NEW_FEE,SYNTHETIC_ACCOUNT_FEE,2026-10-22,10000.00,8820.00,1180.00,0.00,Synthetic-Manual-Test\r\n",
+    "audit_log.csv": "event_id,entity_type,entity_id,event_type,timestamp,actor_id,field,old_value,new_value,source_system\r\nEVT_NEW_MISSING,payment,PAY_NEW_MISSING_01,payment_file_not_transmitted,2026-09-07T10:00:00Z,synthetic_processor,settlement_status,submitted,transmission_failed,Synthetic-Manual-Test\r\nEVT_NEW_FEE,payment,PAY_NEW_FEE_01,net_settlement_received,2026-09-07T10:00:00Z,synthetic_processor,settlement_status,submitted,net_1180_fee_20,Synthetic-Manual-Test\r\n"
+  }
+}

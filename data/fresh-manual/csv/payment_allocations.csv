@@ -1,0 +1,6 @@
+payment_id,invoice_id,allocated_amount,allocation_date,source_system
+PAY_NEW_NORMAL_01,INV_NEW_NORMAL,600.00,2026-09-07,Synthetic-Manual-Test
+PAY_NEW_DUP_01,INV_NEW_DUP,1000.00,2026-09-07,Synthetic-Manual-Test
+PAY_NEW_DUP_02,INV_NEW_DUP,1000.00,2026-09-10,Synthetic-Manual-Test
+PAY_NEW_MISSING_01,INV_NEW_MISSING,800.00,2026-09-07,Synthetic-Manual-Test
+PAY_NEW_FEE_01,INV_NEW_FEE,1200.00,2026-09-07,Synthetic-Manual-Test

@@ -1,0 +1,5 @@
+bank_statement_id,bank_account_id,statement_date,opening_balance,closing_balance,total_debits,total_credits,source_system
+BS_NEW_NORMAL,SYNTHETIC_ACCOUNT_NORMAL,2026-10-22,10000.00,9400.00,600.00,0.00,Synthetic-Manual-Test
+BS_NEW_DUP,SYNTHETIC_ACCOUNT_DUP,2026-10-22,10000.00,8000.00,2000.00,0.00,Synthetic-Manual-Test
+BS_NEW_MISSING,SYNTHETIC_ACCOUNT_MISSING,2026-10-22,10000.00,10000.00,0.00,0.00,Synthetic-Manual-Test
+BS_NEW_FEE,SYNTHETIC_ACCOUNT_FEE,2026-10-22,10000.00,8820.00,1180.00,0.00,Synthetic-Manual-Test
