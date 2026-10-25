@@ -147,7 +147,7 @@ $env:FINTRACE_MODE = "fixture"
 npm run dev
 ```
 
-打开 **http://localhost:4310**。选择内置付款案例并启动调查，或在 Datasets 导入 [合成手测包](data/openai-manual/01-main-bundle.json)。查看 Findings、Validation 和 Activity log，审核后导出报告。Windows 也可使用 `start-fintrace.cmd`。
+打开 [http://localhost:4310](http://localhost:4310)。选择内置付款案例并启动调查，或在 Datasets 导入 [合成手测包](data/openai-manual/01-main-bundle.json)。查看 Findings、Validation 和 Activity log，审核后导出报告。Windows 也可使用 `start-fintrace.cmd`。
 
 前端热更新：另开终端运行 `npm run dev:web`，其 API 代理指向 4310。应用默认绑定 localhost，本地状态写入忽略目录 `.local/`。这是本地原型，未实现生产级多用户认证和部署方案。
 
