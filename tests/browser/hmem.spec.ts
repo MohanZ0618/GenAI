@@ -1,5 +1,81 @@
 import { test, expect } from "@playwright/test";
 
+test("request changes, suggest, accept and correct an existing memory without losing notes", async ({
+  page,
+  request,
+}) => {
+  const { datasets } = await (await request.get("/api/datasets")).json();
+  const ds = datasets.find(
+    (item: { name: string }) => item.name === "Review packet 005",
+  );
+  const { cases } = await (
+    await request.get(`/api/cases?datasetId=${ds.id}`)
+  ).json();
+  const run = await (
+    await request.post("/api/investigations", {
+      data: { datasetId: ds.id, paymentId: cases[0].paymentId },
+    })
+  ).json();
+  await expect
+    .poll(
+      async () =>
+        (await (await request.get(`/api/investigations/${run.id}`)).json())
+          .status,
+    )
+    .toBe("completed");
+  const seeded = await request.post(`/api/investigations/${run.id}/review`, {
+    data: { decision: "accepted", approveMemory: true, memoryContent: "test" },
+  });
+  expect(seeded.ok()).toBe(true);
+  await page.goto(`/?investigation=${run.id}`);
+  await page
+    .getByRole("button", { name: "Review findings", exact: true })
+    .click();
+  await expect(
+    page.getByText("Existing approved memory", { exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: /Request changes/ }).click();
+  await page
+    .getByRole("button", { name: "Suggest memory", exact: true })
+    .click();
+  await expect(page.getByText(/Draft: ready/)).toBeVisible();
+  await expect(page.getByLabel("Approve a reusable memory")).toBeDisabled();
+  await page.getByRole("button", { name: /Accept findings/ }).click();
+  await page.getByLabel("Approve a reusable memory").check();
+  await page.getByLabel("Review notes").fill("Keep my review notes");
+  await page
+    .getByLabel("Confirmed lesson", { exact: true })
+    .fill("Reconcile allocations with bank and ledger evidence.");
+  await page.getByRole("button", { name: "Save human review" }).click();
+  await expect(page.getByRole("alert")).toContainText(
+    "Deactivate the existing memory",
+  );
+  await page
+    .getByRole("button", { name: "Deactivate existing memory", exact: true })
+    .click();
+  await expect(
+    page.getByText("Existing approved memory", { exact: true }),
+  ).toHaveCount(0);
+  await expect(page.getByLabel("Review notes")).toHaveValue(
+    "Keep my review notes",
+  );
+  await page.getByRole("button", { name: "Save human review" }).click();
+  await expect(page.locator(".review-receipt")).toContainText("Accepted");
+  const { memories } = await (await request.get("/api/memories")).json();
+  const sourceMemories = memories.filter(
+    (item: { source: string }) => item.source === run.id,
+  );
+  expect(
+    sourceMemories.find((item: { content: string }) => item.content === "test")
+      .status,
+  ).toBe("inactive");
+  expect(
+    sourceMemories.filter(
+      (item: { status: string }) => item.status === "active",
+    ),
+  ).toHaveLength(1);
+});
+
 test("memory draft, approval, immutable management, source and mobile refresh", async ({
   page,
   request,

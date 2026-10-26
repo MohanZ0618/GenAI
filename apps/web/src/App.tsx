@@ -3220,6 +3220,55 @@ function ReviewModal({
   );
   const [notes, setNotes] = useState("");
   const [approveMemory, setApproveMemory] = useState(false);
+  const [existingMemories, setExistingMemories] = useState<ApprovedMemory[]>(
+    [],
+  );
+  const namespace = investigation.memoryNamespace || "workspace";
+  useEffect(() => {
+    let alive = true;
+    api<{ memories: ApprovedMemory[] }>(
+      `/memories?namespace=${encodeURIComponent(namespace)}`,
+    )
+      .then(({ memories }) => {
+        if (alive)
+          setExistingMemories(
+            memories.filter(
+              (item) =>
+                item.source === investigation.id && item.status === "active",
+            ),
+          );
+      })
+      .catch(() => {
+        /* The review API remains authoritative if the memory list is unavailable. */
+      });
+    return () => {
+      alive = false;
+    };
+  }, [investigation.id, namespace]);
+  async function deactivateMemory(id: string) {
+    setBusy(true);
+    setError("");
+    try {
+      await api(
+        `/memories/${encodeURIComponent(id)}?namespace=${encodeURIComponent(namespace)}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ status: "inactive" }),
+        },
+      );
+      setExistingMemories((previous) =>
+        previous.filter((item) => item.id !== id),
+      );
+    } catch (reason) {
+      setError(
+        reason instanceof Error
+          ? reason.message
+          : "Unable to deactivate the existing memory.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
   const [draft, setDraft] = useState<MemoryDraft | undefined>(
     investigation.memoryDraft,
   );
@@ -3391,6 +3440,24 @@ function ReviewModal({
           </p>
         </div>
         <div className="memory-consent">
+          {existingMemories.map((item) => (
+            <div key={item.id}>
+              <strong>Existing approved memory</strong>
+              <p>{item.content}</p>
+              <p>
+                To approve different content, deactivate this memory first. Its
+                history will be preserved. You can also leave memory approval
+                unchecked to save only the review.
+              </p>
+              <button
+                className="button secondary"
+                disabled={busy || generating}
+                onClick={() => void deactivateMemory(item.id)}
+              >
+                Deactivate existing memory
+              </button>
+            </div>
+          ))}
           <label>
             <input
               type="checkbox"

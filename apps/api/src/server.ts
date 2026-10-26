@@ -300,8 +300,11 @@ export async function createApp(
             m.scope === input.memoryScope,
         );
         if (prior.length && !same)
-          throw new Error(
-            "Deactivate the previous memory before approving a correction",
+          throw Object.assign(
+            new Error(
+              "This investigation already has an active memory. Deactivate the existing memory before approving different content, or uncheck memory approval to save only the review.",
+            ),
+            { statusCode: 409 },
           );
         const record = await memory.approve(
           namespace,

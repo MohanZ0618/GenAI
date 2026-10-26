@@ -56,6 +56,54 @@ const input = { evidence, verification: [], gaps: [] };
 const env = { MODEL_PROVIDER: "openai", OPENAI_API_KEY: "mock" };
 
 describe("H-MEM review lifecycle", () => {
+  it("reports an approval conflict clearly and saves a correction after explicit deactivation", async () => {
+    const { dir, store, ds, memory, service } = await setup();
+    const run = await service.wait(
+      (await service.start(ds.info.id, "PAY_DEMO_DUP")).id,
+    );
+    const old = await memory.approve("workspace", "test", run.id);
+    const { app } = await createApp({
+      store,
+      storageDir: dir,
+      mode: "fixture",
+      seed: false,
+    });
+    try {
+      const payload = {
+        decision: "accepted",
+        notes: "Confirmed",
+        approveMemory: true,
+        memoryContent:
+          "Reconcile each allocation against bank and ledger evidence.",
+      };
+      const url = `/api/investigations/${run.id}/review`;
+      const conflict = await app.inject({ method: "POST", url, payload });
+      expect(conflict.statusCode).toBe(409);
+      expect(conflict.json().error).toContain("Deactivate the existing memory");
+      expect(memory.list()[0].content).toBe("test");
+      expect((await store.run(run.id))?.review).toBeUndefined();
+      const deactivated = await app.inject({
+        method: "PATCH",
+        url: `/api/memories/${old.id}`,
+        payload: { status: "inactive" },
+      });
+      expect(deactivated.statusCode).toBe(200);
+      const saved = await app.inject({ method: "POST", url, payload });
+      expect(saved.statusCode).toBe(200);
+      expect(saved.json().review.notes).toBe("Confirmed");
+      const memories = new MemoryService(join(dir, "memory")).list();
+      expect(memories).toHaveLength(2);
+      expect(memories.find((item) => item.id === old.id)?.status).toBe(
+        "inactive",
+      );
+      expect(memories.find((item) => item.status === "active")?.content).toBe(
+        payload.memoryContent,
+      );
+    } finally {
+      await app.close();
+      await service.close();
+    }
+  });
   it("persists a single draft, deduplicates approval, isolates namespaces and freezes history", async () => {
     const { dir, store, ds, memory, service } = await setup();
     const run = await service.wait(
