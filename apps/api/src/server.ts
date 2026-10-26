@@ -3,7 +3,7 @@ import staticFiles from "@fastify/static";
 import { existsSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { pathToFileURL } from "node:url";
-import { ZodError } from "zod";
+import { z, ZodError } from "zod";
 import { settings } from "./config.ts";
 import { FileStore, PostgresStore, type Store } from "./store.ts";
 import { MemoryService } from "./integrations/memory.ts";
@@ -242,35 +242,98 @@ export async function createApp(
     const run = await service.cancel((request.params as { id: string }).id);
     return run || reply.code(404).send({ error: "Investigation not found" });
   });
-  app.post("/api/investigations/:id/review", async (request, reply) => {
+  const namespaceSchema = z
+    .object({ namespace: z.string().min(1).max(200).default("workspace") })
+    .strict();
+  app.get("/api/memories", async (request) => {
+    const { namespace } = namespaceSchema.parse(request.query);
+    return { memories: memory.list(namespace) };
+  });
+  app.patch("/api/memories/:id", async (request) => {
+    const { namespace } = namespaceSchema.parse(request.query);
+    const { status } = z
+      .object({ status: z.enum(["active", "inactive"]) })
+      .strict()
+      .parse(request.body);
+    return memory.setStatus(
+      namespace,
+      (request.params as { id: string }).id,
+      status,
+    );
+  });
+  app.post("/api/investigations/:id/memory-draft", async (request) => {
+    const { retry } = z
+      .object({ retry: z.boolean().default(false) })
+      .strict()
+      .parse(request.body || {});
+    return service.memoryDraft((request.params as { id: string }).id, retry);
+  });
+  app.post("/api/investigations/:id/review", async (request) => {
     const id = (request.params as { id: string }).id;
     const input = reviewSchema.parse(request.body);
-    const run = await store.run(id);
-    if (!run) return reply.code(404).send({ error: "Investigation not found" });
-    if (run.status !== "completed")
-      throw new Error("Only a completed investigation can be reviewed");
-    const now = new Date().toISOString();
-    let memoryId: string | undefined;
-    if (input.approveMemory) {
-      const record = await memory.approve(
-        "workspace",
-        input.memoryContent!,
-        run.id,
+    return service.mutate(id, async () => {
+      const run = await store.run(id);
+      if (!run) throw new Error("Investigation not found");
+      if (run.status !== "completed")
+        throw new Error("Only a completed investigation can be reviewed");
+      let memoryId: string | undefined;
+      if (input.approveMemory) {
+        const draft = run.memoryDraft;
+        if (
+          input.memoryDraftId &&
+          (draft?.id !== input.memoryDraftId || draft.status !== "ready")
+        )
+          throw new Error("Invalid memory draft identifier or state");
+        const vendorId = run.evidence.find(
+          (e) =>
+            e.table === "payments" && e.record.payment_id === run.paymentId,
+        )?.record.vendor_id;
+        if (input.memoryScope === "vendor" && !vendorId)
+          throw new Error("Vendor scope requires a known vendor");
+        const namespace = run.memoryNamespace || "workspace";
+        const prior = memory
+          .list(namespace)
+          .filter((m) => m.source === id && m.status === "active");
+        const same = prior.find(
+          (m) =>
+            m.content === input.memoryContent!.trim() &&
+            m.scope === input.memoryScope,
+        );
+        if (prior.length && !same)
+          throw new Error(
+            "Deactivate the previous memory before approving a correction",
+          );
+        const record = await memory.approve(
+          namespace,
+          input.memoryContent!.trim(),
+          run.id,
+          {
+            scope: input.memoryScope,
+            vendorId: input.memoryScope === "vendor" ? vendorId : undefined,
+            draftId: input.memoryDraftId,
+            generationSource: input.memoryDraftId ? draft!.source : "manual",
+            conditions: input.memoryDraftId
+              ? draft!.conditions
+              : "Human supplied investigation procedure",
+            suggestedTools: input.memoryDraftId ? draft!.suggestedTools : [],
+            evidenceIds: input.memoryDraftId ? draft!.evidenceIds : [],
+          },
+        );
+        memoryId = record.id;
+      }
+      run.review = {
+        decision: input.decision,
+        notes: input.notes,
+        at: new Date().toISOString(),
+        ...(memoryId ? { memoryId } : {}),
+      };
+      await service.event(
+        run,
+        "review",
+        `Human review recorded: ${input.decision}${memoryId ? "; reusable memory explicitly approved." : "."}`,
       );
-      memoryId = record.id;
-    }
-    run.review = {
-      decision: input.decision,
-      notes: input.notes,
-      at: now,
-      ...(memoryId ? { memoryId } : {}),
-    };
-    await service.event(
-      run,
-      "review",
-      `Human review recorded: ${input.decision}${memoryId ? "; reusable memory explicitly approved." : "."}`,
-    );
-    return run;
+      return run;
+    });
   });
   app.get("/api/investigations/:id/export", async (request, reply) => {
     const run = await store.run((request.params as { id: string }).id);

@@ -140,6 +140,52 @@ export type ModelRequestTrace = {
   totalTokens?: number;
   errorCode?: string;
 };
+export const memorySuggestionSchema = z
+  .object({
+    hasSuggestion: z.boolean(),
+    content: z.string().max(2000),
+    conditions: z.string().max(2000),
+    suggestedTools: z.array(toolSchema).max(6),
+    evidenceIds: z.array(z.string()).max(30),
+    reason: z.string().max(1000),
+  })
+  .strict()
+  .superRefine((v, ctx) => {
+    if (
+      v.hasSuggestion &&
+      (!v.content.trim() || !v.conditions.trim() || !v.evidenceIds.length)
+    )
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Suggestion requires content, conditions and citations",
+      });
+  });
+export type MemorySuggestion = z.infer<typeof memorySuggestionSchema>;
+export type MemoryScope = "workspace" | "vendor";
+export type MemoryDraft = Partial<MemorySuggestion> & {
+  id: string;
+  status: "generating" | "ready" | "none" | "failed";
+  source: "fixture" | "model";
+  provider: string;
+  model: string;
+  createdAt: string;
+  error?: string;
+};
+export type ApprovedMemory = {
+  id: string;
+  content: string;
+  source: string;
+  namespace: string;
+  status: "active" | "inactive";
+  scope: MemoryScope;
+  vendorId?: string;
+  approvedAt: string;
+  generationSource: "manual" | "model" | "fixture";
+  draftId?: string;
+  conditions: string;
+  suggestedTools: ToolName[];
+  evidenceIds: string[];
+};
 export type Investigation = {
   id: string;
   memoryNamespace?: string;
@@ -160,6 +206,8 @@ export type Investigation = {
   queries: QueryTrace[];
   error?: string;
   memories: unknown[];
+  memoryDraft?: MemoryDraft;
+  memoryDraftRequests?: ModelRequestTrace[];
   review?: Review;
   modelTurns: number;
   modelRequests?: ModelRequestTrace[];
@@ -192,6 +240,8 @@ export const reviewSchema = z
     notes: z.string().max(4000).default(""),
     approveMemory: z.boolean().default(false),
     memoryContent: z.string().max(2000).optional(),
+    memoryDraftId: z.string().max(100).optional(),
+    memoryScope: z.enum(["workspace", "vendor"]).default("workspace"),
   })
   .strict()
   .superRefine((v, ctx) => {

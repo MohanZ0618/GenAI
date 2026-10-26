@@ -11,6 +11,8 @@ import { assess, TOOL_ORDER } from "./verifier.ts";
 import { retrieve } from "./evidence.ts";
 import {
   createModelProvider,
+  generateMemorySuggestion,
+  modelConfiguration,
   type ModelProvider,
 } from "./integrations/model.ts";
 import { MemoryService } from "./integrations/memory.ts";
@@ -49,6 +51,8 @@ export function casesFor(dataset: StoredDataset): Case[] {
     });
 }
 export class InvestigationService {
+  private draftJobs = new Map<string, Promise<Investigation>>();
+  private mutations = new Map<string, Promise<unknown>>();
   private active = new Map<string, AbortController>();
   private liveRuns = new Map<string, Investigation>();
   readonly concurrency = 3;
@@ -63,13 +67,20 @@ export class InvestigationService {
     readonly provider?: ModelProvider,
   ) {}
   async recover() {
-    for (const run of await this.store.runs())
+    for (const run of await this.store.runs()) {
+      if (run.memoryDraft?.status === "generating") {
+        run.memoryDraft.status = "failed";
+        run.memoryDraft.error =
+          "Generation interrupted by restart; explicitly retry or enter a memory manually.";
+        await this.store.saveRun(run);
+      }
       if (run.status === "queued" || run.status === "running") {
         run.status = "failed";
         run.error =
           "The process stopped before completion. Retained evidence is available; start a new investigation to retry.";
         await this.event(run, "recovery", run.error);
       }
+    }
   }
   async event(
     run: Investigation,
@@ -197,15 +208,6 @@ export class InvestigationService {
             ? `Local-data model investigation: ${run.provider} / ${run.model}; evidence read from local snapshots; no Zetaris.`
             : "Live investigation: evidence queried through Zetaris with model-selected tools.",
       );
-      run.memories = await this.memory.recall(
-        namespace,
-        "payment investigation review ledger settlement vendor",
-      );
-      await this.event(
-        run,
-        "memory",
-        `Retrieved ${run.memories.length} explicitly approved playbook memories. Current financial evidence will be queried again.`,
-      );
       for (let turn = 0; turn < 6; turn++) {
         signal.throwIfAborted();
         const previous = assess(
@@ -279,12 +281,14 @@ export class InvestigationService {
             .sort((a, b) => a.rank - b.rank)
             .map((t) => t.tool);
           tool =
-            preferred.find((t) => !completed.has(t)) || previous.neededTools[0];
+            preferred.find(
+              (t) => previous.neededTools.includes(t) && !completed.has(t),
+            ) || previous.neededTools[0];
           reason = preferred.includes(tool)
             ? "Apply a reviewer-approved investigation playbook to prioritize this evidence tool."
             : "Retrieve the next source required by the independent verifier.";
         }
-        if (completed.has(tool)) {
+        if (!previous.neededTools.includes(tool) || completed.has(tool)) {
           await this.event(
             run,
             "stopped",
@@ -333,6 +337,39 @@ export class InvestigationService {
           completed,
         );
         run.checks = feedback.checks;
+        if (tool === "overview") {
+          const context = planningEvidence(
+            run.evidence,
+            run.paymentId,
+            ds.info.asOf,
+          );
+          const payment = context.evidence.find(
+            (e) =>
+              e.table === "payments" && e.record.payment_id === run.paymentId,
+          )?.record;
+          const query = [
+            "payment investigation",
+            payment?.vendor_id,
+            payment?.payment_currency,
+            ...feedback.neededTools.map((t) => t.replaceAll("_", " ")),
+            ...feedback.checks
+              .filter((c) => c.status !== "passed")
+              .map((c) => c.label),
+          ]
+            .filter(Boolean)
+            .join(" ");
+          run.memories = await this.memory.recall(
+            namespace,
+            query,
+            payment?.vendor_id,
+          );
+          await this.event(
+            run,
+            "memory",
+            `Provided ${run.memories.length} approved memory snapshots to the planner; this does not prove model adoption. Query: ${query}`,
+          );
+        }
+
         if (feedback.neededTools.length)
           await this.event(
             run,
@@ -387,6 +424,112 @@ export class InvestigationService {
       this.liveRuns.delete(run.id);
     }
   }
+  async mutate<T>(id: string, action: () => Promise<T>): Promise<T> {
+    const previous = this.mutations.get(id) || Promise.resolve();
+    const task = previous.catch(() => {}).then(action);
+    this.mutations.set(id, task);
+    try {
+      return await task;
+    } finally {
+      if (this.mutations.get(id) === task) this.mutations.delete(id);
+    }
+  }
+  async memoryDraft(id: string, retry = false) {
+    const pending = this.draftJobs.get(id);
+    if (pending) return pending;
+    const task = this.mutate(id, async () => {
+      const run = await this.store.run(id);
+      if (!run) throw new Error("Investigation not found");
+      if (run.status !== "completed")
+        throw new Error("Only completed investigations can suggest memory");
+      if (run.memoryDraft && !(retry && run.memoryDraft.status === "failed"))
+        return run;
+      const ds = await this.store.dataset(run.datasetId);
+      if (!ds) throw new Error("Dataset not found");
+      const config = modelConfiguration({
+        ...process.env,
+        FINTRACE_MODE: run.mode,
+      });
+      const draft: NonNullable<Investigation["memoryDraft"]> = {
+        id: `draft-${randomUUID()}`,
+        status: "generating",
+        source: run.mode === "fixture" ? "fixture" : "model",
+        provider: run.mode === "fixture" ? run.provider : config.name,
+        model: run.mode === "fixture" ? run.model : config.model || "",
+        createdAt: new Date().toISOString(),
+      };
+      run.memoryDraft = draft;
+      run.memoryDraftRequests ||= [];
+      await this.store.saveRun(run);
+      try {
+        const context = planningEvidence(
+          run.evidence,
+          run.paymentId,
+          ds.info.asOf,
+        );
+        const allowed = new Set(context.evidence.map((e) => e.id));
+        const verification = run.checks.map((c) => ({
+          ...c,
+          evidenceIds: c.evidenceIds.filter((id) => allowed.has(id)),
+        }));
+        const suggestion =
+          run.mode === "fixture"
+            ? {
+                hasSuggestion: context.evidence.length > 0,
+                content:
+                  "Inspect allocations and vendor history, then reconcile settlements and ledger before accepting a payment assessment.",
+                conditions:
+                  "Payment reconciliation with unresolved evidence checks; retrieve current evidence every time.",
+                suggestedTools: [
+                  "allocations",
+                  "vendor_history",
+                  "settlements",
+                  "ledger",
+                ] as ToolName[],
+                evidenceIds: context.evidence.slice(0, 2).map((e) => e.id),
+                reason: "Deterministic fixture example; no model was called.",
+              }
+            : await generateMemorySuggestion(
+                {
+                  evidence: context.evidence,
+                  verification,
+                  gaps: run.findings.flatMap((f) => f.uncertainty),
+                },
+                new AbortController().signal,
+                async (trace) => {
+                  run.memoryDraftRequests!.push(trace);
+                  await this.store.saveRun(run);
+                },
+              );
+        Object.assign(draft, suggestion, {
+          status: suggestion.hasSuggestion ? "ready" : "none",
+        });
+      } catch (error) {
+        Object.assign(draft, {
+          status: "failed",
+          error:
+            error instanceof Error &&
+            /^Memory draft|^Model |^openai |^nvidia |^meterless /.test(
+              error.message,
+            )
+              ? error.message
+              : "Memory generation failed; manual entry remains available.",
+        });
+      }
+      await this.event(
+        run,
+        "memory_draft",
+        `Memory draft ${draft.status}; source: ${draft.source}. No memory approved.`,
+      );
+      return run;
+    });
+    this.draftJobs.set(id, task);
+    try {
+      return await task;
+    } finally {
+      this.draftJobs.delete(id);
+    }
+  }
   async cancel(id: string) {
     const run = this.liveRuns.get(id) || (await this.store.run(id));
     if (!run) return undefined;
@@ -421,6 +564,7 @@ export class InvestigationService {
   async close() {
     this.closing = true;
     await Promise.allSettled(this.starts.values());
+    await Promise.allSettled(this.draftJobs.values());
     for (const controller of this.active.values()) controller.abort();
     while (this.executing.size) await Promise.allSettled(this.executing);
   }

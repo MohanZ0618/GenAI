@@ -314,3 +314,9 @@ third_party/meterless/engines/hmem/reference/test/smoke.test.ts
 third_party/meterless/engines/hmem/reference/tsconfig.json
 tsconfig.json
 vitest.config.ts
+docs/HMEM_ACCEPTANCE.zh-CN.md
+scripts/verify_hmem.ts
+scripts/hmem_restart_probe.ts
+tests/hmem-lifecycle.test.ts
+tests/browser/hmem.spec.ts
+scripts/prepare_hmem_demo.ts

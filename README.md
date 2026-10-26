@@ -203,3 +203,16 @@ npm run evaluate
 保留必要第三方许可，见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 和 [DATA.md](docs/DATA.md)。项目代码使用 [MIT License](LICENSE)。
 
 GitHub 包仅发布白名单中的源码、配置模板、合成示例、测试和说明。`.env.local`、`.local/`、依赖/构建缓存、个人调研材料、原始运行报告、截图、视频和演示文稿不上传。开发工具及比赛合规需按实际使用情况另行说明；本 README 不证明比赛提交条件已经满足。
+
+## H-MEM 比赛版闭环
+
+已完成调查 → **Review findings → Suggest memory** → 编辑正文、选择当前工作区或供应商 → Accept findings + Approve a reusable memory → Save human review。模型仅在点击建议时调用；草稿持久保存，重复点击不会重复调用，失败后可显式重试或人工填写。
+
+左侧 **Investigation memories** 可查看来源、批准时间及生成来源，停用或恢复经验。已批准正文不可直接修改：先停用旧经验，再从来源调查重新编辑批准。调查详情 **Activity log → Memories provided to planner** 展示本次召回快照与匹配依据；召回表示已提供给规划器，不代表模型必然采用。新证据继续通过手动导入修订版本和 **Update investigation** 处理，经验变化不会自动重跑调查。
+
+- 离线验收：`$env:FINTRACE_MODE='fixture'; npm run verify:hmem`
+- 真实模型验收：在发布目录配置进程环境后执行 `$env:FINTRACE_MODE='local-model'; npm run verify:hmem -- --connect`，会产生模型费用。
+- [分层验收报告与约一分钟演示步骤](docs/HMEM_ACCEPTANCE.zh-CN.md)
+- [API 与兼容边界](docs/API.md#h-mem-competition-lifecycle)
+
+本轮仅使用现有 Meterless H-MEM store、检索评分和 trust ledger；保留本地 hash embedding 与中英关键词，不声称生产语义检索。没有新增 World Model、Scout、Markovian、Runtime、embedding 服务、自动监控或多用户权限系统。

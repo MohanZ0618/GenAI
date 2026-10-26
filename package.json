@@ -21,6 +21,8 @@
     "preflight": "tsx scripts/preflight.ts",
     "prepare:manual": "tsx scripts/prepare_openai_manual.ts",
     "verify:openai": "tsx scripts/verify_openai_manual.ts",
+    "prepare:hmem-demo": "tsx scripts/prepare_hmem_demo.ts",
+    "verify:hmem": "tsx scripts/verify_hmem.ts",
     "evaluate": "tsx apps/api/src/cli.ts evaluate",
     "investigate": "tsx apps/api/src/cli.ts investigate",
     "db:init": "tsx apps/api/src/cli.ts db-init"

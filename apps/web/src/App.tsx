@@ -1,3 +1,7 @@
+import type {
+  ApprovedMemory,
+  MemoryDraft,
+} from "../../../packages/contracts/src/index";
 import { parseTime } from "../../../packages/contracts/src/index";
 import Decimal from "decimal.js";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -43,7 +47,13 @@ import type { Case, Dataset, Evidence, Health, Investigation } from "./api";
 import { ResultsOverview } from "./ResultsOverview";
 import { runInvestigationQueue, type QueueUpdate } from "./investigationQueue";
 
-type Page = "inbox" | "results" | "workspace" | "datasets" | "guide";
+type Page =
+  | "inbox"
+  | "results"
+  | "workspace"
+  | "datasets"
+  | "guide"
+  | "memories";
 type Modal = "import" | "review" | null;
 const TERMINAL = new Set(["completed", "failed", "cancelled"]);
 const isReviewedCase = (item: Case) =>
@@ -316,6 +326,9 @@ function App() {
       .then((run) => {
         rememberRun(run);
         setPage("workspace");
+        setActiveEvidence(
+          new URLSearchParams(window.location.search).get("evidence"),
+        );
         setDatasetId(run.datasetId);
       })
       .catch(() => {
@@ -553,6 +566,7 @@ function App() {
     workspace: "Investigation",
     datasets: "Dataset library",
     guide: "The evidence standard",
+    memories: "Investigation memories",
   }[page];
   const evidence = investigation?.evidence ?? [];
   const chosenEvidence =
@@ -616,6 +630,12 @@ function App() {
             text="Datasets"
             active={page === "datasets"}
             onClick={() => navigate("datasets")}
+          />
+          <NavItem
+            icon={<BookOpen size={18} />}
+            text="Investigation memories"
+            active={page === "memories"}
+            onClick={() => navigate("memories")}
           />
         </nav>
         <div className="sidebar-note">
@@ -723,6 +743,7 @@ function App() {
           </div>
         )}
 
+        {page === "memories" && <MemoryPanel />}
         {page === "inbox" && (
           <div className="page inbox-page">
             <div className="page-heading">
@@ -2131,7 +2152,11 @@ function RunDiagnostics({ investigation }: { investigation: Investigation }) {
           <p>Query ID: {query.id}</p>
         </article>
       ))}
-      <h3>Approved memories</h3>
+      <h3>Memories provided to planner</h3>
+      <p>
+        Recalled snapshots were provided to the planner; model adoption is not
+        asserted. Later status changes do not alter these snapshots.
+      </p>
       {!investigation.memories.length ? (
         <p>No approved memories recalled.</p>
       ) : (
@@ -2147,7 +2172,26 @@ function RunDiagnostics({ investigation }: { investigation: Investigation }) {
             >
               <p>{String(memory.content ?? "Content not recorded")}</p>
               <small>
-                Source run: {String(memory.source ?? "Not recorded")}
+                Source run:{" "}
+                <a
+                  href={`?investigation=${encodeURIComponent(String(memory.source || ""))}`}
+                >
+                  {String(memory.source ?? "Not recorded")}
+                </a>
+                <p>
+                  Scope: {String(memory.scope || "workspace")} · Suggested
+                  tools:{" "}
+                  {Array.isArray(memory.suggestedTools)
+                    ? memory.suggestedTools.join(", ")
+                    : "Not recorded"}
+                </p>
+                <p>
+                  Match explanation:{" "}
+                  {JSON.stringify(
+                    memory.explanation ||
+                      "Legacy snapshot; explanation not recorded",
+                  )}
+                </p>
               </small>
             </article>
           );
@@ -2913,6 +2957,106 @@ function ImportModal({
   );
 }
 
+function MemoryPanel() {
+  const [memories, setMemories] = useState<ApprovedMemory[]>([]);
+  const [error, setError] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [busy, setBusy] = useState(false);
+  async function load() {
+    try {
+      setMemories(
+        (await api<{ memories: ApprovedMemory[] }>("/memories")).memories,
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not load memories");
+    }
+  }
+  useEffect(() => {
+    void load();
+  }, []);
+  async function toggle(m: ApprovedMemory) {
+    setBusy(true);
+    setError("");
+    try {
+      await api(`/memories/${encodeURIComponent(m.id)}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          status: m.status === "active" ? "inactive" : "active",
+        }),
+      });
+      await load();
+    } catch (e) {
+      setError(
+        e instanceof Error ? e.message : "Could not change memory status",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <section className="memory-panel">
+      <h1>Investigation memories</h1>
+      <p>
+        Human approved procedures in Meterless H-MEM. Memories prioritize
+        allowed evidence tools; independent verification determines financial
+        results.
+      </p>
+      <p>
+        Approved text is immutable. Deactivate an incorrect entry, open its
+        source investigation and approve an edited correction. Existing
+        investigations are never rerun automatically.
+      </p>
+      <label>
+        Memory status{" "}
+        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+          <option value="all">All</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </label>
+      {error && <p role="alert">{error}</p>}
+      {!memories.length && <p>No approved memories yet.</p>}
+      {memories
+        .filter((m) => filter === "all" || m.status === filter)
+        .map((m) => (
+          <article className="diagnostic-record" key={m.id}>
+            <strong>
+              {m.id} · {m.status}
+            </strong>
+            <p>{m.content}</p>
+            <p>
+              Scope: {m.scope}
+              {m.vendorId ? ` · ${m.vendorId}` : ""}
+            </p>
+            <p>Conditions: {m.conditions || "Legacy workspace procedure"}</p>
+            <p>
+              Suggested tools: {m.suggestedTools.join(", ") || "None recorded"}
+            </p>
+            <p>
+              Approved {date(m.approvedAt, true)} · Generated by:{" "}
+              {m.generationSource} · Approved by: human reviewer
+            </p>
+            <a href={`?investigation=${encodeURIComponent(m.source)}`}>
+              Open source investigation
+            </a>{" "}
+            <button
+              className="button secondary"
+              disabled={busy}
+              onClick={() => void toggle(m)}
+            >
+              {m.status === "active" ? "Deactivate" : "Restore"}
+            </button>
+          </article>
+        ))}
+      <p>
+        Single instance workspace; local hash embeddings and bilingual keywords.
+        Production semantic retrieval and multiuser permissions are not
+        implemented.
+      </p>
+    </section>
+  );
+}
+
 function ReviewModal({
   investigation,
   onClose,
@@ -2927,7 +3071,46 @@ function ReviewModal({
   );
   const [notes, setNotes] = useState("");
   const [approveMemory, setApproveMemory] = useState(false);
-  const [memoryContent, setMemoryContent] = useState("");
+  const [draft, setDraft] = useState<MemoryDraft | undefined>(
+    investigation.memoryDraft,
+  );
+  const [memoryContent, setMemoryContent] = useState(
+    investigation.memoryDraft?.content || "",
+  );
+  const [scope, setScope] = useState<"workspace" | "vendor">("workspace");
+  const [draftRequests, setDraftRequests] = useState(
+    investigation.memoryDraftRequests || [],
+  );
+  const [generating, setGenerating] = useState(false);
+  const draftLock = useRef(false);
+  async function suggest(retry = false) {
+    if (draftLock.current) return;
+    draftLock.current = true;
+    setGenerating(true);
+    setError("");
+    try {
+      const run = await api<Investigation>(
+        `/investigations/${encodeURIComponent(investigation.id)}/memory-draft`,
+        {
+          method: "POST",
+          body: JSON.stringify({ retry }),
+        },
+      );
+      setDraft(run.memoryDraft);
+      setDraftRequests(run.memoryDraftRequests || []);
+      if (run.memoryDraft?.status === "ready")
+        setMemoryContent(run.memoryDraft.content || "");
+    } catch (e) {
+      setError(
+        e instanceof Error
+          ? e.message
+          : "Generation failed; manual entry remains available.",
+      );
+    } finally {
+      draftLock.current = false;
+      setGenerating(false);
+    }
+  }
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   async function submit() {
@@ -2942,6 +3125,10 @@ function ReviewModal({
             decision,
             notes,
             approveMemory,
+            memoryScope: scope,
+            ...(approveMemory && draft?.status === "ready"
+              ? { memoryDraftId: draft.id }
+              : {}),
             ...(approveMemory && memoryContent.trim()
               ? { memoryContent: memoryContent.trim() }
               : {}),
@@ -2962,14 +3149,14 @@ function ReviewModal({
       title="Review the investigation"
       subtitle={`${investigation.paymentId} · Your decision is recorded with the run.`}
       onClose={onClose}
-      busy={busy}
+      busy={busy || generating}
     >
       <div className="modal-body">
         <div className="review-options">
           <button
             className={decision === "accepted" ? "active" : ""}
             onClick={() => setDecision("accepted")}
-            disabled={busy}
+            disabled={busy || generating}
             aria-pressed={decision === "accepted"}
           >
             <CheckCircle2 size={20} />
@@ -2982,7 +3169,7 @@ function ReviewModal({
               setDecision("needs_changes");
               setApproveMemory(false);
             }}
-            disabled={busy}
+            disabled={busy || generating}
             aria-pressed={decision === "needs_changes"}
           >
             <RefreshCw size={20} />
@@ -2994,12 +3181,66 @@ function ReviewModal({
           Review notes
           <textarea
             value={notes}
-            disabled={busy}
+            disabled={busy || generating}
             onChange={(event) => setNotes(event.target.value)}
             placeholder="Record what you checked, any limitations, or the changes needed."
             rows={4}
           />
         </label>
+        <div className="memory-draft">
+          <button
+            className="button secondary"
+            disabled={
+              busy || generating || investigation.status !== "completed"
+            }
+            onClick={() => void suggest(draft?.status === "failed")}
+          >
+            {generating
+              ? "Generating suggestion…"
+              : draft?.status === "failed"
+                ? "Retry memory suggestion"
+                : "Suggest memory"}
+          </button>
+          {draft && (
+            <div aria-live="polite">
+              <p>
+                Draft: {draft.status} ·{" "}
+                {draft.source === "fixture"
+                  ? "Deterministic fixture example · no model called"
+                  : `${draft.provider} / ${draft.model}`}
+              </p>
+              {draft.status === "none" && (
+                <p>No suitable reusable lesson. {draft.reason}</p>
+              )}
+              {draft.error && <p role="alert">{draft.error}</p>}
+              {draft.status === "ready" && (
+                <>
+                  <p>Conditions: {draft.conditions}</p>
+                  <p>Suggested tools: {draft.suggestedTools?.join(", ")}</p>
+                  <p>
+                    Evidence:{" "}
+                    {draft.evidenceIds?.map((id) => (
+                      <a
+                        key={id}
+                        href={`?investigation=${encodeURIComponent(investigation.id)}&evidence=${encodeURIComponent(id)}`}
+                      >
+                        {id}{" "}
+                      </a>
+                    ))}
+                  </p>
+                </>
+              )}
+              <p>
+                Draft requests: {draftRequests.length} (separate from
+                investigation cost). Drafts are excluded from recall.
+              </p>
+            </div>
+          )}
+          <p>
+            Manual entry remains available. Accept findings and explicitly
+            approve before saving to H-MEM.
+          </p>
+        </div>
         <div className="memory-consent">
           <label>
             <input
@@ -3017,12 +3258,27 @@ function ReviewModal({
               </small>
             </span>
           </label>
+          <label className="form-label">
+            Memory scope
+            <select
+              aria-label="Memory scope"
+              value={scope}
+              disabled={busy || generating}
+              onChange={(e) =>
+                setScope(e.target.value as "workspace" | "vendor")
+              }
+            >
+              <option value="workspace">Current workspace</option>
+              <option value="vendor">Current vendor</option>
+            </select>
+          </label>
           {approveMemory && (
             <label className="form-label">
               Confirmed lesson
               <textarea
+                aria-label="Confirmed lesson"
                 value={memoryContent}
-                disabled={busy}
+                disabled={busy || generating}
                 onChange={(event) => setMemoryContent(event.target.value)}
                 placeholder="Write only the confirmed lesson you want the system to remember."
                 rows={3}
@@ -3042,13 +3298,19 @@ function ReviewModal({
         )}
       </div>
       <div className="modal-footer">
-        <button className="button secondary" onClick={onClose} disabled={busy}>
+        <button
+          className="button secondary"
+          onClick={onClose}
+          disabled={busy || generating}
+        >
           Cancel
         </button>
         <button
           className="button primary"
           onClick={() => void submit()}
-          disabled={busy || (approveMemory && !memoryContent.trim())}
+          disabled={
+            busy || generating || (approveMemory && !memoryContent.trim())
+          }
         >
           {busy ? (
             <LoaderCircle className="spin" size={15} />
