@@ -2,7 +2,7 @@
 
 ## What is already implemented
 
-The app has PostgreSQL storage, a bounded read-only Zetaris query adapter, configurable NVIDIA/Meterless inference, and the pinned Meterless H-MEM reference. No live accounts or instances were configured during offline verification.
+The app has PostgreSQL storage, a bounded read-only Zetaris query adapter, configurable model inference, and the pinned Meterless H-MEM reference. The original release checks were offline. A later local Docker validation on 2026-10-26 connected PostgreSQL, Zetaris, and OpenAI and completed two selected synthetic live investigations. Credentials and raw runtime traces are not part of the repository.
 
 ## PostgreSQL
 
@@ -17,7 +17,7 @@ Install Docker Desktop from its official source, or use an existing PostgreSQL i
 
 Obtain and start your own instance using the official [installation and connection materials](https://github.com/zetaris/getting-started). On a Docker deployment, PostgreSQL must be reachable from the Zetaris container; the container's `localhost` is not the Windows host. Verify the address for your deployment before registering the connector.
 
-Register the nine `fintrace_source` PostgreSQL views with the Zetaris PostgreSQL connector in a Lightning database named `FINTRACE`, preserving their lowercase table names. The app's default prefix is `FINTRACE.`; change `ZETARIS_TABLE_PREFIX` to the actual registered namespace if necessary. The exact connector registration is instance-specific and has not been executed here. Do not register evaluation labels, mutation logs, or benchmark answer files.
+Register the nine `fintrace_source` PostgreSQL views with the Zetaris PostgreSQL connector in a Lightning database named `FINTRACE`, preserving their lowercase table names. The app's default prefix is `FINTRACE.`; change `ZETARIS_TABLE_PREFIX` to the actual registered namespace if necessary. This registration was exercised in the 2026-10-26 local Docker validation using a dedicated read-only PostgreSQL role. Connector credentials and host details remain instance-specific. Do not register evaluation labels, mutation logs, or benchmark answer files.
 
 Configure:
 

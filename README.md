@@ -4,7 +4,7 @@ FinTrace is an evidence-based payment investigation workspace: a constrained age
 
 面向应付账款与财务运营人员，把“这笔付款为什么异常”转成可复核的过程：**导入数据 → 选择付款 → 检索证据 → 独立校验 → 展示发现与证据缺口 → 人工审核 → 导出报告**。
 
-当前成果是可本地运行的端到端原型，支持离线演示，以及真实模型配合本地合成数据。PostgreSQL、Zetaris、NVIDIA 和 Meterless Runtime 适配代码已存在，但完整外部集成尚未验证。合成测试不代表真实业务准确率。
+当前成果是可本地运行的端到端原型，支持离线演示、真实模型配合本地合成数据，以及 PostgreSQL + Zetaris + OpenAI 的 `live` 调查路径。2026-10-26 的本地 Docker 验证中，live preflight 分别确认 PostgreSQL 已连接、Zetaris 查询成功、OpenAI 模型已响应；随后一个正常付款案例和一个费用异常案例均完成端到端调查。该结果验证的是合成数据上的连接与工作流，不代表真实业务准确率。NVIDIA 和 Meterless Runtime 仍未完成 live 验证。
 
 ## 这个项目完成了什么
 
@@ -34,7 +34,7 @@ flowchart TB
     Agent --> Tools["六种只读取证工具<br/>evidence.ts"]
     Tools -->|"fixture / local-model"| Local[("本地合成数据快照")]
     Tools -->|"live：HTTP API"| Zetaris["Zetaris 查询适配器"]
-    Zetaris -->|"需外部配置来源视图"| PG[("PostgreSQL")]
+    Zetaris -->|"只读查询来源视图"| PG[("PostgreSQL")]
     Agent --> Verify["独立财务校验器<br/>verifier.ts"]
     Verify -->|"缺失证据反馈"| Agent
     Agent --> Store
@@ -48,7 +48,7 @@ flowchart TB
     Store --> API
 ```
 
-图中的外部连接表示代码路径，不表示服务已联调成功。live 调查取证通过 Zetaris；数据导入和应用状态存储直接使用 PostgreSQL。
+live 调查取证通过 Zetaris；数据导入和应用状态存储直接使用 PostgreSQL。该路径已在本地 Docker 环境使用九个只读来源视图完成合成数据联调；其他部署仍需按各自网络、凭据和命名空间重新配置与验证。
 
 ## Agent 在项目里扮演什么角色
 
@@ -189,7 +189,8 @@ npm run evaluate
 - **源码已实现：** 上述工作台、Agent 循环、校验器、数据版本、审核记忆和适配器。
 - **历史离线记录：** 开发集 39/40、保留集 20/20、衍生覆盖压力集 10/10，均为小型合成参考集。fixture 与固定规则基线使用同一校验逻辑，不能据此宣称 AI 优势。详见 [评估说明](docs/EVALUATION.md)。
 - **历史真实 API 记录：** 本地 2026-10-22 记录显示一个正常案例使用 OpenAI 完成调查，四次模型 HTTP 请求成功。这不是八案例真实模型评估，也不是本次发布重新执行的结果；原始请求轨迹不随源码发布。
-- **尚未证明：** 真实客户效果、真实数据泛化、相对规则的收益、完整 sponsor 服务联调及生产部署能力。
+- **live 联调记录：** 2026-10-26 在本地 Docker 环境完成 PostgreSQL、Zetaris 和 OpenAI preflight；Zetaris 能读取 `FINTRACE` 中已注册的九个只读来源视图。两个选定的合成案例完成调查：一个返回 `No anomaly supported`，一个返回 `Issues found`。调查活动记录包含成功的 Zetaris evidence query；原始运行轨迹和凭据不随源码发布。
+- **尚未证明：** 真实客户效果、真实数据泛化、相对规则的收益、连续完整 live 评估、Meterless Runtime / NVIDIA live 接入及生产部署能力。
 
 本次发布检查结果见 [RELEASE_VALIDATION.md](docs/RELEASE_VALIDATION.md)。
 
@@ -197,7 +198,7 @@ npm run evaluate
 
 - **FinRCA-AI-Bench**：固定提交 `76c93ec32536e29826e2ab9e68b58e0351410bc7`，MIT。提供生成器、源 schema 和合成财务基础。本项目增加 review packet 提取、覆盖变换、导入工作流及应用实现。
 - **Meterless H-MEM**：固定提交 `1742dec56a66e58eef9dda2d2b865823758ca8cd`，Apache-2.0。使用本地参考引擎；embedding 是确定性 mock，未接入生产语义检索；自动 dreaming 未调用。
-- **Zetaris**：应用实现查询适配器；来源视图需要在实际实例上注册，代码存在不等于接入已验证。
+- **Zetaris**：应用通过受限查询适配器读取 PostgreSQL 中的九个 `fintrace_source` 只读视图；本地 Docker live 路径已验证。Zetaris 是治理查询层，PostgreSQL 仍是数据与运行状态的持久化来源。
 
 保留必要第三方许可，见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 和 [DATA.md](docs/DATA.md)。项目代码使用 [MIT License](LICENSE)。
 

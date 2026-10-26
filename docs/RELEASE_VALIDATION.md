@@ -22,9 +22,11 @@ The default browser-test port 4311 was occupied. The browser suite uses the exis
 
 ## Evidence boundaries
 
-All current release checks run offline or use mocked model requests. No new billable model or sponsor-service validation was performed. A historical local record from 2026-10-22 documents one real OpenAI normal-case investigation with four successful HTTP requests; raw request identifiers and runtime traces are excluded from this package.
+The 2026-10-24 publication checks ran offline or used mocked model requests. A historical local record from 2026-10-22 documents one real OpenAI normal-case investigation with four successful HTTP requests; raw request identifiers and runtime traces are excluded from this package.
 
-The fixture result is deterministic verification over small synthetic reference sets. It does not establish production accuracy, independent statistical generalization, or an advantage of model planning over rules. PostgreSQL/Zetaris and NVIDIA/Meterless Runtime end-to-end operation remain unverified.
+On 2026-10-26, a separate local Docker live validation reported PostgreSQL connected, a Zetaris query succeeded, and OpenAI responded. Nine read-only PostgreSQL source views were registered under `FINTRACE`. Two selected synthetic cases then completed: one normal payment returned `No anomaly supported`, and one fee case returned `Issues found`; their activity records included successful Zetaris evidence queries. No credential, raw request trace, or screenshot is included in the repository.
+
+The fixture and live results use synthetic reference data. They do not establish production accuracy, independent statistical generalization, an advantage of model planning over rules, or real-customer deployment readiness. NVIDIA and Meterless Runtime end-to-end operation remain unverified, and the recommended repeated live release matrix has not yet been completed.
 
 ## Included and excluded material
 
