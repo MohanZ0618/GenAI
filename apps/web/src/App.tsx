@@ -90,6 +90,8 @@ function App() {
   const [health, setHealth] = useState<Health | null>(null);
   const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [datasetSearch, setDatasetSearch] = useState("");
+  const [libraryCases, setLibraryCases] = useState<Case[] | null>(null);
+  const [libraryError, setLibraryError] = useState("");
   const [datasetId, setDatasetId] = useState("all");
   const [cases, setCases] = useState<Case[]>([]);
   const [selectedId, setSelectedId] = useState("");
@@ -139,6 +141,30 @@ function App() {
       .includes(datasetSearch.trim().toLowerCase()),
   );
   const reviewedCount = cases.filter(isReviewedCase).length;
+  const datasetProgress = new Map(
+    datasets.map((dataset) => {
+      const items =
+        libraryCases?.filter((item) => item.datasetId === dataset.id) ?? [];
+      const completed = items.filter(isReviewedCase).length;
+      const running = items.filter(
+        (item) => item.status === "running" || item.status === "queued",
+      ).length;
+      const started = items.some(
+        (item) =>
+          item.investigationId || (item.status && item.status !== "unreviewed"),
+      );
+      const status =
+        items.length === 0
+          ? "empty"
+          : completed === items.length
+            ? "completed"
+            : started
+              ? "progress"
+              : "new";
+      return [dataset.id, { status, completed, total: items.length, running }];
+    }),
+  );
+  const progressTotals = [...datasetProgress.values()];
   const searchedCases = cases.filter((item) =>
     `${item.vendor} ${item.paymentId} ${item.symptom}`
       .toLowerCase()
@@ -249,6 +275,35 @@ function App() {
   useEffect(() => {
     void loadBase();
   }, [loadBase]);
+  useEffect(() => {
+    if (page !== "datasets") return;
+    let alive = true;
+    const refresh = async () => {
+      try {
+        const result = await api<{ cases: Case[] }>("/cases?datasetId=all");
+        if (alive) {
+          setLibraryCases(result.cases);
+          setLibraryError("");
+        }
+      } catch (reason) {
+        if (alive) {
+          setLibraryCases(null);
+          setLibraryError(
+            reason instanceof Error
+              ? reason.message
+              : "Unable to load dataset progress.",
+          );
+        }
+      }
+    };
+    setLibraryCases(null);
+    void refresh();
+    const timer = window.setInterval(() => void refresh(), 3000);
+    return () => {
+      alive = false;
+      window.clearInterval(timer);
+    };
+  }, [page, datasets, casesRevision]);
   useEffect(() => {
     setPageIndex(0);
   }, [search, filter, datasetId, pageSize, sort]);
@@ -1869,6 +1924,63 @@ function App() {
                 <Upload size={16} /> Import dataset
               </button>
             </div>
+            <div
+              className="dataset-progress-summary"
+              aria-label="Dataset progress summary"
+              aria-live="polite"
+            >
+              {(
+                [
+                  [
+                    "new",
+                    "Not started",
+                    libraryCases?.filter(
+                      (item) =>
+                        !isReviewedCase(item) &&
+                        item.status !== "running" &&
+                        item.status !== "queued",
+                    ).length,
+                    "cases pending",
+                  ],
+                  [
+                    "progress",
+                    "In progress",
+                    libraryCases?.filter(
+                      (item) =>
+                        item.status === "running" || item.status === "queued",
+                    ).length,
+                    "cases running / queued",
+                  ],
+                  [
+                    "completed",
+                    "Completed",
+                    libraryCases?.filter(isReviewedCase).length,
+                    "cases completed",
+                  ],
+                ] as const
+              ).map(([status, title, count, detail]) => (
+                <div className={`dataset-progress-stat ${status}`} key={status}>
+                  <span>{title}</span>
+                  <strong>
+                    {libraryCases === null
+                      ? "—"
+                      : progressTotals.filter((item) => item.status === status)
+                          .length}{" "}
+                    <small>datasets</small>
+                  </strong>
+                  <span>
+                    {libraryCases === null
+                      ? libraryError
+                        ? "Progress unavailable"
+                        : "Loading progress…"
+                      : `${count} ${detail}`}
+                  </span>
+                </div>
+              ))}
+            </div>
+            {libraryError && (
+              <p role="alert">Dataset progress unavailable: {libraryError}</p>
+            )}
             <div className="dataset-library-toolbar">
               <label className="search-field dataset-library-search">
                 <Search size={20} />
@@ -1942,16 +2054,53 @@ function App() {
                     className={`dataset-card ${item.id === datasetId ? "active" : ""}`}
                     aria-label={`Dataset ${item.name}`}
                     key={item.id}
+                    onClick={(event) => {
+                      if (
+                        (event.target as HTMLElement).closest(
+                          "button, a, input",
+                        )
+                      )
+                        return;
+                      setDatasetId(item.id);
+                      navigate("inbox");
+                    }}
                   >
                     <div className="dataset-card-top">
                       <span className="dataset-icon">
                         <Database size={22} />
                       </span>
-                      {item.id === datasetId && (
-                        <span className="dataset-selected">
-                          <Check size={16} /> Selected
+                      <div className="dataset-card-badges">
+                        <span
+                          className={`dataset-progress-badge ${libraryCases === null ? "unknown" : datasetProgress.get(item.id)?.status}`}
+                        >
+                          {libraryCases === null
+                            ? libraryError
+                              ? "Status unavailable"
+                              : "Loading…"
+                            : datasetProgress.get(item.id)?.status ===
+                                "completed"
+                              ? "Completed"
+                              : datasetProgress.get(item.id)?.status ===
+                                  "progress"
+                                ? "In progress"
+                                : datasetProgress.get(item.id)?.status ===
+                                    "empty"
+                                  ? "No cases"
+                                  : "Not started"}
                         </span>
-                      )}
+                        {libraryCases !== null && (
+                          <span className="dataset-progress-detail">
+                            {datasetProgress.get(item.id)?.completed} /{" "}
+                            {datasetProgress.get(item.id)?.total} cases
+                            completed
+                          </span>
+                        )}
+                        {item.id === datasetId && (
+                          <span className="dataset-selected">
+                            <Check size={16} /> Selected
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <h2>{item.name}</h2>
                     <div className="dataset-identifiers">

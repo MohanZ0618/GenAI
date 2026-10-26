@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import type { Dataset } from "../../packages/contracts/src/index";
+import type { Case, Dataset } from "../../packages/contracts/src/index";
 
 test.use({ reducedMotion: "reduce" });
 
@@ -195,4 +195,91 @@ test("clicking a searched dataset card opens its cases and the same action works
     .focus();
   await page.keyboard.press("Space");
   await expect(page.getByLabel("Active dataset")).toHaveValue(datasets[2].id);
+});
+
+test("dataset progress counts all datasets, survives search and reload, and refreshes completed runs", async ({
+  page,
+}) => {
+  const statuses = [
+    "unreviewed",
+    "completed",
+    "running",
+    "reviewed",
+    "completed",
+  ];
+  let items: Case[] = statuses.map((status, index) => ({
+    id: `progress-${index}`,
+    paymentId: `PAY_${index}`,
+    datasetId: datasets[index === 0 ? 0 : index < 3 ? 1 : 2].id,
+    vendor: "Test vendor",
+    amount: "10",
+    currency: "USD",
+    date: "2026-06-30T12:00:00Z",
+    symptom: "Test case",
+    status,
+  }));
+  await openLibrary(page);
+  await page.route("**/api/cases?*", (route) =>
+    route.fulfill({ json: { cases: items } }),
+  );
+  await page.reload();
+  await page.getByRole("button", { name: "Datasets", exact: true }).click();
+  const summary = page.getByLabel("Dataset progress summary");
+  await expect(summary.locator(".new strong")).toHaveText("1 datasets");
+  await expect(summary.locator(".progress strong")).toHaveText("1 datasets");
+  await expect(summary.locator(".completed strong")).toHaveText("1 datasets");
+  await expect(summary).toContainText("1 cases pending");
+  await expect(summary).toContainText("1 cases running / queued");
+  await expect(summary).toContainText("3 cases completed");
+  const cards = page.locator(".dataset-card");
+  await expect(cards.nth(0).locator(".dataset-progress-badge")).toHaveText(
+    "Not started",
+  );
+  await expect(cards.nth(1).locator(".dataset-progress-badge")).toHaveText(
+    "In progress",
+  );
+  await expect(cards.nth(1).locator(".dataset-progress-detail")).toHaveText(
+    "1 / 2 cases completed",
+  );
+  await expect(cards.nth(2).locator(".dataset-progress-badge")).toHaveText(
+    "Completed",
+  );
+  await page.getByLabel("Search datasets").fill(datasets[0].name);
+  await expect(cards).toHaveCount(1);
+  await expect(summary.locator(".completed strong")).toHaveText("1 datasets");
+  items = items.map((item) =>
+    item.status === "running" ? { ...item, status: "completed" } : item,
+  );
+  await expect(summary.locator(".completed strong")).toHaveText("2 datasets", {
+    timeout: 10000,
+  });
+  items = items.map((item) =>
+    item.status === "unreviewed" ? { ...item, status: "failed" } : item,
+  );
+  await expect(cards.locator(".dataset-progress-badge")).toHaveText(
+    "In progress",
+    { timeout: 10000 },
+  );
+  await expect(summary.locator(".new strong")).toHaveText("0 datasets");
+  await expect(summary).toContainText("1 cases pending");
+});
+
+test("progress load failure shows unavailable instead of unstarted or zero counts", async ({
+  page,
+}) => {
+  await openLibrary(page);
+  await page.route("**/api/cases?*", (route) =>
+    route.fulfill({ status: 503, json: { error: "Try again" } }),
+  );
+  await page.reload();
+  await page.getByRole("button", { name: "Datasets", exact: true }).click();
+  await expect(page.getByRole("alert")).toContainText(
+    "Dataset progress unavailable",
+  );
+  await expect(page.locator(".dataset-progress-badge").first()).toHaveText(
+    "Status unavailable",
+  );
+  await expect(
+    page.locator(".dataset-progress-stat strong").first(),
+  ).toHaveText("— datasets");
 });

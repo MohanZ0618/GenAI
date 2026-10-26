@@ -2163,13 +2163,63 @@ button.button:active:not(:disabled) {
   outline: 3px solid #65c4ae;
   outline-offset: 3px;
 }
-/* Extend the native open button across the card; copy buttons stay above it. */
-.dataset-open-button::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+.dataset-progress-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.dataset-progress-stat {
+  display: grid;
+  gap: 10px;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid var(--line);
   border-radius: 7px;
+  color: #526e62;
+}
+.dataset-progress-stat strong {
+  font-size: 28px;
+  color: #24453e;
+}
+.dataset-progress-stat small {
+  font-size: 14px;
+  font-weight: 500;
+}
+.dataset-progress-stat > span:last-child {
+  font-size: 13px;
+}
+.dataset-card-badges {
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+  text-align: right;
+}
+.dataset-progress-badge {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #edf1ef;
+  color: #526e62;
+}
+.dataset-progress-badge.completed {
+  background: #e6f4ed;
+  color: #1c6b51;
+}
+.dataset-progress-badge.progress {
+  background: #fff2d6;
+  color: #805d15;
+}
+.dataset-progress-detail {
+  font-size: 12px;
+  color: #526e62;
+}
+@media (max-width: 600px) {
+  .dataset-progress-summary {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 }
 .dataset-card.active {
   border-color: #a8c19a;
