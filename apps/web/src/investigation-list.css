@@ -13,6 +13,159 @@
   box-shadow: 0 1px 2px #172b4d04;
 }
 
+.investigation-list-page .investigation-history-summary {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.investigation-list-page .investigation-summary-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--history-line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--history-ink);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.investigation-list-page .investigation-summary-card:hover:not(:disabled) {
+  border-color: #bdcdef;
+  background: #fbfcff;
+}
+
+.investigation-list-page .investigation-summary-card.selected {
+  border-color: var(--history-blue);
+  box-shadow: inset 0 0 0 1px var(--history-blue);
+  background: #f8faff;
+}
+
+.investigation-list-page .investigation-summary-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #52637c;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.investigation-list-page .investigation-summary-label svg {
+  flex: none;
+}
+
+.investigation-list-page .investigation-summary-card strong {
+  font-size: 28px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.investigation-list-page .investigation-summary-card.completed strong {
+  color: #277457;
+}
+
+.investigation-list-page .investigation-summary-card.failed strong {
+  color: #a13e47;
+}
+
+.investigation-list-page .investigation-summary-card.undetermined strong {
+  color: #8a661d;
+}
+
+.investigation-list-page .investigation-summary-detail,
+.investigation-list-page .investigation-summary-note {
+  color: var(--history-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.investigation-list-page .investigation-summary-note {
+  margin: 10px 0 22px;
+}
+
+.investigation-list-page .investigation-history-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--history-line);
+  background: #fcfdff;
+}
+
+.investigation-list-page .investigation-history-search {
+  display: flex;
+  flex: 1 1 240px;
+  align-items: center;
+  gap: 9px;
+  min-height: 40px;
+  min-width: 0;
+  padding: 0 12px;
+  border: 1px solid #dce3ee;
+  border-radius: 6px;
+  background: #fff;
+  color: #7c8ba3;
+}
+
+.investigation-list-page .investigation-history-search svg {
+  flex: none;
+}
+
+.investigation-list-page .investigation-history-search input {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--history-ink);
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.investigation-list-page .investigation-history-filter {
+  display: flex;
+  flex: 0 1 170px;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 145px;
+  color: #52637c;
+  font-size: 11px;
+}
+
+.investigation-list-page .investigation-history-filter select,
+.investigation-list-page .investigation-history-clear {
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid #dce3ee;
+  border-radius: 6px;
+  background: #fff;
+  color: #40516b;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.investigation-list-page .investigation-history-search:focus-within,
+.investigation-list-page .investigation-history-filter select:focus-visible,
+.investigation-list-page .investigation-history-clear:focus-visible,
+.investigation-list-page .investigation-summary-card:focus-visible {
+  outline: 3px solid #d5e3ff;
+  outline-offset: 2px;
+  border-color: #8aabed;
+}
+
+.investigation-list-page .investigation-history-clear:hover {
+  background: #f5f8ff;
+}
+
 .investigation-list-page .investigation-history-toolbar {
   display: flex;
   align-items: center;
@@ -380,6 +533,37 @@
   color: var(--history-muted);
   font-size: 14px;
   line-height: 1.6;
+}
+
+@media (max-width: 1150px) {
+  .investigation-list-page .investigation-history-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .investigation-list-page .investigation-history-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .investigation-list-page .investigation-history-filter {
+    flex: 1 1 145px;
+    min-width: 0;
+  }
+
+  .investigation-list-page .investigation-history-search {
+    flex-basis: 100%;
+  }
+
+  .investigation-list-page .investigation-history-toolbar {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .investigation-list-page .investigation-history-summary {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -193,6 +193,149 @@ async function openHistory(page: Page) {
   ).toBeVisible();
 }
 
+test("history summary counts all records and combines status, conclusion, review and search filters", async ({
+  page,
+}, info) => {
+  const runs = [
+    makeRun(2),
+    makeRun(3),
+    makeRun(4),
+    makeRun(5),
+    makeRun(6, "queued"),
+    makeRun(7, "running"),
+    makeRun(8, "failed"),
+    makeRun(9, "cancelled"),
+  ];
+  runs[1].outcome = "no_anomaly_supported";
+  runs[2].outcome = "insufficient_evidence";
+  runs[3].outcome = null;
+  runs[0].review = {
+    decision: "accepted",
+    notes: "Reviewed",
+    at: runs[0].createdAt,
+  };
+  runs[1].review = {
+    decision: "needs_changes",
+    notes: "Needs more work",
+    at: runs[1].createdAt,
+  };
+  const state = await mockWorkspace(page, runs);
+  await openHistory(page);
+  const summary = page.getByRole("region", {
+    name: "Investigation summary",
+    exact: true,
+  });
+  const table = page.getByRole("table", { name: "Investigation history" });
+  for (const [name, count] of [
+    ["Total investigations", "8"],
+    ["Completed", "4"],
+    ["In progress", "2"],
+    ["Failed", "1"],
+    ["Undetermined", "6"],
+  ]) {
+    await expect(
+      summary
+        .getByRole("button", { name: new RegExp(`^${name}`) })
+        .locator("strong"),
+    ).toHaveText(count);
+  }
+  await page.screenshot({
+    path: info.outputPath("investigation-history-summary.png"),
+    fullPage: false,
+  });
+  await summary.getByRole("button", { name: /^Failed/ }).click();
+  await expect(table.locator("tbody tr")).toHaveCount(1);
+  await expect(row(page, runs[6].id)).toBeVisible();
+  await expect(
+    summary
+      .getByRole("button", { name: /^Total investigations/ })
+      .locator("strong"),
+  ).toHaveText("8");
+  await summary.getByRole("button", { name: /^Undetermined/ }).click();
+  await expect(table.locator("tbody tr")).toHaveCount(6);
+  await page
+    .getByRole("combobox", { name: "Status", exact: true })
+    .selectOption("completed");
+  await expect(table.locator("tbody tr")).toHaveCount(2);
+  await page
+    .getByRole("combobox", { name: "Conclusion", exact: true })
+    .selectOption("insufficient_evidence");
+  await expect(table.locator("tbody tr")).toHaveCount(1);
+  await expect(row(page, runs[2].id)).toBeVisible();
+  await page
+    .getByRole("combobox", { name: "Human review", exact: true })
+    .selectOption("awaiting");
+  await expect(table.locator("tbody tr")).toHaveCount(1);
+  await page
+    .getByRole("combobox", { name: "Human review", exact: true })
+    .selectOption("accepted");
+  await expect(
+    page.getByRole("heading", {
+      name: "No matching investigations",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Clear search and filters", exact: true })
+    .click();
+  await expect(table.locator("tbody tr")).toHaveCount(8);
+  const search = page.getByRole("searchbox", {
+    name: "Search investigations",
+    exact: true,
+  });
+  await search.fill("  VENDOR   pay_HISTORY_4  ");
+  await expect(table.locator("tbody tr")).toHaveCount(1);
+  await expect(row(page, runs[2].id)).toBeVisible();
+  await search.fill("history-run-009");
+  await expect(row(page, runs[7].id)).toBeVisible();
+  await search.fill("Payment review snapshot a1a1a1");
+  await expect(table.locator("tbody tr")).toHaveCount(8);
+  expect(state.startRequests).toBe(0);
+});
+
+test("history searches every page, resets pagination and preserves filters when returning from a run", async ({
+  page,
+}) => {
+  const runs = Array.from({ length: 52 }, (_, index) =>
+    makeRun(index, index === 3 ? "failed" : "completed"),
+  );
+  const state = await mockWorkspace(page, runs);
+  await openHistory(page);
+  const search = page.getByRole("searchbox", {
+    name: "Search investigations",
+    exact: true,
+  });
+  const status = page.getByRole("combobox", { name: "Status", exact: true });
+  await page
+    .getByRole("button", { name: "Next investigations page", exact: true })
+    .click();
+  await search.fill("history-run-004");
+  await expect(row(page, runs[4].id)).toBeVisible();
+  await expect(page.getByText("Page 1 of 1", { exact: true })).toBeVisible();
+  await search.fill("PAY_HISTORY");
+  await status.selectOption("completed");
+  await expect(page.getByText("Page 1 of 2", { exact: true })).toBeVisible();
+  await page
+    .getByRole("button", { name: "Next investigations page", exact: true })
+    .click();
+  await row(page, runs[4].id)
+    .getByRole("button", { name: /^View investigation / })
+    .click();
+  await expect(page.locator(".detail-run-reference")).toContainText(runs[4].id);
+  await page
+    .locator(".detail-breadcrumb")
+    .getByRole("button", { name: "Investigation", exact: true })
+    .click();
+  await expect(search).toHaveValue("PAY_HISTORY");
+  await expect(status).toHaveValue("completed");
+  await expect(page.getByText("Page 2 of 2", { exact: true })).toBeVisible();
+  await page
+    .getByRole("button", { name: "Clear filters", exact: true })
+    .click();
+  await expect(page.getByText("Page 1 of 3", { exact: true })).toBeVisible();
+  expect(state.startRequests).toBe(0);
+});
+
 test("history keeps repeated investigations distinct and restores the page and scroll after viewing a failed run", async ({
   page,
 }, info) => {
@@ -246,7 +389,7 @@ test("history keeps repeated investigations distinct and restores the page and s
   const previousScroll = await page.evaluate(() => window.scrollY);
   expect(previousScroll).toBeGreaterThan(0);
   await view.click();
-  await expect(page.locator(".detail-provenance")).toContainText(failed.id);
+  await expect(page.locator(".detail-run-reference")).toContainText(failed.id);
   await expect(
     page.getByRole("heading", {
       name: "Investigation could not complete",
@@ -513,6 +656,6 @@ test("a historical run retains its saved vendor, amount and date when its snapsh
   );
   await expect(page.locator(".detail-case-meta")).toContainText("Oct 20, 2026");
   await expect(page.locator(".detail-case-amount")).toContainText("$3,456.78");
-  await expect(page.locator(".detail-provenance")).toContainText(saved.id);
+  await expect(page.locator(".detail-run-reference")).toContainText(saved.id);
   expect(state.startRequests).toBe(0);
 });

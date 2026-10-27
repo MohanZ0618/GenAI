@@ -5,8 +5,10 @@ import {
   CheckCircle2,
   Clock3,
   FileCheck2,
+  HelpCircle,
   LoaderCircle,
   RefreshCw,
+  Search,
   Workflow,
   XCircle,
 } from "lucide-react";
@@ -25,6 +27,21 @@ type Props = {
 const PAGE_SIZE = 25;
 const isActive = (run: InvestigationSummary) =>
   run.status === "queued" || run.status === "running";
+const isUndetermined = (run: InvestigationSummary) =>
+  run.status !== "completed" ||
+  !run.outcome ||
+  run.outcome === "insufficient_evidence";
+type StatusFilter = "all" | InvestigationSummary["status"] | "in_progress";
+type ConclusionFilter =
+  | "all"
+  | NonNullable<InvestigationSummary["outcome"]>
+  | "undetermined";
+type ReviewFilter =
+  | "all"
+  | "awaiting"
+  | "accepted"
+  | "needs_changes"
+  | "unavailable";
 
 function conclusion(run: InvestigationSummary) {
   if (run.status !== "completed") return "Not determined";
@@ -47,6 +64,11 @@ export function InvestigationList({
   const [error, setError] = useState("");
   const [refresh, setRefresh] = useState(0);
   const [page, setPage] = useState(0);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [conclusionFilter, setConclusionFilter] =
+    useState<ConclusionFilter>("all");
+  const [reviewFilter, setReviewFilter] = useState<ReviewFilter>("all");
   const loaded = useRef(false);
 
   useEffect(() => {
@@ -94,13 +116,109 @@ export function InvestigationList({
     };
   }, [active, revision, refresh]);
 
-  const pageCount = Math.max(1, Math.ceil(runs.length / PAGE_SIZE));
+  const searchTerms = search.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const filtered = runs.filter((run) => {
+    if (
+      statusFilter === "in_progress"
+        ? !isActive(run)
+        : statusFilter !== "all" && run.status !== statusFilter
+    )
+      return false;
+    if (
+      conclusionFilter === "undetermined"
+        ? !isUndetermined(run)
+        : conclusionFilter !== "all" &&
+          (run.status !== "completed" || run.outcome !== conclusionFilter)
+    )
+      return false;
+    const review =
+      run.review?.decision ||
+      (run.status === "completed" ? "awaiting" : "unavailable");
+    if (reviewFilter !== "all" && review !== reviewFilter) return false;
+    const text = [
+      run.vendor,
+      run.paymentId,
+      run.id,
+      run.question,
+      run.datasetName,
+      run.datasetId,
+      run.datasetVersion,
+    ]
+      .join(" ")
+      .toLowerCase();
+    return searchTerms.every((term) => text.includes(term));
+  });
+  const hasFilters =
+    searchTerms.length > 0 ||
+    statusFilter !== "all" ||
+    conclusionFilter !== "all" ||
+    reviewFilter !== "all";
+  function clearFilters() {
+    setSearch("");
+    setStatusFilter("all");
+    setConclusionFilter("all");
+    setReviewFilter("all");
+    setPage(0);
+  }
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount - 1);
-  const visible = runs.slice(
+  const visible = filtered.slice(
     currentPage * PAGE_SIZE,
     (currentPage + 1) * PAGE_SIZE,
   );
   const runningCount = runs.filter(isActive).length;
+  const summary = [
+    {
+      key: "total",
+      title: "Total investigations",
+      count: runs.length,
+      detail: "All saved investigations",
+      Icon: Workflow,
+      selected: statusFilter === "all" && conclusionFilter === "all",
+      status: "all",
+      outcome: "all",
+    },
+    {
+      key: "completed",
+      title: "Completed",
+      count: runs.filter((run) => run.status === "completed").length,
+      detail: "Finished, including evidence gaps",
+      Icon: CheckCircle2,
+      selected: statusFilter === "completed" && conclusionFilter === "all",
+      status: "completed",
+      outcome: "all",
+    },
+    {
+      key: "in-progress",
+      title: "In progress",
+      count: runningCount,
+      detail: "Queued or running",
+      Icon: Clock3,
+      selected: statusFilter === "in_progress" && conclusionFilter === "all",
+      status: "in_progress",
+      outcome: "all",
+    },
+    {
+      key: "failed",
+      title: "Failed",
+      count: runs.filter((run) => run.status === "failed").length,
+      detail: "Stopped by an error",
+      Icon: XCircle,
+      selected: statusFilter === "failed" && conclusionFilter === "all",
+      status: "failed",
+      outcome: "all",
+    },
+    {
+      key: "undetermined",
+      title: "Undetermined",
+      count: runs.filter(isUndetermined).length,
+      detail: "No supported conclusion yet",
+      Icon: HelpCircle,
+      selected: statusFilter === "all" && conclusionFilter === "undetermined",
+      status: "all",
+      outcome: "undetermined",
+    },
+  ] as const;
 
   return (
     <div className="page investigation-list-page">
@@ -123,6 +241,40 @@ export function InvestigationList({
       </div>
 
       <section
+        className="investigation-history-summary"
+        aria-label="Investigation summary"
+        aria-busy={loading}
+      >
+        {summary.map(
+          ({ key, title, count, detail, Icon, selected, status, outcome }) => (
+            <button
+              key={key}
+              className={`investigation-summary-card ${key} ${selected ? "selected" : ""}`}
+              aria-pressed={selected}
+              disabled={!loaded.current}
+              onClick={() => {
+                setStatusFilter(status);
+                setConclusionFilter(outcome);
+                setPage(0);
+              }}
+            >
+              <span className="investigation-summary-label">
+                <Icon size={16} aria-hidden="true" />
+                {title}
+              </span>
+              <strong>{loaded.current ? count : "—"}</strong>
+              <span className="investigation-summary-detail">{detail}</span>
+            </button>
+          ),
+        )}
+      </section>
+      <p className="investigation-summary-note">
+        Counts cover all saved investigations. Undetermined includes pending,
+        failed, cancelled and evidence-insufficient investigations, so it can
+        overlap with the status counts.
+      </p>
+
+      <section
         className="investigation-history-panel"
         aria-label="Saved investigations"
         aria-busy={loading}
@@ -135,10 +287,92 @@ export function InvestigationList({
               role="status"
               aria-atomic="true"
             >
-              {runs.length}{" "}
+              {hasFilters
+                ? `${filtered.length} of ${runs.length}`
+                : runs.length}{" "}
               {runs.length === 1 ? "investigation" : "investigations"}
               {runningCount > 0 && ` · ${runningCount} in progress`}
             </span>
+          )}
+        </div>
+
+        <div
+          className="investigation-history-filters"
+          role="search"
+          aria-label="Search and filter investigations"
+        >
+          <label className="investigation-history-search">
+            <Search size={17} aria-hidden="true" />
+            <input
+              type="search"
+              aria-label="Search investigations"
+              placeholder="Search vendor, payment, run or snapshot…"
+              value={search}
+              onChange={(event) => {
+                setSearch(event.target.value);
+                setPage(0);
+              }}
+            />
+          </label>
+          <label className="investigation-history-filter">
+            <span>Status</span>
+            <select
+              value={statusFilter}
+              onChange={(event) => {
+                setStatusFilter(event.target.value as StatusFilter);
+                setPage(0);
+              }}
+            >
+              <option value="all">All statuses</option>
+              <option value="completed">Completed</option>
+              <option value="in_progress">In progress</option>
+              <option value="queued">Queued</option>
+              <option value="running">Running</option>
+              <option value="failed">Failed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </label>
+          <label className="investigation-history-filter">
+            <span>Conclusion</span>
+            <select
+              value={conclusionFilter}
+              onChange={(event) => {
+                setConclusionFilter(event.target.value as ConclusionFilter);
+                setPage(0);
+              }}
+            >
+              <option value="all">All conclusions</option>
+              <option value="anomaly_supported">Issues found</option>
+              <option value="no_anomaly_supported">No anomaly supported</option>
+              <option value="insufficient_evidence">
+                More evidence needed
+              </option>
+              <option value="undetermined">Undetermined</option>
+            </select>
+          </label>
+          <label className="investigation-history-filter">
+            <span>Human review</span>
+            <select
+              value={reviewFilter}
+              onChange={(event) => {
+                setReviewFilter(event.target.value as ReviewFilter);
+                setPage(0);
+              }}
+            >
+              <option value="all">All reviews</option>
+              <option value="awaiting">Awaiting review</option>
+              <option value="accepted">Accepted</option>
+              <option value="needs_changes">Changes requested</option>
+              <option value="unavailable">Not available</option>
+            </select>
+          </label>
+          {hasFilters && (
+            <button
+              className="investigation-history-clear"
+              onClick={clearFilters}
+            >
+              Clear filters
+            </button>
           )}
         </div>
 
@@ -180,7 +414,21 @@ export function InvestigationList({
               Choose a case <ArrowRight size={15} aria-hidden="true" />
             </button>
           </div>
-        ) : runs.length > 0 ? (
+        ) : runs.length > 0 && filtered.length === 0 ? (
+          <div className="investigation-history-empty">
+            <span className="investigation-history-empty-icon">
+              <Search size={25} aria-hidden="true" />
+            </span>
+            <h3>No matching investigations</h3>
+            <p>
+              Try another search or clear the filters to see all saved
+              investigations.
+            </p>
+            <button className="button secondary" onClick={clearFilters}>
+              Clear search and filters
+            </button>
+          </div>
+        ) : filtered.length > 0 ? (
           <>
             <div className="investigation-history-scroll">
               <table
@@ -330,8 +578,8 @@ export function InvestigationList({
             <div className="investigation-history-footer">
               <span>
                 {currentPage * PAGE_SIZE + 1}–
-                {Math.min((currentPage + 1) * PAGE_SIZE, runs.length)} of{" "}
-                {runs.length} investigations
+                {Math.min((currentPage + 1) * PAGE_SIZE, filtered.length)} of{" "}
+                {filtered.length} investigations
               </span>
               <nav aria-label="Investigation history pages">
                 <button
