@@ -83,6 +83,8 @@ export class MemoryService {
       m = engine.store.get(id);
     if (!m || !m.tags.includes("approved-playbook"))
       throw new Error("Memory not found");
+    if (metadata(m).removedAt)
+      throw new Error("Cannot change a removed memory. Undo removal first.");
     engine.store.update(id, {
       tags: [
         ...m.tags.filter((t) => !t.startsWith(prefix)),
@@ -102,6 +104,7 @@ export class MemoryService {
     const eligible = engine.store.all().filter((m) => {
       const meta = metadata(m);
       return (
+        !meta.removedAt &&
         !m.supersededBy &&
         m.tags.includes("approved-playbook") &&
         m.provenance.origin === "manual" &&
@@ -199,6 +202,7 @@ export class MemoryService {
     };
     const existing = this.list(namespace).find(
       (m) =>
+        !m.removedAt &&
         m.source === source &&
         m.content === content &&
         m.scope === meta.scope &&
@@ -228,5 +232,34 @@ export class MemoryService {
       details: { approval: "explicit", ...meta },
     });
     return record;
+  }
+  setRemoved(namespace: string, id: string, removed: boolean) {
+    const engine = this.engine(namespace);
+    const record = engine.store.get(id);
+    if (
+      !record ||
+      !record.tags.includes("approved-playbook") ||
+      record.provenance.origin !== "manual"
+    )
+      throw new Error("Memory not found");
+    const meta = metadata(record);
+    engine.store.update(id, {
+      tags: [
+        ...record.tags.filter((tag) => !tag.startsWith(prefix)),
+        prefix +
+          JSON.stringify({
+            ...meta,
+            removedAt: removed
+              ? meta.removedAt || new Date().toISOString()
+              : null,
+          }),
+      ],
+    });
+    engine.ledger.log(
+      id,
+      removed ? "feedback" : "restore",
+      "fintrace-reviewer",
+      { details: { removed } },
+    );
   }
 }

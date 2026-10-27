@@ -119,6 +119,7 @@ export async function createApp(
   });
   app.get("/api/datasets", async () => ({
     datasets: (await store.datasets())
+      .filter((d) => !d.info.removedAt)
       .map((d) => ({ ...d.info, caseCount: casesFor(d).length }))
       .sort((a, b) => a.name.localeCompare(b.name)),
   }));
@@ -136,14 +137,51 @@ export async function createApp(
       .send({ dataset: { ...saved.info, caseCount: casesFor(saved).length } });
   });
   app.get("/api/templates", async () => getTemplates());
+  app.get("/api/datasets/:id", async (request, reply) => {
+    const dataset = await store.dataset((request.params as { id: string }).id);
+    if (!dataset) return reply.code(404).send({ error: "Dataset not found" });
+    return {
+      dataset: { ...dataset.info, caseCount: casesFor(dataset).length },
+    };
+  });
+  const removalSchema = z
+    .object({
+      ids: z.array(z.string().min(1).max(100)).min(1).max(1000),
+      removed: z.boolean(),
+    })
+    .strict();
+  app.post("/api/datasets/removal", async (request) => {
+    const { ids, removed } = removalSchema.parse(request.body);
+    const results = [];
+    for (const id of new Set(ids)) {
+      try {
+        await service.setDatasetRemoved(id, removed);
+        results.push({ id, success: true });
+      } catch (error) {
+        results.push({
+          id,
+          success: false,
+          error:
+            error instanceof Error
+              ? error.message
+              : "Unable to update dataset.",
+        });
+      }
+    }
+    return { results };
+  });
   app.get("/api/cases", async (request) => {
     const datasetId = (request.query as { datasetId?: string }).datasetId;
     if (!datasetId) throw new Error("datasetId is required");
     const datasets =
       datasetId === "all"
-        ? await store.datasets()
+        ? (await store.datasets()).filter((d) => !d.info.removedAt)
         : [await store.dataset(datasetId)];
     if (datasets.some((d) => !d)) throw new Error("Dataset not found");
+    if (datasets.some((d) => d?.info.removedAt))
+      throw new Error(
+        "Cannot list cases for a removed dataset. Restore it first.",
+      );
     const runs = (await store.runs())
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
       .filter(
@@ -247,7 +285,28 @@ export async function createApp(
     .strict();
   app.get("/api/memories", async (request) => {
     const { namespace } = namespaceSchema.parse(request.query);
-    return { memories: memory.list(namespace) };
+    return {
+      memories: memory.list(namespace).filter((item) => !item.removedAt),
+    };
+  });
+  app.post("/api/memories/removal", async (request) => {
+    const { namespace } = namespaceSchema.parse(request.query);
+    const { ids, removed } = removalSchema.parse(request.body);
+    const results = [];
+    for (const id of new Set(ids)) {
+      try {
+        memory.setRemoved(namespace, id, removed);
+        results.push({ id, success: true });
+      } catch (error) {
+        results.push({
+          id,
+          success: false,
+          error:
+            error instanceof Error ? error.message : "Unable to update memory.",
+        });
+      }
+    }
+    return { results };
   });
   app.patch("/api/memories/:id", async (request) => {
     const { namespace } = namespaceSchema.parse(request.query);
@@ -293,7 +352,9 @@ export async function createApp(
         const namespace = run.memoryNamespace || "workspace";
         const prior = memory
           .list(namespace)
-          .filter((m) => m.source === id && m.status === "active");
+          .filter(
+            (m) => m.source === id && m.status === "active" && !m.removedAt,
+          );
         const same = prior.find(
           (m) =>
             m.content === input.memoryContent!.trim() &&

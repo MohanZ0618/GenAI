@@ -42,6 +42,7 @@ export type Coverage = {
   to: string;
 };
 export type Dataset = {
+  removedAt?: string | null;
   focusPaymentIds?: string[];
   tableHashes?: Record<string, string>;
   id: string;
@@ -172,6 +173,7 @@ export type MemoryDraft = Partial<MemorySuggestion> & {
   error?: string;
 };
 export type ApprovedMemory = {
+  removedAt?: string | null;
   id: string;
   content: string;
   source: string;

@@ -45,6 +45,8 @@ import {
 import { api, date, label, money, textValue } from "./api";
 import type { Case, Dataset, Evidence, Health, Investigation } from "./api";
 import { ResultsOverview } from "./ResultsOverview";
+import { ModalShell } from "./ModalShell";
+import { useRemoval } from "./useRemoval";
 import { runInvestigationQueue, type QueueUpdate } from "./investigationQueue";
 
 type Page =
@@ -89,6 +91,9 @@ function App() {
   const [page, setPage] = useState<Page>("inbox");
   const [health, setHealth] = useState<Health | null>(null);
   const [datasets, setDatasets] = useState<Dataset[]>([]);
+  const [historicalDataset, setHistoricalDataset] = useState<Dataset | null>(
+    null,
+  );
   const [datasetSearch, setDatasetSearch] = useState("");
   const [libraryCases, setLibraryCases] = useState<Case[] | null>(null);
   const [libraryError, setLibraryError] = useState("");
@@ -219,9 +224,31 @@ function App() {
       item.paymentId === investigation?.paymentId &&
       item.datasetId === investigation?.datasetId,
   );
-  const runDataset = datasets.find(
-    (item) => item.id === investigation?.datasetId,
-  );
+  const runDataset =
+    datasets.find((item) => item.id === investigation?.datasetId) ??
+    (historicalDataset?.id === investigation?.datasetId
+      ? historicalDataset
+      : undefined);
+  useEffect(() => {
+    if (
+      !investigation ||
+      datasets.some((item) => item.id === investigation.datasetId)
+    )
+      return;
+    let alive = true;
+    api<{ dataset: Dataset }>(
+      `/datasets/${encodeURIComponent(investigation.datasetId)}`,
+    )
+      .then(({ dataset }) => {
+        if (alive) setHistoricalDataset(dataset);
+      })
+      .catch(() => {
+        /* Existing evidence remains available if source metadata cannot be loaded. */
+      });
+    return () => {
+      alive = false;
+    };
+  }, [investigation?.datasetId, datasets]);
   const updatedDataset =
     runDataset &&
     datasets
@@ -271,6 +298,21 @@ function App() {
     url.searchParams.set("investigation", run.id);
     window.history.replaceState({}, "", url);
   }, []);
+
+  const datasetRemoval = useRemoval({
+    kind: "dataset",
+    items: datasets.map((item) => ({ id: item.id, label: item.name })),
+    visibleItems: filteredDatasets.map((item) => ({
+      id: item.id,
+      label: item.name,
+    })),
+    endpoint: "/datasets/removal",
+    onChanged: async (ids, removed) => {
+      if (removed && ids.includes(datasetId)) setDatasetId("all");
+      setCasesRevision((previous) => previous + 1);
+      await loadBase();
+    },
+  });
 
   useEffect(() => {
     void loadBase();
@@ -384,7 +426,11 @@ function App() {
         setActiveEvidence(
           new URLSearchParams(window.location.search).get("evidence"),
         );
-        setDatasetId(run.datasetId);
+        setDatasetId(
+          datasets.some((item) => item.id === run.datasetId)
+            ? run.datasetId
+            : "all",
+        );
       })
       .catch(() => {
         setNotice(
@@ -2006,6 +2052,7 @@ function App() {
                   : `${filteredDatasets.length} of ${datasets.length} datasets`}
               </span>
             </div>
+            {datasetRemoval.controls}
             <div className="dataset-explainer">
               <span>
                 <Database size={25} />
@@ -2057,7 +2104,7 @@ function App() {
                     onClick={(event) => {
                       if (
                         (event.target as HTMLElement).closest(
-                          "button, a, input",
+                          "button, a, input, label",
                         )
                       )
                         return;
@@ -2066,6 +2113,10 @@ function App() {
                     }}
                   >
                     <div className="dataset-card-top">
+                      {datasetRemoval.checkbox({
+                        id: item.id,
+                        label: item.name,
+                      })}
                       <span className="dataset-icon">
                         <Database size={22} />
                       </span>
@@ -2135,6 +2186,10 @@ function App() {
                         : "Select dataset & open cases"}
                       <ArrowRight size={14} />
                     </button>
+                    {datasetRemoval.removeButton({
+                      id: item.id,
+                      label: item.name,
+                    })}
                   </article>
                 ))}
               </div>
@@ -2870,92 +2925,6 @@ function IntegrationStatus({ health }: { health: Health | null }) {
   );
 }
 
-function ModalShell({
-  title,
-  subtitle,
-  onClose,
-  busy = false,
-  children,
-}: {
-  title: string;
-  subtitle: string;
-  onClose: () => void;
-  busy?: boolean;
-  children: React.ReactNode;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const closeState = useRef({ onClose, busy });
-  closeState.current = { onClose, busy };
-  useEffect(() => {
-    const previous = document.activeElement as HTMLElement | null;
-    ref.current?.querySelector<HTMLElement>("button, input, textarea")?.focus();
-    function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape" && !closeState.current.busy)
-        closeState.current.onClose();
-      if (event.key !== "Tab") return;
-      const nodes = ref.current?.querySelectorAll<HTMLElement>(
-        'button:not(:disabled), input:not(:disabled), textarea:not(:disabled), select:not(:disabled), [tabindex="0"]',
-      );
-      if (!nodes?.length) {
-        event.preventDefault();
-        ref.current?.focus();
-        return;
-      }
-      const first = nodes[0],
-        last = nodes[nodes.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    }
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      previous?.focus();
-    };
-  }, []);
-  useEffect(() => {
-    if (busy) ref.current?.focus();
-  }, [busy]);
-  return (
-    <div
-      className="modal-overlay"
-      onMouseDown={(event) => {
-        if (!busy && event.target === event.currentTarget) onClose();
-      }}
-    >
-      <div
-        className="modal"
-        ref={ref}
-        role="dialog"
-        tabIndex={-1}
-        aria-modal="true"
-        aria-busy={busy}
-        aria-labelledby="modal-title"
-      >
-        <div className="modal-heading">
-          <div>
-            <h2 id="modal-title">{title}</h2>
-            <p>{subtitle}</p>
-          </div>
-          <button
-            className="icon-button"
-            onClick={onClose}
-            aria-label="Close dialog"
-            disabled={busy}
-          >
-            <X size={20} />
-          </button>
-        </div>
-        {children}
-      </div>
-    </div>
-  );
-}
-
 function ImportModal({
   onClose,
   onImported,
@@ -3111,6 +3080,24 @@ function MemoryPanel() {
   const [error, setError] = useState("");
   const [filter, setFilter] = useState("all");
   const [busy, setBusy] = useState(false);
+  const visibleMemories = memories.filter(
+    (item) => filter === "all" || item.status === filter,
+  );
+  const memoryRemoval = useRemoval({
+    kind: "memory",
+    items: memories.map((item) => ({
+      id: item.id,
+      label: `${item.id}: ${item.content}`,
+    })),
+    visibleItems: visibleMemories.map((item) => ({
+      id: item.id,
+      label: `${item.id}: ${item.content}`,
+    })),
+    endpoint: "/memories/removal",
+    onChanged: async () => {
+      await load();
+    },
+  });
   async function load() {
     try {
       setMemories(
@@ -3157,18 +3144,27 @@ function MemoryPanel() {
       </p>
       <label>
         Memory status{" "}
-        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+        <select
+          value={filter}
+          disabled={busy || memoryRemoval.busy}
+          onChange={(e) => setFilter(e.target.value)}
+        >
           <option value="all">All</option>
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
       </label>
+      {memoryRemoval.controls}
       {error && <p role="alert">{error}</p>}
       {!memories.length && <p>No approved memories yet.</p>}
       {memories
         .filter((m) => filter === "all" || m.status === filter)
         .map((m) => (
           <article className="diagnostic-record" key={m.id}>
+            {memoryRemoval.checkbox({
+              id: m.id,
+              label: `${m.id}: ${m.content}`,
+            })}
             <strong>
               {m.id} · {m.status}
             </strong>
@@ -3190,11 +3186,15 @@ function MemoryPanel() {
             </a>{" "}
             <button
               className="button secondary"
-              disabled={busy}
+              disabled={busy || memoryRemoval.busy}
               onClick={() => void toggle(m)}
             >
               {m.status === "active" ? "Deactivate" : "Restore"}
             </button>
+            {memoryRemoval.removeButton({
+              id: m.id,
+              label: `${m.id}: ${m.content}`,
+            })}
           </article>
         ))}
       <p>

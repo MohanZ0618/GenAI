@@ -320,3 +320,7 @@ scripts/hmem_restart_probe.ts
 tests/hmem-lifecycle.test.ts
 tests/browser/hmem.spec.ts
 scripts/prepare_hmem_demo.ts
+apps/web/src/ModalShell.tsx
+apps/web/src/useRemoval.tsx
+tests/removal.test.ts
+tests/browser/removal.spec.ts

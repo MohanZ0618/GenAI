@@ -17,6 +17,7 @@ export interface Store {
   init(): Promise<void>;
   datasets(): Promise<StoredDataset[]>;
   dataset(id: string): Promise<StoredDataset | undefined>;
+  setDatasetRemoved(id: string, removed: boolean): Promise<void>;
   saveDataset(data: DatasetPackage, builtin?: boolean): Promise<StoredDataset>;
   saveRun(run: Investigation): Promise<void>;
   run(id: string): Promise<Investigation | undefined>;
@@ -129,6 +130,14 @@ export class FileStore implements Store {
   dataset(id: string) {
     return this.get<StoredDataset>("datasets", id);
   }
+  async setDatasetRemoved(id: string, removed: boolean) {
+    const dataset = await this.dataset(id);
+    if (!dataset) throw new Error("Dataset not found");
+    dataset.info.removedAt = removed
+      ? dataset.info.removedAt || new Date().toISOString()
+      : null;
+    await this.put("datasets", id, dataset);
+  }
   async saveDataset(data: DatasetPackage, builtin = false) {
     const info = metadata(data, builtin);
     const existing = await this.dataset(info.id);
@@ -173,6 +182,13 @@ export class PostgresStore implements Store {
     return Promise.all(
       result.rows.map((r) => this.dataset(r.id) as Promise<StoredDataset>),
     );
+  }
+  async setDatasetRemoved(id: string, removed: boolean) {
+    const result = await this.pool.query(
+      "UPDATE fintrace_app.datasets SET info=jsonb_set(info,'{removedAt}', CASE WHEN $2::boolean THEN COALESCE(NULLIF(info->'removedAt','null'::jsonb),to_jsonb($3::text)) ELSE 'null'::jsonb END) WHERE id=$1",
+      [id, removed, new Date().toISOString()],
+    );
+    if (!result.rowCount) throw new Error("Dataset not found");
   }
   async dataset(id: string): Promise<StoredDataset | undefined> {
     const r = await this.pool.query(

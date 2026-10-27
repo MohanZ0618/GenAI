@@ -106,13 +106,32 @@ export class InvestigationService {
     const key = JSON.stringify([datasetId, paymentId, this.mode, namespace]);
     const pending = this.starts.get(key);
     if (pending) return pending;
-    const starting = this.startOrReuse(datasetId, paymentId, namespace);
+    const starting = this.mutate(`dataset:${datasetId}`, () =>
+      this.startOrReuse(datasetId, paymentId, namespace),
+    );
     this.starts.set(key, starting);
     try {
       return await starting;
     } finally {
       this.starts.delete(key);
     }
+  }
+  async setDatasetRemoved(datasetId: string, removed: boolean) {
+    return this.mutate(`dataset:${datasetId}`, async () => {
+      if (
+        removed &&
+        (await this.store.runs()).some(
+          (run) =>
+            run.datasetId === datasetId &&
+            (run.status === "queued" || run.status === "running"),
+        )
+      ) {
+        throw new Error(
+          "This dataset has an active investigation. Wait for it to finish or cancel it first.",
+        );
+      }
+      await this.store.setDatasetRemoved(datasetId, removed);
+    });
   }
   private async startOrReuse(
     datasetId: string,
@@ -121,6 +140,10 @@ export class InvestigationService {
   ) {
     const ds = await this.store.dataset(datasetId);
     if (!ds) throw new Error("Dataset not found");
+    if (ds.info.removedAt)
+      throw new Error(
+        "Cannot investigate a removed dataset. Restore it first.",
+      );
     if (!casesFor(ds).some((c) => c.paymentId === paymentId))
       throw new Error("Payment not found in this dataset case queue");
     const existing = (await this.store.runs())
