@@ -76,6 +76,9 @@ describe("OpenAI provider", () => {
       response_format: { type: "json_schema", json_schema: { strict: true } },
     });
     expect(body).not.toHaveProperty("max_tokens");
+    expect(body.messages[0].content).toContain(
+      "Write the user-facing reason in English",
+    );
     expect(request.body).not.toContain(env.OPENAI_API_KEY);
   });
   it("accepts explicit finish without a tool, and rejects missing decisions", async () => {

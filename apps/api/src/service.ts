@@ -5,6 +5,7 @@ import type {
   Mode,
   ToolName,
   Case,
+  InvestigationActivity,
 } from "../../../packages/contracts/src/index.ts";
 import type { Store, StoredDataset } from "./store.ts";
 import { assess, TOOL_ORDER } from "./verifier.ts";
@@ -17,6 +18,13 @@ import {
 } from "./integrations/model.ts";
 import { MemoryService } from "./integrations/memory.ts";
 import { planningEvidence } from "./context.ts";
+import {
+  toolPurpose,
+  toolTables,
+  toolResultActivity,
+  unfinishedActivities,
+  verificationActivity,
+} from "./activity.ts";
 
 export function casesFor(dataset: StoredDataset): Case[] {
   const focus = dataset.data.manifest.focusPaymentIds;
@@ -78,6 +86,11 @@ export class InvestigationService {
         run.status = "failed";
         run.error =
           "The process stopped before completion. Retained evidence is available; start a new investigation to retry.";
+        await this.finishOpenActivities(
+          run,
+          "failed",
+          "A process restart interrupted this step. Retained evidence is available for review.",
+        );
         await this.event(run, "recovery", run.error);
       }
     }
@@ -87,6 +100,7 @@ export class InvestigationService {
     type: string,
     message: string,
     tool?: ToolName,
+    activity?: InvestigationActivity,
   ) {
     run.updatedAt = new Date().toISOString();
     run.events.push({
@@ -95,8 +109,93 @@ export class InvestigationService {
       type,
       message,
       ...(tool ? { tool } : {}),
+      ...(activity ? { activity } : {}),
     });
     await this.store.saveRun(run);
+  }
+  private async beginActivity(
+    run: Investigation,
+    kind: InvestigationActivity["kind"],
+    reason: string,
+    source: InvestigationActivity["source"],
+    tool?: ToolName,
+  ) {
+    const activity: InvestigationActivity = {
+      id: randomUUID(),
+      kind,
+      status: "running",
+      source,
+      reason,
+      ...(kind === "tool" && tool ? { tables: toolTables[tool] } : {}),
+    };
+    await this.event(run, `${kind}_started`, reason, tool, activity);
+    return activity;
+  }
+  private async finishActivity(
+    run: Investigation,
+    activity: InvestigationActivity,
+    status: Exclude<InvestigationActivity["status"], "running">,
+    summary: string,
+    tool?: ToolName,
+    details: Partial<InvestigationActivity> = {},
+    message: string = summary,
+  ) {
+    const pending = unfinishedActivities(run).find(
+      (item) => item.activity.id === activity.id,
+    );
+    // Cancellation may already have closed this activity while its call awaited.
+    if (!pending) return;
+    const type =
+      status !== "completed"
+        ? `${activity.kind}_${status}`
+        : activity.kind === "tool"
+          ? "evidence"
+          : activity.kind;
+    await this.event(run, type, message, tool || pending.tool, {
+      ...activity,
+      ...details,
+      id: activity.id,
+      kind: activity.kind,
+      status,
+      summary,
+      durationMs:
+        details.durationMs ??
+        Math.max(0, Date.now() - Date.parse(pending.startedAt)),
+    });
+  }
+  private async finishOpenActivities(
+    run: Investigation,
+    status: "failed" | "cancelled",
+    summary: string,
+  ) {
+    for (const { activity, tool } of unfinishedActivities(run))
+      await this.finishActivity(run, activity, status, summary, tool);
+  }
+  private async verifyActivity(
+    run: Investigation,
+    ds: StoredDataset,
+    completed: Set<ToolName>,
+    signal: AbortSignal,
+  ) {
+    signal.throwIfAborted();
+    const activity = await this.beginActivity(
+      run,
+      "verification",
+      "Check evidence completeness, timing, and financial relationships using independent rules.",
+      "rules",
+    );
+    signal.throwIfAborted();
+    const result = assess(ds.info, run.paymentId, run.evidence, completed);
+    const details = verificationActivity(result);
+    await this.finishActivity(
+      run,
+      activity,
+      "completed",
+      details.summary,
+      undefined,
+      details,
+    );
+    return result;
   }
   async start(datasetId: string, paymentId: string, namespace = "workspace") {
     if (this.closing)
@@ -231,21 +330,26 @@ export class InvestigationService {
             ? `Local-data model investigation: ${run.provider} / ${run.model}; evidence read from local snapshots; no Zetaris.`
             : "Live investigation: evidence queried through Zetaris with model-selected tools.",
       );
+      let previous = await this.verifyActivity(run, ds, completed, signal);
       for (let turn = 0; turn < 6; turn++) {
         signal.throwIfAborted();
-        const previous = assess(
-          ds.info,
-          run.paymentId,
-          run.evidence,
-          completed,
-        );
         if (!previous.neededTools.length) break;
         let tool: ToolName;
         let reason: string;
+        let diagnosticReason: string | undefined;
+        const selectionSource = turn > 0 && provider ? "model" : "rules";
+        const planning = await this.beginActivity(
+          run,
+          "planning",
+          selectionSource === "model"
+            ? "Ask the model to choose the next tool from the independent verifier's outstanding evidence requests."
+            : "Plan the next evidence request from the independent verifier's evidence gaps.",
+          selectionSource,
+        );
+        signal.throwIfAborted();
         if (turn === 0) {
           tool = "overview";
-          reason =
-            "Establish the payment, vendor, and invoice context before forming a conclusion.";
+          reason = toolPurpose.overview;
         } else if (provider) {
           run.modelTurns++;
           const context = planningEvidence(
@@ -271,7 +375,10 @@ export class InvestigationService {
                   excludedFuture: context.excludedFuture,
                 },
               },
-              history: run.events.slice(-10),
+              history: run.events
+                .filter((event) => !event.type.endsWith("_started"))
+                .slice(-10)
+                .map(({ activity: _activity, ...event }) => event),
               memories: run.memories,
             },
             signal,
@@ -284,7 +391,14 @@ export class InvestigationService {
               );
             },
           );
+          signal.throwIfAborted();
           if (next.finish) {
+            await this.finishActivity(
+              run,
+              planning,
+              "completed",
+              "The model requested an end to evidence retrieval. Unmet evidence requirements remain reported as gaps.",
+            );
             await this.event(
               run,
               "budget",
@@ -293,7 +407,8 @@ export class InvestigationService {
             break;
           }
           tool = next.tool!;
-          reason = next.reason;
+          reason = toolPurpose[tool];
+          diagnosticReason = next.reason;
         } else {
           const memoryText = JSON.stringify(run.memories).toLowerCase();
           const preferred = TOOL_ORDER.map((tool) => ({
@@ -308,9 +423,19 @@ export class InvestigationService {
               (t) => previous.neededTools.includes(t) && !completed.has(t),
             ) || previous.neededTools[0];
           reason = preferred.includes(tool)
-            ? "Apply a reviewer-approved investigation playbook to prioritize this evidence tool."
-            : "Retrieve the next source required by the independent verifier.";
+            ? `${toolPurpose[tool]} Prioritize evidence retrieval using approved investigation experience.`
+            : toolPurpose[tool];
         }
+        await this.finishActivity(
+          run,
+          planning,
+          "completed",
+          `Selected tool ${tool}. ${reason}`,
+          tool,
+          { reason },
+          diagnosticReason,
+        );
+        signal.throwIfAborted();
         if (!previous.neededTools.includes(tool) || completed.has(tool)) {
           await this.event(
             run,
@@ -324,41 +449,70 @@ export class InvestigationService {
           await this.event(run, "budget", "Evidence query budget exhausted.");
           break;
         }
-        await this.event(run, "planning", reason, tool);
+        const toolActivity = await this.beginActivity(
+          run,
+          "tool",
+          reason,
+          selectionSource,
+          tool,
+        );
+        signal.throwIfAborted();
         let result: Awaited<ReturnType<typeof retrieve>>;
+        const queryStarted = Date.now();
         try {
           result = await retrieve(tool, ds, run.paymentId, this.mode, signal);
         } catch (e) {
+          const queryId = randomUUID();
           run.queries.push({
-            id: randomUUID(),
+            id: queryId,
             tool,
             tables: [],
             at: new Date().toISOString(),
-            durationMs: 0,
+            durationMs: Math.max(0, Date.now() - queryStarted),
             rowCount: 0,
             status: "failed",
             error:
               "Evidence source request failed; no absence inference was made.",
             coverage: {},
           });
+          await this.finishActivity(
+            run,
+            toolActivity,
+            controller.signal.aborted ? "cancelled" : "failed",
+            controller.signal.aborted
+              ? "The query was cancelled. No inference was made about whether source records exist."
+              : "The evidence query did not complete. A failed request does not establish that source records are missing.",
+            tool,
+            { queryId, durationMs: Math.max(0, Date.now() - queryStarted) },
+          );
           throw e;
         }
         signal.throwIfAborted();
         run.queries.push(result.query);
         run.evidence.push(...result.evidence);
         completed.add(tool);
-        await this.event(
-          run,
-          "evidence",
-          `Retrieved ${result.evidence.length} source records. Query ${result.query.id}.`,
+        const toolDetails = toolResultActivity(
+          result.evidence,
+          run.evidence,
+          run.paymentId,
+          ds.info.asOf,
           tool,
         );
-        const feedback = assess(
-          ds.info,
-          run.paymentId,
-          run.evidence,
-          completed,
+        await this.finishActivity(
+          run,
+          toolActivity,
+          "completed",
+          toolDetails.summary,
+          tool,
+          {
+            ...toolDetails,
+            queryId: result.query.id,
+            tables: result.query.tables,
+            durationMs: result.query.durationMs,
+          },
         );
+        const feedback = await this.verifyActivity(run, ds, completed, signal);
+        previous = feedback;
         run.checks = feedback.checks;
         if (tool === "overview") {
           const context = planningEvidence(
@@ -381,29 +535,34 @@ export class InvestigationService {
           ]
             .filter(Boolean)
             .join(" ");
+          signal.throwIfAborted();
+          const memoryActivity = await this.beginActivity(
+            run,
+            "memory",
+            "Retrieve relevant approved investigation experience to help prioritize subsequent evidence tools.",
+            "rules",
+          );
+          signal.throwIfAborted();
           run.memories = await this.memory.recall(
             namespace,
             query,
             payment?.vendor_id,
           );
-          await this.event(
+          signal.throwIfAborted();
+          await this.finishActivity(
             run,
-            "memory",
-            `Provided ${run.memories.length} approved memory snapshots to the planner; this does not prove model adoption. Query: ${query}`,
+            memoryActivity,
+            "completed",
+            run.memories.length
+              ? `Found ${run.memories.length} approved memories for reference. Continue checking the current evidence.`
+              : "No reusable approved experience was found. Continue investigating the current evidence.",
           );
         }
-
-        if (feedback.neededTools.length)
-          await this.event(
-            run,
-            "verification",
-            "Conclusion withheld: the evidence is incomplete. Follow-up required: " +
-              feedback.neededTools.join(", "),
-          );
         if (this.mode === "fixture") await delay(20, undefined, { signal });
       }
       signal.throwIfAborted();
-      const result = assess(ds.info, run.paymentId, run.evidence, completed);
+      const result = await this.verifyActivity(run, ds, completed, signal);
+      signal.throwIfAborted();
       run.outcome = result.outcome;
       run.findings = result.findings;
       run.actions = result.actions;
@@ -441,6 +600,13 @@ export class InvestigationService {
           : e instanceof Error
             ? e.message
             : "Investigation failed";
+      await this.finishOpenActivities(
+        run,
+        run.status === "cancelled" ? "cancelled" : "failed",
+        run.status === "cancelled"
+          ? "This step was cancelled. No financial conclusion was produced."
+          : "This step did not complete. No financial conclusion was produced; retained evidence is available for review.",
+      );
       await this.event(run, run.status, run.error);
     } finally {
       this.active.delete(run.id);
@@ -562,6 +728,11 @@ export class InvestigationService {
       run.outcome = null;
       run.actions = [];
       run.error = "Cancelled by the user.";
+      await this.finishOpenActivities(
+        run,
+        "cancelled",
+        "This step was cancelled. No financial conclusion was produced.",
+      );
       await this.event(run, "cancelled", run.error);
     }
     return this.store.run(id);
@@ -573,12 +744,23 @@ export class InvestigationService {
       if (!run) throw new Error("Investigation not found");
       if (!["queued", "running"].includes(run.status)) return run;
       if (!this.active.has(id)) {
-        run.status = "failed";
-        run.outcome = null;
-        run.error =
+        // A read may begin before the final save and finish after its controller
+        // is removed. Re-read so an older snapshot cannot overwrite completion.
+        const latest = await this.store.run(id);
+        if (!latest) throw new Error("Investigation not found");
+        if (!["queued", "running"].includes(latest.status)) return latest;
+        latest.status = "failed";
+        latest.outcome = null;
+        latest.actions = [];
+        latest.error =
           "Execution ended before the final state could be persisted. Retry the investigation.";
-        await this.store.saveRun(run);
-        return run;
+        await this.finishOpenActivities(
+          latest,
+          "failed",
+          "This step was unexpectedly interrupted. No financial conclusion was produced.",
+        );
+        await this.store.saveRun(latest);
+        return latest;
       }
       await delay(50);
     }

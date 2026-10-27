@@ -9,7 +9,7 @@ import type {
 } from "../../../packages/contracts/src/index.ts";
 import { recordId, tableHash, type StoredDataset } from "./store.ts";
 import { queryZetaris } from "./integrations/zetaris.ts";
-const tablesByTool: Record<ToolName, TableName[]> = {
+export const tablesByTool: Record<ToolName, TableName[]> = {
   overview: ["payments", "invoices", "vendors"],
   allocations: ["payment_allocations"],
   settlements: ["bank_transactions"],

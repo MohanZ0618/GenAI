@@ -233,19 +233,30 @@ test("legacy server: three completed cases are read, five pending cases run seri
     fullPage: true,
     animations: "disabled",
   });
-  await page
-    .getByRole("button", {
-      name: "View result PAY_BATCH_000 in batch-a",
-      exact: true,
-    })
-    .click();
+  const savedResultButton = page.getByRole("button", {
+    name: "View result PAY_BATCH_000 in batch-a",
+    exact: true,
+  });
+  await savedResultButton.click();
+  const dialog = page.getByRole("dialog", {
+    name: "Payment investigation",
+    exact: true,
+  });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator(".modal-heading")).toContainText("PAY_BATCH_000");
   await expect(
-    page.getByRole("heading", { name: "No anomaly supported", exact: true }),
+    dialog.getByRole("heading", { name: "No anomaly supported", exact: true }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Case inbox", exact: true }).click();
-  await page
-    .getByRole("button", { name: "View investigation progress", exact: true })
+  expect(posts).toHaveLength(2);
+  await dialog
+    .getByRole("button", { name: "Close investigation", exact: true })
     .click();
+  await expect(dialog).toHaveCount(0);
+  await expect(savedResultButton).toBeFocused();
+  await expect(page.locator(".results-page")).toBeVisible();
+  await expect(page.locator(".batch-progress")).toContainText(
+    "4 of 8 finished · 4 remaining",
+  );
   allowance = Infinity;
   await expect(page.locator(".batch-progress")).toContainText(
     "8 of 8 finished · 0 remaining",

@@ -1,0 +1,320 @@
+.investigation-progress {
+  --progress-ink: var(--ink, #172b4d);
+  --progress-muted: var(--muted, #69788c);
+  --progress-line: var(--line, #e5e9f0);
+  --progress-accent: var(--teal, #2563eb);
+  margin: 6px 0 23px;
+  color: var(--progress-ink);
+  font-size: 13px;
+  line-height: 1.75;
+}
+.investigation-progress .investigation-progress-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+.investigation-progress-toggle:hover .investigation-progress-heading strong {
+  color: var(--progress-accent);
+}
+.investigation-progress-chevron {
+  flex: 0 0 auto;
+  color: var(--progress-muted);
+  transition: transform 160ms ease;
+}
+.investigation-progress-chevron.is-open {
+  transform: rotate(180deg);
+}
+.investigation-progress-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.investigation-progress-evidence-disclosure {
+  margin-top: 6px;
+  color: var(--progress-muted);
+  font-size: 11px;
+}
+.investigation-progress-evidence-disclosure > summary {
+  width: fit-content;
+  min-height: 28px;
+  cursor: pointer;
+}
+.investigation-progress-evidence-disclosure > summary:focus-visible {
+  outline: 2px solid var(--progress-accent);
+  outline-offset: 3px;
+}
+.investigation-progress-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  min-width: 0;
+}
+.investigation-progress-heading strong {
+  font-weight: 550;
+}
+.investigation-progress-caption {
+  color: var(--progress-muted);
+  font-size: 12px;
+}
+.investigation-progress-mode,
+.investigation-progress-source {
+  color: var(--progress-muted);
+  font-size: 10px;
+  font-weight: 400;
+}
+.investigation-progress-header-mark {
+  display: grid;
+  place-items: center;
+  flex: 0 0 16px;
+  height: 18px;
+  color: var(--progress-muted);
+}
+.investigation-progress-header-mark > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.investigation-progress-header-mark.is-breathing {
+  color: var(--progress-accent);
+}
+.investigation-progress-header-mark.is-breathing > span,
+.investigation-progress-pulse {
+  animation: investigation-progress-breathe 2s ease-in-out infinite;
+}
+.investigation-progress-content {
+  padding-top: 7px;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 200ms ease,
+    transform 200ms ease;
+}
+.investigation-progress.is-collapsing .investigation-progress-content {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+.investigation-progress-content[hidden] {
+  display: none;
+}
+.investigation-progress .investigation-progress-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.investigation-progress-steps > li {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  gap: 10px;
+  position: relative;
+  padding: 0 0 18px;
+}
+.investigation-progress-steps > li:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 20px;
+  bottom: 0;
+  width: 1px;
+  background: var(--progress-line);
+}
+.investigation-progress-mark {
+  display: grid;
+  place-items: center;
+  position: relative;
+  z-index: 1;
+  height: 23px;
+  color: #7b899a;
+}
+.investigation-progress .is-current .investigation-progress-mark {
+  color: var(--progress-accent);
+}
+.investigation-progress-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.investigation-progress-step-body {
+  min-width: 0;
+}
+.investigation-progress-step-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 8px;
+}
+.investigation-progress-step-title > strong {
+  font-weight: 500;
+}
+.investigation-progress
+  .is-current
+  .investigation-progress-step-title
+  > strong {
+  color: var(--progress-accent);
+}
+.investigation-progress code {
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: var(--progress-muted);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+.investigation-progress-step-status {
+  color: var(--progress-muted);
+  font-size: 11px;
+}
+.investigation-progress .investigation-progress-reason,
+.investigation-progress .investigation-progress-tables,
+.investigation-progress .investigation-progress-summary {
+  margin: 3px 0 0;
+  max-width: 900px;
+  overflow-wrap: anywhere;
+}
+.investigation-progress-reason {
+  color: var(--progress-muted);
+}
+.investigation-progress-tables {
+  color: var(--progress-muted);
+  font-size: 11px;
+  line-height: 1.8;
+}
+.investigation-progress-tables > span {
+  display: inline;
+}
+.investigation-progress-summary {
+  color: var(--progress-ink);
+}
+.investigation-progress-evidence {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  margin-top: 4px;
+}
+.investigation-progress .investigation-progress-evidence button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  max-width: 100%;
+  padding: 1px 0;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--progress-accent);
+  font: inherit;
+  font-size: 11px;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.investigation-progress-evidence button:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.investigation-progress-provenance {
+  margin: 5px 0 0;
+  border: 0;
+  color: var(--progress-muted);
+  font-size: 11px;
+}
+.investigation-progress-provenance > summary {
+  display: list-item;
+  width: fit-content;
+  padding: 2px 0;
+  cursor: pointer;
+}
+.investigation-progress-provenance > p {
+  margin: 3px 0 0;
+  overflow-wrap: anywhere;
+}
+.investigation-progress :where(summary):focus-visible {
+  outline: 2px solid var(--progress-accent);
+  outline-offset: 4px;
+}
+.investigation-progress .investigation-progress-empty,
+.investigation-progress .investigation-progress-end,
+.investigation-progress .investigation-progress-stale {
+  margin: 0 0 12px 26px;
+  color: var(--progress-muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.investigation-progress .has-error .investigation-progress-mark,
+.investigation-progress .has-error .investigation-progress-step-status,
+.investigation-progress .investigation-progress-end.has-error {
+  color: #a23a35;
+}
+.investigation-progress .investigation-progress-stale {
+  color: #85612b;
+}
+.investigation-progress :where(button):focus-visible {
+  outline: 2px solid var(--progress-accent);
+  outline-offset: 4px;
+}
+.investigation-progress-announcement {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+@keyframes investigation-progress-breathe {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@media (max-width: 600px) {
+  .investigation-progress {
+    font-size: 13px;
+    margin-bottom: 18px;
+  }
+  .investigation-progress-heading {
+    gap: 0 8px;
+  }
+  .investigation-progress-caption {
+    flex-basis: 100%;
+  }
+  .investigation-progress-caption {
+    font-size: 11px;
+  }
+  .investigation-progress .investigation-progress-evidence button {
+    min-height: 44px;
+  }
+  .investigation-progress-provenance > summary {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  .investigation-progress-step-title {
+    gap: 2px 7px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .investigation-progress *,
+  .investigation-progress *::before {
+    animation: none !important;
+    transition: none !important;
+  }
+}

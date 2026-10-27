@@ -1,0 +1,899 @@
+/* Desktop secondary surfaces. Imported after the base styles by the app shell. */
+.app-shell.fintrace-desktop .results-page,
+.app-shell.fintrace-desktop .memory-panel,
+.app-shell.fintrace-desktop .guide-page {
+  --ink: #172b4d;
+  --muted: #69788c;
+  --line: #e5e9f0;
+  --teal: #295dcc;
+  --soft: #f1f5fb;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  padding: 28px 32px 40px;
+  color: #172b4d;
+  background: #f5f7fa;
+  font-family: "Inter Variable", Inter, "Segoe UI", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-shell.fintrace-desktop .results-page .page-heading,
+.app-shell.fintrace-desktop .guide-page > h1,
+.app-shell.fintrace-desktop .memory-panel > h1 {
+  margin-top: 0;
+}
+
+.app-shell.fintrace-desktop .results-page h1,
+.app-shell.fintrace-desktop .memory-panel > h1,
+.app-shell.fintrace-desktop .guide-page > h1 {
+  margin-bottom: 9px;
+  color: #172b4d;
+  font-size: 26px;
+  font-weight: 650;
+  line-height: 1.3;
+  letter-spacing: -0.65px;
+}
+
+.app-shell.fintrace-desktop .results-page .page-heading {
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.app-shell.fintrace-desktop .results-page .page-heading p,
+.app-shell.fintrace-desktop .memory-panel > p,
+.app-shell.fintrace-desktop .guide-page .guide-intro {
+  margin: 0;
+  color: #69788c;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.app-shell.fintrace-desktop .results-page .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #52637c;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.app-shell.fintrace-desktop .results-page .button,
+.app-shell.fintrace-desktop .memory-panel .diagnostic-record .button,
+.app-shell.fintrace-desktop .memory-panel > .resource-toolbar .button,
+.app-shell.fintrace-desktop .memory-panel > .resource-notice .button,
+.app-shell.fintrace-desktop .guide-page > .button {
+  min-height: 38px;
+  gap: 7px;
+  padding: 9px 13px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-decoration: none;
+  box-shadow: none;
+  transform: none;
+}
+
+.app-shell.fintrace-desktop .results-page .button.secondary,
+.app-shell.fintrace-desktop .memory-panel .diagnostic-record .button.secondary,
+.app-shell.fintrace-desktop .memory-panel > .resource-toolbar .button.secondary,
+.app-shell.fintrace-desktop .memory-panel > .resource-notice .button.secondary {
+  border-color: #dbe1ea;
+  background: #fff;
+  color: #34445e;
+}
+
+.app-shell.fintrace-desktop
+  .results-page
+  .button.secondary:hover:not(:disabled),
+.app-shell.fintrace-desktop
+  .memory-panel
+  .diagnostic-record
+  .button.secondary:hover:not(:disabled),
+.app-shell.fintrace-desktop
+  .memory-panel
+  > .resource-toolbar
+  .button.secondary:hover:not(:disabled),
+.app-shell.fintrace-desktop
+  .memory-panel
+  > .resource-notice
+  .button.secondary:hover:not(:disabled) {
+  border-color: #bdc9da;
+  background: #f8fafc;
+  transform: none;
+}
+
+.app-shell.fintrace-desktop .results-page .text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #295dcc;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.app-shell.fintrace-desktop
+  .results-page
+  :where(button, a, input, select):focus-visible,
+.app-shell.fintrace-desktop .memory-panel > label select:focus-visible,
+.app-shell.fintrace-desktop
+  .memory-panel
+  .diagnostic-record
+  :where(button, a, input):focus-visible,
+.app-shell.fintrace-desktop
+  .memory-panel
+  > .resource-toolbar
+  :where(button, input):focus-visible,
+.app-shell.fintrace-desktop
+  .memory-panel
+  > .resource-notice
+  button:focus-visible,
+.app-shell.fintrace-desktop .guide-page > .button:focus-visible {
+  outline: 3px solid #93b4fc;
+  outline-offset: 3px;
+}
+
+/* Saved results: white summary controls, restrained semantic accents. */
+.app-shell.fintrace-desktop .results-page .results-note {
+  max-width: 100ch;
+  margin: 0 0 22px;
+  color: #69788c;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.app-shell.fintrace-desktop .results-page .batch-progress {
+  gap: 8px 18px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+  border: 1px solid #e0e6f0;
+  border-radius: 7px;
+  background: #fff;
+  color: #34445e;
+  font-size: 13px;
+  line-height: 1.5;
+  box-shadow: none;
+}
+
+.app-shell.fintrace-desktop .results-page .batch-progress strong {
+  color: #172b4d;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.app-shell.fintrace-desktop .results-page .batch-progress > span {
+  margin-left: auto;
+  color: #69788c;
+  font-size: 12px;
+}
+
+.app-shell.fintrace-desktop .results-page .batch-progress progress {
+  width: 100%;
+  height: 6px;
+  margin-top: 5px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 4px;
+  accent-color: #295dcc;
+  background: #edf1f7;
+}
+
+.app-shell.fintrace-desktop
+  .results-page
+  .batch-progress
+  progress::-webkit-progress-bar {
+  border-radius: 4px;
+  background: #edf1f7;
+}
+
+.app-shell.fintrace-desktop
+  .results-page
+  .batch-progress
+  progress::-webkit-progress-value {
+  border-radius: 4px;
+  background: #295dcc;
+}
+
+.app-shell.fintrace-desktop
+  .results-page
+  .batch-progress
+  progress::-moz-progress-bar {
+  border-radius: 4px;
+  background: #295dcc;
+}
+
+.app-shell.fintrace-desktop .results-page .results-summary {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.app-shell.fintrace-desktop .results-page .result-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  min-width: 0;
+  min-height: 106px;
+  gap: 9px;
+  padding: 17px 18px;
+  border: 1px solid #e0e6ef;
+  border-radius: 7px;
+  background: #fff;
+  color: #52637c;
+  text-align: left;
+  box-shadow: 0 1px 2px #172b4d04;
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease;
+}
+
+.app-shell.fintrace-desktop .results-page .result-summary:hover {
+  border-color: #bdc9da;
+  background: #fbfcff;
+}
+
+.app-shell.fintrace-desktop .results-page .result-summary.active {
+  border-color: #295dcc;
+  background: #f8faff;
+  box-shadow: inset 0 0 0 1px #295dcc;
+  outline: none;
+}
+
+.app-shell.fintrace-desktop .results-page .result-summary:focus-visible {
+  outline: 3px solid #93b4fc;
+  outline-offset: 3px;
+}
+
+.app-shell.fintrace-desktop .results-page .result-summary strong {
+  color: #172b4d;
+  font-size: 28px;
+  font-weight: 650;
+  line-height: 1.1;
+  letter-spacing: -0.65px;
+  font-variant-numeric: tabular-nums;
+}
+
+.app-shell.fintrace-desktop .results-page .result-summary.issues strong {
+  color: #b04c50;
+}
+
+.app-shell.fintrace-desktop .results-page .result-summary.clear strong {
+  color: #277457;
+}
+
+.app-shell.fintrace-desktop .results-page .result-summary.uncertain strong {
+  color: #926719;
+}
+
+.app-shell.fintrace-desktop .results-page .result-summary > span {
+  color: #52637c;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.app-shell.fintrace-desktop .results-page .inbox-section {
+  overflow: hidden;
+  border: 1px solid #e0e6ef;
+  border-radius: 7px;
+  background: #fff;
+  box-shadow: 0 1px 2px #172b4d04;
+}
+
+.app-shell.fintrace-desktop .results-page .table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  min-height: 74px;
+  padding: 17px 20px;
+  border-bottom: 1px solid #e5e9f0;
+  background: #fff;
+}
+
+.app-shell.fintrace-desktop .results-page .table-toolbar h2 {
+  margin: 0;
+  color: #172b4d;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.25px;
+}
+
+.app-shell.fintrace-desktop .results-page .search-field {
+  display: flex;
+  align-items: center;
+  width: min(360px, 100%);
+  min-height: 38px;
+  gap: 8px;
+  padding: 8px 11px;
+  border: 1px solid #dbe1ea;
+  border-radius: 6px;
+  background: #fff;
+  color: #8692a3;
+}
+
+.app-shell.fintrace-desktop .results-page .search-field input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #253852;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.app-shell.fintrace-desktop .results-page .search-field:focus-within {
+  border-color: #8aabed;
+  box-shadow: 0 0 0 3px #eaf1ff;
+}
+
+.app-shell.fintrace-desktop .results-page .search-field input::placeholder {
+  color: #8692a3;
+}
+
+.app-shell.fintrace-desktop .results-page .table-scroll {
+  overflow-x: auto;
+}
+
+.app-shell.fintrace-desktop .results-page .results-table {
+  width: 100%;
+  min-width: 760px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  color: #34445e;
+}
+
+.app-shell.fintrace-desktop .results-page .results-table th {
+  height: 39px;
+  padding: 11px 18px;
+  border-bottom: 1px solid #e5e9f0;
+  background: #f8fafc;
+  color: #69788c;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.025em;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.app-shell.fintrace-desktop .results-page .results-table th:nth-child(1) {
+  width: 25%;
+}
+
+.app-shell.fintrace-desktop .results-page .results-table th:nth-child(2) {
+  width: 23%;
+}
+
+.app-shell.fintrace-desktop .results-page .results-table th:nth-child(3) {
+  width: 17%;
+  text-align: right;
+}
+
+.app-shell.fintrace-desktop .results-page .results-table th:nth-child(4) {
+  width: 21%;
+}
+
+.app-shell.fintrace-desktop .results-page .results-table th:nth-child(5) {
+  width: 14%;
+}
+
+.app-shell.fintrace-desktop .results-page .results-table td {
+  padding: 16px 18px;
+  border-bottom: 1px solid #edf0f5;
+  background: transparent;
+  color: #34445e;
+  font-size: 14px;
+  line-height: 1.5;
+  vertical-align: middle;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.app-shell.fintrace-desktop .results-page .results-table tbody tr {
+  cursor: default;
+  transition: background-color 120ms ease;
+}
+
+.app-shell.fintrace-desktop .results-page .results-table tbody tr:hover {
+  background: #f8faff;
+}
+
+.app-shell.fintrace-desktop
+  .results-page
+  .results-table
+  tbody
+  tr:last-child
+  td {
+  border-bottom: 0;
+}
+
+.app-shell.fintrace-desktop
+  .results-page
+  .results-table
+  td:first-child
+  > strong {
+  color: #253852;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.app-shell.fintrace-desktop .results-page .results-table .cell-sub {
+  display: block;
+  margin-top: 5px;
+  color: #69788c;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.app-shell.fintrace-desktop .results-page .results-table .snapshot-label {
+  display: block;
+  color: #69788c;
+  font-size: 12px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.app-shell.fintrace-desktop .results-page .results-table td:nth-child(3) {
+  text-align: right;
+}
+
+.app-shell.fintrace-desktop .results-page .results-table .amount {
+  color: #253852;
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.app-shell.fintrace-desktop .results-page .results-table td:last-child {
+  text-align: right;
+}
+
+.app-shell.fintrace-desktop .results-page .results-table .text-button {
+  justify-content: flex-end;
+  max-width: 100%;
+  white-space: normal;
+  text-align: right;
+}
+
+.app-shell.fintrace-desktop .results-page .result-badge {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 4px 7px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: #f0f3f8;
+  color: #52637c;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.45;
+  white-space: normal;
+}
+
+.app-shell.fintrace-desktop .results-page .result-badge.issues {
+  background: #fff1f1;
+  color: #ac454d;
+}
+
+.app-shell.fintrace-desktop .results-page .result-badge.clear {
+  background: #edf8f2;
+  color: #287255;
+}
+
+.app-shell.fintrace-desktop .results-page .result-badge.uncertain {
+  background: #fff7e8;
+  color: #8a661d;
+}
+
+.app-shell.fintrace-desktop .results-page .results-table .result-start-error {
+  max-width: none;
+  color: #ac454d;
+  font-size: 12px;
+  white-space: normal;
+}
+
+.app-shell.fintrace-desktop .results-page .table-footer {
+  min-height: 61px;
+  padding: 14px 20px;
+  border-top: 1px solid #e5e9f0;
+  background: #fff;
+  color: #69788c;
+  font-size: 12px;
+}
+
+.app-shell.fintrace-desktop .results-page .pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #69788c;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.app-shell.fintrace-desktop .results-page .pagination-controls .icon-button {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #e0e6ef;
+  border-radius: 5px;
+  background: #fff;
+  color: #52637c;
+}
+
+.app-shell.fintrace-desktop
+  .results-page
+  .pagination-controls
+  .icon-button:hover:not(:disabled) {
+  background: #f0f4fb;
+}
+
+.app-shell.fintrace-desktop .results-page .results-message {
+  margin: 0;
+  padding: 30px 20px;
+  color: #69788c;
+  font-size: 14px;
+}
+
+.app-shell.fintrace-desktop .results-page .results-error {
+  margin: 12px 0;
+  padding: 13px 16px;
+  border: 1px solid #f0d5d7;
+  border-radius: 6px;
+  background: #fff6f6;
+  color: #a44148;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.app-shell.fintrace-desktop .results-page .inbox-section > .results-error {
+  margin: 14px 20px;
+}
+
+/* Approved memories: procedure content first, immutable metadata secondary. */
+.app-shell.fintrace-desktop .memory-panel {
+  max-width: 1260px;
+}
+
+.app-shell.fintrace-desktop .memory-panel > p {
+  max-width: 102ch;
+  margin-bottom: 9px;
+}
+
+.app-shell.fintrace-desktop .memory-panel > p:nth-of-type(2) {
+  margin-bottom: 24px;
+  color: #69788c;
+  font-size: 12px;
+}
+
+.app-shell.fintrace-desktop .memory-panel > label {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: #52637c;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.app-shell.fintrace-desktop .memory-panel > label select {
+  min-width: 160px;
+  min-height: 38px;
+  padding: 8px 30px 8px 11px;
+  border: 1px solid #dbe1ea;
+  border-radius: 6px;
+  background: #fff;
+  color: #34445e;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.app-shell.fintrace-desktop .memory-panel > .resource-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  min-height: 56px;
+  margin: 18px 0;
+  padding: 11px 15px;
+  border: 1px solid #e0e6ef;
+  border-radius: 6px;
+  background: #fff;
+  color: #52637c;
+  font-size: 12px;
+}
+
+.app-shell.fintrace-desktop .memory-panel > .resource-toolbar label {
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.app-shell.fintrace-desktop .memory-panel > .resource-toolbar > span {
+  color: #69788c;
+  margin-right: auto;
+}
+
+.app-shell.fintrace-desktop .memory-panel > .resource-toolbar .button {
+  min-height: 32px;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+
+.app-shell.fintrace-desktop .memory-panel .resource-selection {
+  padding: 0;
+  flex: 0 0 auto;
+}
+
+.app-shell.fintrace-desktop .memory-panel .resource-selection input,
+.app-shell.fintrace-desktop .memory-panel > .resource-toolbar input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #295dcc;
+}
+
+.app-shell.fintrace-desktop .memory-panel > .diagnostic-record {
+  padding: 21px 23px;
+  margin: 14px 0;
+  border: 1px solid #e0e6ef;
+  border-radius: 7px;
+  background: #fff;
+  box-shadow: 0 1px 2px #172b4d04;
+}
+
+.app-shell.fintrace-desktop .memory-panel .memory-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid #edf0f5;
+}
+
+.app-shell.fintrace-desktop .memory-panel .memory-card-header input {
+  margin-top: 2px;
+}
+
+.app-shell.fintrace-desktop .memory-panel .memory-card-header > strong {
+  color: #69788c;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.app-shell.fintrace-desktop .memory-panel .diagnostic-record > p {
+  margin: 7px 0;
+  color: #69788c;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.app-shell.fintrace-desktop .memory-panel .diagnostic-record > p:first-of-type {
+  max-width: 105ch;
+  margin: 16px 0 13px;
+  color: #253852;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.7;
+}
+
+.app-shell.fintrace-desktop .memory-panel .memory-card-actions {
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 17px;
+  padding-top: 15px;
+  border-top: 1px solid #edf0f5;
+}
+
+.app-shell.fintrace-desktop .memory-panel .memory-card-actions > a {
+  color: #295dcc;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-decoration: none;
+  text-underline-offset: 3px;
+}
+
+.app-shell.fintrace-desktop .memory-panel .memory-card-actions > a:hover {
+  text-decoration: underline;
+}
+
+.app-shell.fintrace-desktop .memory-panel .memory-card-buttons {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.app-shell.fintrace-desktop .memory-panel .diagnostic-record .resource-remove,
+.app-shell.fintrace-desktop .memory-panel > .resource-toolbar .resource-remove {
+  color: #a34850;
+}
+
+.app-shell.fintrace-desktop .memory-panel > .resource-notice {
+  gap: 12px;
+  padding: 12px 15px;
+  border: 1px solid #d9e8df;
+  border-radius: 6px;
+  background: #f1f8f4;
+  color: #2f6c53;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.app-shell.fintrace-desktop .memory-panel > p[role="alert"] {
+  margin: 14px 0;
+  padding: 12px 15px;
+  border: 1px solid #f0d5d7;
+  border-radius: 6px;
+  background: #fff6f6;
+  color: #a44148;
+  font-size: 13px;
+}
+
+.app-shell.fintrace-desktop .memory-panel > p:last-child {
+  margin: 22px 0 0;
+  padding-top: 17px;
+  border-top: 1px solid #e0e6ef;
+  color: #69788c;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* Guide: compact reading layout with the same neutral card system. */
+.app-shell.fintrace-desktop .guide-page {
+  max-width: 1180px;
+}
+
+.app-shell.fintrace-desktop .guide-page > .eyebrow {
+  margin: 0 0 11px;
+  color: #69788c;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  line-height: 1.5;
+}
+
+.app-shell.fintrace-desktop .guide-page .guide-intro {
+  max-width: 78ch;
+  margin-bottom: 25px;
+}
+
+.app-shell.fintrace-desktop .guide-page .guide-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 25px 0 20px;
+}
+
+.app-shell.fintrace-desktop .guide-page .guide-grid article {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid #e0e6ef;
+  border-radius: 7px;
+  background: #fff;
+  box-shadow: 0 1px 2px #172b4d04;
+}
+
+.app-shell.fintrace-desktop .guide-page .guide-grid article > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+  margin: 0 0 17px;
+  border-radius: 6px;
+  background: #edf3ff;
+  color: #295dcc;
+}
+
+.app-shell.fintrace-desktop .guide-page .guide-grid article > span > svg {
+  width: 20px;
+  height: 20px;
+}
+
+.app-shell.fintrace-desktop .guide-page .guide-grid h2 {
+  margin: 0 0 9px;
+  color: #253852;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.2px;
+}
+
+.app-shell.fintrace-desktop .guide-page .guide-grid p {
+  margin: 0;
+  color: #69788c;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.app-shell.fintrace-desktop .guide-page .honest-mode-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  padding: 20px 22px;
+  margin-bottom: 22px;
+  border: 1px solid #e0e6ef;
+  border-radius: 7px;
+  background: #f0f4fa;
+  color: #6d84a8;
+}
+
+.app-shell.fintrace-desktop .guide-page .honest-mode-note > svg {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  margin-top: 1px;
+}
+
+.app-shell.fintrace-desktop .guide-page .honest-mode-note h3 {
+  margin: 0 0 7px;
+  color: #34445e;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.app-shell.fintrace-desktop .guide-page .honest-mode-note p {
+  margin: 0;
+  color: #627188;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.app-shell.fintrace-desktop .guide-page > .button.primary {
+  border-color: #295dcc;
+  background: #295dcc;
+  color: #fff;
+  box-shadow: 0 1px 2px #172b4d0d;
+}
+
+.app-shell.fintrace-desktop .guide-page > .button.primary:hover:not(:disabled) {
+  border-color: #1d4ed8;
+  background: #1d4ed8;
+  transform: none;
+}
+
+/* Narrow desktop windows retain tables and two-column help content. */
+@media (min-width: 1024px) and (max-width: 1250px) {
+  .app-shell.fintrace-desktop .results-page,
+  .app-shell.fintrace-desktop .memory-panel,
+  .app-shell.fintrace-desktop .guide-page {
+    padding-right: 24px;
+    padding-left: 24px;
+  }
+
+  .app-shell.fintrace-desktop .results-page .results-summary {
+    gap: 9px;
+  }
+
+  .app-shell.fintrace-desktop .results-page .result-summary {
+    min-height: 103px;
+    padding: 15px 13px;
+  }
+
+  .app-shell.fintrace-desktop .results-page .results-table th,
+  .app-shell.fintrace-desktop .results-page .results-table td {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .app-shell.fintrace-desktop .guide-page .guide-grid article {
+    padding: 21px;
+  }
+}

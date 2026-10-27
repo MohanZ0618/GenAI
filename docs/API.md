@@ -13,6 +13,7 @@ Execution modes are `fixture` (local data and deterministic planning), `local-mo
 | POST `/datasets` | `{manifest, files: Record<csvFilename,string>}`; returns `{dataset}` with 201 |
 | GET `/templates` | Empty valid-header CSV template bundle and manifest |
 | GET `/cases?datasetId=...` | `{cases: Case[]}`; `all` aggregates review packets |
+| GET `/investigations` | `{investigations: InvestigationSummary[]}`; every saved run in the current mode and workspace, newest first, with payment/question, snapshot, status, conclusion and human review metadata; includes removed snapshots, omits full evidence and traces |
 | POST `/investigations` | `{datasetId,paymentId}`; returns an existing queued/running/completed investigation for the same immutable dataset, payment, mode and memory namespace, or creates one; 202 |
 | GET `/investigations/:id` | Persisted state, findings, evidence, checks, queries and events |
 | GET `/investigations/:id/events` | SSE events with monotonically increasing IDs; accepts Last-Event-ID |

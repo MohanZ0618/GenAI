@@ -112,12 +112,28 @@ export type QueryTrace = {
   error?: string;
   coverage: Record<string, Coverage>;
 };
+export type InvestigationActivity = {
+  id: string;
+  kind: "planning" | "tool" | "verification" | "memory";
+  status: "running" | "completed" | "failed" | "cancelled";
+  /** Origin of the decision, rather than the financial evidence source. */
+  source?: "rules" | "model";
+  reason?: string;
+  summary?: string;
+  tables?: TableName[];
+  rowCount?: number;
+  relatedCount?: number;
+  evidenceIds?: string[];
+  queryId?: string;
+  durationMs?: number;
+};
 export type RunEvent = {
   id: string;
   at: string;
   type: string;
   message: string;
   tool?: ToolName;
+  activity?: InvestigationActivity;
 };
 export type Review = {
   decision: "accepted" | "needs_changes";
@@ -213,6 +229,24 @@ export type Investigation = {
   review?: Review;
   modelTurns: number;
   modelRequests?: ModelRequestTrace[];
+};
+/** Saved run metadata for the investigation history, without evidence payloads. */
+export type InvestigationSummary = Pick<
+  Investigation,
+  | "id"
+  | "datasetId"
+  | "paymentId"
+  | "status"
+  | "createdAt"
+  | "updatedAt"
+  | "outcome"
+> & {
+  vendor: string;
+  question: string;
+  datasetName: string;
+  datasetVersion: string;
+  datasetRemoved: boolean;
+  review?: Pick<Review, "decision" | "notes" | "at">;
 };
 export const startSchema = z
   .object({

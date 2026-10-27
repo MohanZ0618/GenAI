@@ -4,7 +4,13 @@ import type {
 } from "../../../packages/contracts/src/index";
 import { parseTime } from "../../../packages/contracts/src/index";
 import Decimal from "decimal.js";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Activity,
   ArrowDownToLine,
@@ -13,12 +19,10 @@ import {
   ArrowUpRight,
   BookOpen,
   Check,
-  CheckCheck,
   CheckCircle2,
   ChevronDown,
   ChevronRight,
   Circle,
-  Clock3,
   Database,
   FileCheck2,
   FileJson,
@@ -43,8 +47,13 @@ import {
   XCircle,
 } from "lucide-react";
 import { api, date, label, money, textValue } from "./api";
-import type { Case, Dataset, Evidence, Health, Investigation } from "./api";
+import type { Case, Dataset, Health, Investigation } from "./api";
 import { ResultsOverview } from "./ResultsOverview";
+import { InvestigationDetail } from "./InvestigationDetail";
+import { InvestigationList } from "./InvestigationList";
+import { InvestigationDialog } from "./InvestigationDialog";
+import { EvidenceDrawer } from "./EvidenceDrawer";
+import { useInvestigationSessions } from "./useInvestigationSessions";
 import { ModalShell } from "./ModalShell";
 import { useRemoval } from "./useRemoval";
 import { runInvestigationQueue, type QueueUpdate } from "./investigationQueue";
@@ -52,6 +61,7 @@ import { runInvestigationQueue, type QueueUpdate } from "./investigationQueue";
 type Page =
   | "inbox"
   | "results"
+  | "investigations"
   | "workspace"
   | "datasets"
   | "guide"
@@ -88,7 +98,19 @@ const storage = {
 };
 
 function App() {
-  const [page, setPage] = useState<Page>("inbox");
+  const [page, setPage] = useState<Page>(() =>
+    new URLSearchParams(window.location.search).get("view") === "investigations"
+      ? "investigations"
+      : "inbox",
+  );
+  const [workspaceOrigin, setWorkspaceOrigin] = useState<
+    "inbox" | "investigations"
+  >("inbox");
+  const [historyRevision, setHistoryRevision] = useState(0);
+  const [openingHistoryId, setOpeningHistoryId] = useState<string>();
+  const historyOpenRequest = useRef(0);
+  const historyScroll = useRef(0);
+  const historyTrigger = useRef<HTMLElement | null>(null);
   const [health, setHealth] = useState<Health | null>(null);
   const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [historicalDataset, setHistoricalDataset] = useState<Dataset | null>(
@@ -130,14 +152,71 @@ function App() {
   const [pageSize, setPageSize] = useState(25);
   const [activeEvidence, setActiveEvidence] = useState<string | null>(null);
   const [activeFinding, setActiveFinding] = useState<string | null>(null);
-  const [workspaceTab, setWorkspaceTab] = useState<
-    "findings" | "activity" | "checks"
-  >("findings");
   const [modal, setModal] = useState<Modal>(null);
+  const [reviewDraftNotes, setReviewDraftNotes] = useState<
+    string | undefined
+  >();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogKey, setDialogKey] = useState<string | null>(null);
+  const [dialogError, setDialogError] = useState("");
+  const [reviewBusy, setReviewBusy] = useState(false);
   const initialResume = useRef(false);
+  useLayoutEffect(() => {
+    if (page === "investigations") {
+      historyTrigger.current?.focus({ preventScroll: true });
+      window.scrollTo({ top: historyScroll.current, behavior: "instant" });
+    } else if (page === "workspace") {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+  }, [page]);
+  const onSessionRun = useCallback((run: Investigation) => {
+    setCases((items) =>
+      items.map((item) =>
+        item.datasetId === run.datasetId && item.paymentId === run.paymentId
+          ? {
+              ...item,
+              status: run.review ? "reviewed" : run.status,
+              investigationId: run.id,
+              outcome: run.status === "completed" ? run.outcome : null,
+              updateAvailable: false,
+            }
+          : item,
+      ),
+    );
+    setInvestigation((current) => (current?.id === run.id ? run : current));
+  }, []);
+  const investigationSessions = useInvestigationSessions({
+    onRun: onSessionRun,
+  });
+  const dialogSession = dialogKey
+    ? investigationSessions.sessions[dialogKey]
+    : undefined;
+  const pageRunManagedBySession = Object.values(
+    investigationSessions.sessions,
+  ).some((session) => session.run?.id === investigation?.id);
+  const dialogRun = dialogSession?.run;
+  const dialogDataset =
+    datasets.find((item) => item.id === dialogRun?.datasetId) ??
+    (historicalDataset && historicalDataset.id === dialogRun?.datasetId
+      ? historicalDataset
+      : undefined);
+  const dialogUpdatedDataset =
+    dialogDataset && dialogRun
+      ? datasets
+          .filter(
+            (item) =>
+              item.name === dialogDataset.name &&
+              item.createdAt > dialogDataset.createdAt &&
+              item.id !== dialogDataset.id &&
+              (!item.focusPaymentIds ||
+                item.focusPaymentIds.includes(dialogRun.paymentId)),
+          )
+          .sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0]
+      : undefined;
+  const backgroundInert = modal !== null || dialogOpen;
   const casesPending = casesLoading || loadedDatasetId !== datasetId;
   const currentDataset = datasets.find((item) => item.id === datasetId);
   const filteredDatasets = datasets.filter((item) =>
@@ -296,8 +375,20 @@ function App() {
     storage.set("fintrace:last-investigation", run.id);
     const url = new URL(window.location.href);
     url.searchParams.set("investigation", run.id);
+    url.searchParams.delete("view");
+    url.searchParams.delete("from");
     window.history.replaceState({}, "", url);
   }, []);
+
+  useEffect(() => {
+    if (!dialogOpen || !dialogRun) return;
+    setInvestigation(dialogRun);
+    storage.set("fintrace:last-investigation", dialogRun.id);
+    const url = new URL(window.location.href);
+    url.searchParams.set("investigation", dialogRun.id);
+    url.searchParams.set("view", "dialog");
+    window.history.replaceState({}, "", url);
+  }, [dialogOpen, dialogRun]);
 
   const datasetRemoval = useRemoval({
     kind: "dataset",
@@ -351,7 +442,8 @@ function App() {
   }, [search, filter, datasetId, pageSize, sort]);
   useEffect(() => setCheckedIds(new Set()), [datasetId]);
   useEffect(() => {
-    if (!investigation) return;
+    // Reading an older run must not replace the inbox's latest investigation.
+    if (!investigation || workspaceOrigin === "investigations") return;
     setCases((previous) =>
       previous.map((item) =>
         item.datasetId === investigation.datasetId &&
@@ -369,7 +461,12 @@ function App() {
           : item,
       ),
     );
-  }, [investigation?.id, investigation?.status, investigation?.review]);
+  }, [
+    investigation?.id,
+    investigation?.status,
+    investigation?.review,
+    workspaceOrigin,
+  ]);
   useEffect(() => {
     if (!datasetId) {
       setCases([]);
@@ -415,13 +512,27 @@ function App() {
   useEffect(() => {
     if (loading || initialResume.current) return;
     initialResume.current = true;
-    const runId =
-      new URLSearchParams(window.location.search).get("investigation") ??
-      storage.get("fintrace:last-investigation");
+    const params = new URLSearchParams(window.location.search);
+    const runId = params.get("investigation");
+    if (params.get("view") === "investigations") return;
     if (!runId) return;
+    if (params.get("view") === "dialog") {
+      setDialogKey(investigationSessions.resume(runId));
+      setDialogOpen(true);
+      setActiveEvidence(params.get("evidence"));
+      return;
+    }
+    const request = historyOpenRequest.current;
     api<Investigation>(`/investigations/${encodeURIComponent(runId)}`)
       .then((run) => {
+        if (request !== historyOpenRequest.current) return;
         rememberRun(run);
+        if (params.get("from") === "investigations") {
+          setWorkspaceOrigin("investigations");
+          const url = new URL(window.location.href);
+          url.searchParams.set("from", "investigations");
+          window.history.replaceState({}, "", url);
+        }
         setPage("workspace");
         setActiveEvidence(
           new URLSearchParams(window.location.search).get("evidence"),
@@ -433,6 +544,7 @@ function App() {
         );
       })
       .catch(() => {
+        if (request !== historyOpenRequest.current) return;
         setNotice(
           "The previous investigation is unavailable. You can start a new one from the inbox.",
         );
@@ -440,7 +552,14 @@ function App() {
   }, [loading, rememberRun]);
 
   useEffect(() => {
-    if (!investigation || TERMINAL.has(investigation.status)) return;
+    if (
+      page !== "workspace" ||
+      dialogOpen ||
+      pageRunManagedBySession ||
+      !investigation ||
+      TERMINAL.has(investigation.status)
+    )
+      return;
     let stopped = false;
     const timer = window.setInterval(() => {
       api<Investigation>(
@@ -463,9 +582,18 @@ function App() {
       stopped = true;
       window.clearInterval(timer);
     };
-  }, [investigation?.id, investigation?.status]);
+  }, [
+    page,
+    dialogOpen,
+    pageRunManagedBySession,
+    investigation?.id,
+    investigation?.status,
+  ]);
 
-  async function startInvestigation(item = selectedCase) {
+  async function startInvestigation(
+    item = selectedCase,
+    target: "dialog" | "page" = "dialog",
+  ) {
     if (!item || starting) return;
     if (
       batchSubmitting &&
@@ -475,12 +603,23 @@ function App() {
         ))
     )
       return;
+    historyOpenRequest.current++;
+    setOpeningHistoryId(undefined);
+    if (target === "dialog") {
+      setDialogError("");
+      setActiveEvidence(null);
+      setActiveFinding(null);
+      setModal(null);
+      setSelectedId(item.id);
+      setDialogKey(investigationSessions.open(item));
+      setDialogOpen(true);
+      return;
+    }
     setStarting(true);
     setError("");
     setStale("");
     setActiveEvidence(null);
     setActiveFinding(null);
-    setWorkspaceTab("findings");
     try {
       const reusable =
         !item.updateAvailable &&
@@ -500,6 +639,7 @@ function App() {
             }),
           });
       rememberRun(run);
+      setWorkspaceOrigin("inbox");
       setSelectedId(item.id);
       setPage("workspace");
     } catch (reason) {
@@ -537,6 +677,10 @@ function App() {
     if (!checkedCases.length || batchSubmitting || starting || casesPending)
       return;
     const selected = [...checkedCases];
+    if (selected.length === 1) {
+      await startInvestigation(selected[0]);
+      return;
+    }
     setResultsScope({
       datasetId,
       caseIds: allCasesChecked ? null : selected.map((item) => item.id),
@@ -576,7 +720,7 @@ function App() {
           "This payment is not available in the updated dataset.",
         );
       setDatasetId(updatedDataset.id);
-      await startInvestigation(item);
+      await startInvestigation(item, "page");
     } catch (reason) {
       setError(
         reason instanceof Error
@@ -610,18 +754,25 @@ function App() {
     }
   }
 
-  async function exportRun(format: "json" | "csv" | "html") {
-    if (!investigation) return;
+  async function exportRun(
+    format: "json" | "csv" | "html",
+    run = investigation,
+  ) {
+    if (!run) return;
     setExporting(true);
     setError("");
+    setDialogError("");
     try {
       const response = await fetch(
-        `/api/investigations/${encodeURIComponent(investigation.id)}/export?format=${format}`,
+        `/api/investigations/${encodeURIComponent(run.id)}/export?format=${format}`,
       );
       if (!response.ok) throw new Error(`Export failed (${response.status}).`);
-      download(await response.blob(), `fintrace-${investigation.id}.${format}`);
+      download(await response.blob(), `fintrace-${run.id}.${format}`);
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Export failed.");
+      const message =
+        reason instanceof Error ? reason.message : "Export failed.";
+      if (dialogOpen && run.id === dialogRun?.id) setDialogError(message);
+      else setError(message);
     } finally {
       setExporting(false);
     }
@@ -646,9 +797,111 @@ function App() {
   }
 
   function navigate(next: Page) {
+    historyOpenRequest.current++;
+    setOpeningHistoryId(undefined);
     setPage(next);
     setSidebarOpen(false);
     setError("");
+    if (next !== "workspace") {
+      const url = new URL(window.location.href);
+      for (const key of ["investigation", "evidence", "view", "from"])
+        url.searchParams.delete(key);
+      if (next === "investigations")
+        url.searchParams.set("view", "investigations");
+      window.history.replaceState({}, "", url);
+    }
+  }
+  async function openSavedInvestigation(id: string, review: boolean) {
+    const request = ++historyOpenRequest.current;
+    historyScroll.current = window.scrollY;
+    historyTrigger.current = document.activeElement as HTMLElement | null;
+    setOpeningHistoryId(id);
+    setError("");
+    try {
+      const run = await api<Investigation>(
+        `/investigations/${encodeURIComponent(id)}`,
+      );
+      if (request !== historyOpenRequest.current) return;
+      if (run.id !== id)
+        throw new Error(
+          "The saved investigation did not match the requested run.",
+        );
+      rememberRun(run);
+      setWorkspaceOrigin("investigations");
+      setActiveEvidence(null);
+      setActiveFinding(null);
+      setStale("");
+      setReviewDraftNotes(run.review?.notes ?? "");
+      setModal(review && run.status === "completed" ? "review" : null);
+      if (datasets.some((item) => item.id === run.datasetId))
+        setDatasetId(run.datasetId);
+      const url = new URL(window.location.href);
+      url.searchParams.set("from", "investigations");
+      url.searchParams.delete("evidence");
+      window.history.replaceState({}, "", url);
+      setPage("workspace");
+    } catch (reason) {
+      if (request === historyOpenRequest.current)
+        setError(
+          reason instanceof Error
+            ? reason.message
+            : "Could not open the saved investigation. Please try again.",
+        );
+    } finally {
+      if (request === historyOpenRequest.current)
+        setOpeningHistoryId(undefined);
+    }
+  }
+  function savePageReview(run: Investigation) {
+    setInvestigation((current) => (current?.id === run.id ? run : current));
+    setCasesRevision((value) => value + 1);
+    setHistoryRevision((value) => value + 1);
+    setNotice("Human review saved. Proposed actions remain unexecuted.");
+  }
+  function closeInvestigationDialog() {
+    if (reviewBusy) return;
+    setDialogOpen(false);
+    setModal(null);
+    setActiveEvidence(null);
+    setActiveFinding(null);
+    setDialogError("");
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("view") === "dialog") {
+      url.searchParams.delete("view");
+      url.searchParams.delete("investigation");
+      url.searchParams.delete("evidence");
+      window.history.replaceState({}, "", url);
+    }
+  }
+  async function updateDialogInvestigation() {
+    if (!dialogRun || !dialogUpdatedDataset) return;
+    setDialogError("");
+    try {
+      const result = await api<{ cases: Case[] }>(
+        `/cases?datasetId=${encodeURIComponent(dialogUpdatedDataset.id)}`,
+      );
+      const item = result.cases.find(
+        (entry) => entry.paymentId === dialogRun.paymentId,
+      );
+      if (!item)
+        throw new Error(
+          "This payment is not available in the updated dataset.",
+        );
+      await startInvestigation(item);
+    } catch (reason) {
+      setDialogError(
+        reason instanceof Error
+          ? reason.message
+          : "Could not load the updated dataset.",
+      );
+    }
+  }
+  function saveDialogReview(run: Investigation) {
+    investigationSessions.updateRun(run);
+    setHistoryRevision((value) => value + 1);
+    setModal(null);
+    setActiveEvidence(null);
+    setNotice("Human review saved. Proposed actions remain unexecuted.");
   }
   function toggleSort(field: "amount" | "date") {
     setSort((previous) => ({
@@ -665,27 +918,21 @@ function App() {
       ? "Selected case results"
       : "All case results",
     workspace: "Investigation",
+    investigations: "Investigation",
     datasets: "Dataset library",
     guide: "The evidence standard",
     memories: "Investigation memories",
   }[page];
-  const evidence = investigation?.evidence ?? [];
-  const chosenEvidence =
-    evidence.find((item) => item.id === activeEvidence) ?? evidence[0];
-  const outcome = investigation?.outcome;
-  const evidenceGaps = [
-    ...new Set([
-      ...(investigation?.findings.flatMap((finding) => finding.uncertainty) ??
-        []),
-      ...(investigation?.checks
-        .filter((check) => check.status === "unknown")
-        .map((check) => check.detail) ?? []),
-    ]),
-  ];
 
   return (
-    <div className={`app-shell ${sidebarOpen ? "sidebar-open" : ""}`}>
-      <aside className="sidebar">
+    <div
+      className={`app-shell fintrace-desktop ${sidebarOpen ? "sidebar-open" : ""} ${page === "workspace" ? "detail-view" : ""}`}
+    >
+      <aside
+        className="sidebar"
+        inert={backgroundInert}
+        aria-hidden={backgroundInert || undefined}
+      >
         <a
           className="brand"
           href="#"
@@ -722,8 +969,8 @@ function App() {
           <NavItem
             icon={<Workflow size={18} />}
             text="Investigation"
-            active={page === "workspace"}
-            onClick={() => navigate("workspace")}
+            active={page === "workspace" || page === "investigations"}
+            onClick={() => navigate("investigations")}
             dot={!!running}
           />
           <NavItem
@@ -739,6 +986,12 @@ function App() {
             onClick={() => navigate("memories")}
           />
         </nav>
+        {page === "workspace" && (
+          <div className="detail-sidebar-note">
+            <ShieldCheck size={16} />
+            <span>Read-only investigation</span>
+          </div>
+        )}
         <div className="sidebar-note">
           <span className="small-icon">
             <ShieldCheck size={17} />
@@ -772,7 +1025,11 @@ function App() {
           onClick={() => setSidebarOpen(false)}
         />
       )}
-      <main className="main-content">
+      <main
+        className="main-content"
+        inert={backgroundInert}
+        aria-hidden={backgroundInert || undefined}
+      >
         <header className="topbar">
           <div className="breadcrumb">
             <button
@@ -787,6 +1044,15 @@ function App() {
             <strong>{title}</strong>
           </div>
           <div className="topbar-right">
+            {page === "workspace" && (
+              <button
+                className="icon-button"
+                onClick={() => void loadBase()}
+                aria-label="Refresh API connection"
+              >
+                <RefreshCw size={14} />
+              </button>
+            )}
             <span className={`connection ${health ? "connected" : ""}`}>
               <span />
               {health ? "API connected" : "API unavailable"}
@@ -794,37 +1060,51 @@ function App() {
             <div className="top-avatar">FO</div>
           </div>
         </header>
-        <div className={`mode-banner ${health?.mode === "live" ? "live" : ""}`}>
-          <span className="mode-symbol">
-            {health?.mode === "live" ? <Activity size={16} /> : <FlaskIcon />}
-          </span>
-          <div>
-            <strong>
-              {health?.mode === "fixture"
-                ? "Offline fixture"
-                : health?.mode === "local-model"
-                  ? `${health.provider === "openai" ? "OpenAI" : health.provider} + local data`
-                  : health?.mode === "live"
-                    ? "Live integration mode"
-                    : "Connection not verified"}
-            </strong>
-            <span>
-              {health?.mode === "fixture"
-                ? "Deterministic rules · no live model or Zetaris"
-                : health?.mode === "local-model"
-                  ? `${health.model} · Real model calls · local snapshots · no Zetaris or PostgreSQL`
-                  : health?.mode === "live"
-                    ? "Review integration status before running an investigation."
-                    : "Start the API server to load datasets and investigations."}
-            </span>
+        {page === "workspace" && health && (
+          <div className="detail-mode-indicator">
+            <FlaskIcon />
+            {health.mode === "fixture"
+              ? "Example case · Sample data"
+              : health.mode === "local-model"
+                ? "Real model · Local snapshot"
+                : "Live run · Data snapshot"}
           </div>
-          <button
-            onClick={() => void loadBase()}
-            aria-label="Refresh API connection"
+        )}
+        {page !== "workspace" && (
+          <div
+            className={`mode-banner ${health?.mode === "live" ? "live" : ""}`}
           >
-            <RefreshCw size={14} />
-          </button>
-        </div>
+            <span className="mode-symbol">
+              {health?.mode === "live" ? <Activity size={16} /> : <FlaskIcon />}
+            </span>
+            <div>
+              <strong>
+                {health?.mode === "fixture"
+                  ? "Offline fixture"
+                  : health?.mode === "local-model"
+                    ? `${health.provider === "openai" ? "OpenAI" : health.provider === "deepseek" ? "DeepSeek" : health.provider} + local data`
+                    : health?.mode === "live"
+                      ? "Live integration mode"
+                      : "Connection not verified"}
+              </strong>
+              <span>
+                {health?.mode === "fixture"
+                  ? "Deterministic rules · no live model or Zetaris"
+                  : health?.mode === "local-model"
+                    ? `${health.model} · Real model calls · local snapshots · no Zetaris or PostgreSQL`
+                    : health?.mode === "live"
+                      ? "Review integration status before running an investigation."
+                      : "Start the API server to load datasets and investigations."}
+              </span>
+            </div>
+            <button
+              onClick={() => void loadBase()}
+              aria-label="Refresh API connection"
+            >
+              <RefreshCw size={14} />
+            </button>
+          </div>
+        )}
         {error && (
           <div className="global-alert error" role="alert">
             <XCircle size={17} />
@@ -1195,6 +1475,7 @@ function App() {
                           <td>
                             <span
                               className={`status-pill ${item.updateAvailable ? "update" : ["completed", "reviewed"].includes(item.status || "") ? "success" : ""}`}
+                              data-status={item.status ?? "unreviewed"}
                             >
                               <span />
                               {item.updateAvailable
@@ -1319,14 +1600,15 @@ function App() {
                     : caseAction(selectedCase)}
                   <ArrowRight size={15} />
                 </button>
-                {running && (
-                  <button
-                    className="text-button"
-                    onClick={() => navigate("workspace")}
-                  >
-                    View run
-                  </button>
-                )}
+                {selectedCase.investigationId &&
+                  ["running", "queued"].includes(selectedCase.status ?? "") && (
+                    <button
+                      className="text-button"
+                      onClick={() => void startInvestigation(selectedCase)}
+                    >
+                      View run
+                    </button>
+                  )}
               </div>
             )}
             <div className="quiet-footer">
@@ -1362,595 +1644,76 @@ function App() {
           />
         )}
 
-        {page === "workspace" && (
-          <div className="page workspace-page">
-            <div className="investigation-heading">
-              <div>
-                <button className="back-link" onClick={() => navigate("inbox")}>
-                  <ArrowLeft size={13} /> Case inbox
-                </button>
-                <h1>
-                  {investigation
-                    ? `Investigate ${investigation.paymentId}`
-                    : "Investigation workspace"}
-                </h1>
-                <p>
-                  {investigation
-                    ? `${workspaceCase?.vendor ?? "Payment investigation"} · ${investigation.id}`
-                    : "Select a payment exception to follow its evidence."}
-                </p>
-              </div>
-              <div className="heading-actions">
-                {running && (
-                  <button
-                    className="button secondary"
-                    onClick={() => void cancelInvestigation()}
-                    disabled={cancelling}
-                  >
-                    <Square size={13} />
-                    {cancelling ? "Cancelling…" : "Cancel run"}
-                  </button>
-                )}
-                {investigation && TERMINAL.has(investigation.status) && (
-                  <a className="text-button" href="#investigation-review">
-                    Review & export <ArrowRight size={14} />
-                  </a>
-                )}
-              </div>
-            </div>
-            {stale && (
-              <div className="global-alert notice" role="status">
-                <Clock3 size={16} />
-                <span>{stale}</span>
-              </div>
-            )}
-            {investigation?.status === "completed" && (
-              <div className="global-alert notice" role="status">
-                {updatedDataset ? (
-                  <RefreshCw size={16} />
-                ) : (
-                  <CheckCircle2 size={16} />
-                )}
-                <span>
-                  {updatedDataset
-                    ? "Update available — a newer data snapshot was imported. This result uses the previous snapshot."
-                    : "Saved result — reopening this case uses the existing analysis. Memory updates do not rerun it."}
-                </span>
-                {updatedDataset && (
-                  <button
-                    className="button secondary"
-                    disabled={starting || !!running}
-                    onClick={() => void updateInvestigation()}
-                  >
-                    Update investigation
-                  </button>
-                )}
-              </div>
-            )}
-            {!investigation ? (
+        <div hidden={page !== "investigations"}>
+          <InvestigationList
+            active={page === "investigations"}
+            revision={historyRevision}
+            openingId={openingHistoryId}
+            onOpen={(id, review) => void openSavedInvestigation(id, review)}
+            onChooseCase={() => navigate("inbox")}
+          />
+        </div>
+
+        {page === "workspace" &&
+          (investigation ? (
+            <InvestigationDetail
+              key={investigation.id}
+              investigation={investigation}
+              payment={workspaceCase}
+              dataset={runDataset ?? undefined}
+              updatedDataset={updatedDataset ?? undefined}
+              stale={stale}
+              starting={starting}
+              cancelling={cancelling}
+              exporting={exporting}
+              activeEvidence={activeEvidence}
+              activeFinding={activeFinding}
+              onEvidence={setActiveEvidence}
+              onFinding={setActiveFinding}
+              onBack={() => navigate(workspaceOrigin)}
+              backLabel={
+                workspaceOrigin === "investigations"
+                  ? "Investigation"
+                  : "Case inbox"
+              }
+              onCancel={() => void cancelInvestigation()}
+              onUpdate={() => void updateInvestigation()}
+              onReview={(notes) => {
+                setReviewDraftNotes(notes);
+                setModal("review");
+              }}
+              onReviewed={savePageReview}
+              runStatus={<Status status={investigation.status} />}
+              diagnostics={<RunDiagnostics investigation={investigation} />}
+              timeline={<SourceTimeline investigation={investigation} />}
+              exportControl={
+                <ExportMenu disabled={exporting} onExport={exportRun} />
+              }
+            />
+          ) : (
+            <div className="page workspace-page investigation-detail">
+              <button className="back-link" onClick={() => navigate("inbox")}>
+                <ArrowLeft size={14} />
+                Case inbox
+              </button>
               <div className="workspace-placeholder">
                 <Empty
                   icon={<Workflow size={34} />}
-                  title="A structured path to a clear answer"
-                  text="Choose a payment in the case inbox. FinTrace will investigate the records, run checks, and put the evidence beside every finding."
+                  title="Choose a payment to investigate"
+                  text="Open a payment from the case inbox to review its findings and source evidence."
                   action={
                     <button
                       className="button primary"
                       onClick={() => navigate("inbox")}
                     >
-                      Choose a case <ArrowRight size={15} />
+                      Choose a case
+                      <ArrowRight size={15} />
                     </button>
                   }
                 />
-                <div className="process-strip">
-                  {[
-                    "Query source records",
-                    "Validate the explanation",
-                    "Review proposed actions",
-                  ].map((step, i) => (
-                    <span key={step}>
-                      <b>0{i + 1}</b>
-                      {step}
-                    </span>
-                  ))}
-                </div>
               </div>
-            ) : (
-              <>
-                <div className="run-meta-strip">
-                  <Status status={investigation.status} />
-                  <span className="meta-divider" />
-                  <span>
-                    <Clock3 size={13} /> Updated{" "}
-                    {date(investigation.updatedAt, true)}
-                  </span>
-                  <span className="run-model">
-                    {investigation.mode === "fixture"
-                      ? "Deterministic fixture"
-                      : `${investigation.provider || "Provider not recorded"} / ${investigation.model || "Model not recorded"}`}
-                  </span>
-                  <span className="mono subtle">{investigation.datasetId}</span>
-                </div>
-                <div className="investigation-grid">
-                  <aside className="case-rail">
-                    <div className="panel-kicker">CASE BRIEF</div>
-                    <div className="case-rail-vendor">
-                      <span className="vendor-avatar">
-                        {initials(workspaceCase?.vendor ?? "Payment")}
-                      </span>
-                      <h3>
-                        {workspaceCase?.vendor ?? investigation.paymentId}
-                      </h3>
-                    </div>
-                    <div className="case-amount">
-                      {workspaceCase
-                        ? money(workspaceCase.amount, workspaceCase.currency)
-                        : "—"}
-                    </div>
-                    <span className="muted small">Payment amount</span>
-                    <dl className="brief-list">
-                      <dt>Payment ID</dt>
-                      <dd className="mono">{investigation.paymentId}</dd>
-                      <dt>Transaction date</dt>
-                      <dd>{date(workspaceCase?.date)}</dd>
-                      <dt>Observed symptom</dt>
-                      <dd>
-                        {workspaceCase?.symptom ??
-                          "See source records for the reported exception."}
-                      </dd>
-                      <dt>Dataset snapshot</dt>
-                      <dd>
-                        {datasets.find(
-                          (item) => item.id === investigation.datasetId,
-                        )?.version ?? investigation.datasetId}
-                      </dd>
-                    </dl>
-                    <div className="rail-divider" />
-                    <div className="panel-kicker">INVESTIGATION SCOPE</div>
-                    <div className="scope-item">
-                      <Database size={15} />
-                      <span>{evidence.length} evidence records</span>
-                    </div>
-                    <div className="scope-item">
-                      <ShieldCheck size={15} />
-                      <span>
-                        {investigation.checks?.length ?? 0} validation checks
-                      </span>
-                    </div>
-                    <div className="scope-item">
-                      <Activity size={15} />
-                      <span>
-                        {investigation.events?.length ?? 0} recorded events
-                      </span>
-                    </div>
-                    <div className="rail-footnote">
-                      <ShieldCheck size={16} />
-                      <p>
-                        Findings are decision support. Proposed actions have not
-                        been executed.
-                      </p>
-                    </div>
-                  </aside>
-                  <section className="findings-panel">
-                    <div
-                      className="workspace-tabs"
-                      role="tablist"
-                      aria-label="Investigation details"
-                    >
-                      {(["findings", "checks", "activity"] as const).map(
-                        (key) => (
-                          <button
-                            role="tab"
-                            aria-selected={workspaceTab === key}
-                            className={workspaceTab === key ? "active" : ""}
-                            key={key}
-                            onClick={() => setWorkspaceTab(key)}
-                          >
-                            {key === "findings"
-                              ? "Findings"
-                              : key === "activity"
-                                ? "Activity log"
-                                : "Validation"}
-                            <span>
-                              {key === "findings"
-                                ? (investigation.findings?.length ?? 0)
-                                : key === "activity"
-                                  ? (investigation.events?.length ?? 0)
-                                  : (investigation.checks?.length ?? 0)}
-                            </span>
-                          </button>
-                        ),
-                      )}
-                    </div>
-                    {investigation.error && (
-                      <div className="inline-error">
-                        <XCircle size={16} />
-                        {investigation.error}
-                      </div>
-                    )}
-                    {workspaceTab === "findings" && (
-                      <div className="findings-content">
-                        {outcome && (
-                          <div
-                            className={`outcome-card ${outcome === "no_anomaly_supported" ? "clear" : outcome === "insufficient_evidence" ? "uncertain" : ""}`}
-                          >
-                            <span className="outcome-icon">
-                              {outcome === "no_anomaly_supported" ? (
-                                <CheckCheck size={21} />
-                              ) : outcome === "insufficient_evidence" ? (
-                                <HelpCircle size={21} />
-                              ) : (
-                                <Fingerprint size={21} />
-                              )}
-                            </span>
-                            <div>
-                              <div className="eyebrow">
-                                INVESTIGATION OUTCOME
-                              </div>
-                              <h2>
-                                {outcome === "anomaly_supported"
-                                  ? "Anomaly supported by evidence"
-                                  : outcome === "no_anomaly_supported"
-                                    ? "No anomaly supported"
-                                    : "More evidence is needed"}
-                              </h2>
-                              <p>
-                                {outcome === "anomaly_supported"
-                                  ? "Review the supporting records and checks before deciding on a next step."
-                                  : outcome === "no_anomaly_supported"
-                                    ? "The available evidence does not support the reported anomaly."
-                                    : "The available records do not support a conclusive determination."}
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                        {!investigation.findings?.length && (
-                          <Empty
-                            compact
-                            icon={
-                              running ? (
-                                <LoaderCircle className="spin" size={25} />
-                              ) : (
-                                <Search size={25} />
-                              )
-                            }
-                            title={
-                              running
-                                ? "Investigation is in progress"
-                                : "No findings recorded"
-                            }
-                            text={
-                              running
-                                ? "Results will appear as they are received from the server. You can inspect the recorded activity in the meantime."
-                                : "Inspect the activity log for the run outcome or start another case."
-                            }
-                          />
-                        )}
-                        {!!investigation.findings?.length && (
-                          <div className="content-section-label">
-                            <span>Evidence-backed findings</span>
-                            <small>SELECT A FINDING TO TRACE ITS SOURCES</small>
-                          </div>
-                        )}
-                        {investigation.findings?.map((finding, i) => (
-                          <article
-                            key={finding.id}
-                            className={`finding-card ${activeFinding === finding.id ? "active" : ""}`}
-                          >
-                            <button
-                              className="finding-main"
-                              onClick={() => {
-                                setActiveFinding(finding.id);
-                                setActiveEvidence(
-                                  finding.evidenceIds?.[0] ?? null,
-                                );
-                              }}
-                              aria-pressed={activeFinding === finding.id}
-                            >
-                              <span className="finding-index">
-                                {String(i + 1).padStart(2, "0")}
-                              </span>
-                              <div>
-                                <span className="category-label">
-                                  {label(finding.category)}
-                                </span>
-                                <h3>{finding.title}</h3>
-                                <p>{finding.summary}</p>
-                              </div>
-                              <ArrowUpRight size={15} />
-                            </button>
-                            {!!finding.contradictions?.length && (
-                              <div className="finding-caveat">
-                                <strong>
-                                  Alternative explanation considered
-                                </strong>
-                                {finding.contradictions.map((item, index) => (
-                                  <p key={index}>{item}</p>
-                                ))}
-                              </div>
-                            )}
-                            {!!finding.uncertainty?.length && (
-                              <div className="finding-caveat neutral">
-                                <strong>Uncertainty & limitations</strong>
-                                {finding.uncertainty.map((item, index) => (
-                                  <p key={index}>{item}</p>
-                                ))}
-                              </div>
-                            )}
-                            <div className="finding-sources">
-                              <span>
-                                <Layers3 size={12} /> Supporting records
-                              </span>
-                              {finding.evidenceIds?.length ? (
-                                finding.evidenceIds.map((id) => (
-                                  <button
-                                    className={
-                                      activeEvidence === id ? "selected" : ""
-                                    }
-                                    key={id}
-                                    onClick={() => {
-                                      setActiveFinding(finding.id);
-                                      setActiveEvidence(id);
-                                    }}
-                                  >
-                                    {id}
-                                    <ArrowUpRight size={10} />
-                                  </button>
-                                ))
-                              ) : (
-                                <small>No source IDs recorded</small>
-                              )}
-                            </div>
-                          </article>
-                        ))}
-                        <SourceTimeline investigation={investigation} />
-                      </div>
-                    )}
-                    {workspaceTab === "activity" && (
-                      <div className="activity-content">
-                        <div className="content-section-label">
-                          <span>Recorded execution</span>
-                          <small>
-                            {investigation.events?.length ?? 0} EVENTS
-                          </small>
-                        </div>
-                        <p className="section-description">
-                          Server-reported events only. No simulated progress or
-                          generated activity.
-                        </p>
-                        <RunDiagnostics investigation={investigation} />
-                        {investigation.events?.length ? (
-                          <ol className="event-timeline">
-                            {investigation.events.map((event) => (
-                              <li key={event.id}>
-                                <span className="event-dot">
-                                  <Circle size={8} />
-                                </span>
-                                <div className="event-header">
-                                  <strong>{label(event.type)}</strong>
-                                  <time>{date(event.at, true)}</time>
-                                </div>
-                                <p>{event.message}</p>
-                                {event.tool && (
-                                  <span className="tool-tag">{event.tool}</span>
-                                )}
-                              </li>
-                            ))}
-                          </ol>
-                        ) : (
-                          <Empty
-                            compact
-                            icon={<Activity size={25} />}
-                            title="No recorded events yet"
-                            text="Events appear when the server records a step."
-                          />
-                        )}
-                      </div>
-                    )}
-                    {workspaceTab === "checks" && (
-                      <div className="checks-content">
-                        <div className="content-section-label">
-                          <span>Validation checks</span>
-                          <small>
-                            {investigation.checks?.filter(
-                              (check) => check.status === "passed",
-                            ).length ?? 0}{" "}
-                            PASSED
-                          </small>
-                        </div>
-                        <p className="section-description">
-                          Checks validate the available evidence. An unknown
-                          result is not a pass.
-                        </p>
-                        {investigation.checks?.length ? (
-                          investigation.checks.map((check) => (
-                            <article className="check-card" key={check.id}>
-                              <span className={`check-status ${check.status}`}>
-                                {check.status === "passed" ? (
-                                  <CheckCircle2 size={19} />
-                                ) : check.status === "failed" ? (
-                                  <XCircle size={19} />
-                                ) : (
-                                  <HelpCircle size={19} />
-                                )}
-                              </span>
-                              <div>
-                                <div className="check-title">
-                                  <h3>{check.label}</h3>
-                                  <span>{label(check.status)}</span>
-                                </div>
-                                <p>{check.detail}</p>
-                                <div className="check-source-buttons">
-                                  {check.evidenceIds?.map((id) => (
-                                    <button
-                                      key={id}
-                                      onClick={() => setActiveEvidence(id)}
-                                    >
-                                      {id}
-                                      <ArrowUpRight size={11} />
-                                    </button>
-                                  ))}
-                                </div>
-                              </div>
-                            </article>
-                          ))
-                        ) : (
-                          <Empty
-                            compact
-                            icon={<ShieldCheck size={25} />}
-                            title="No checks recorded yet"
-                            text="Validation results will appear when available."
-                          />
-                        )}
-                      </div>
-                    )}
-                  </section>
-                  <EvidencePanel
-                    evidence={evidence}
-                    selected={chosenEvidence}
-                    activeId={activeEvidence}
-                    onSelect={setActiveEvidence}
-                    queries={investigation.queries ?? []}
-                  />
-                </div>
-                <section
-                  className="investigation-followup"
-                  aria-label="Next steps and human review"
-                >
-                  <div className="followup-actions">
-                    {!!investigation.actions?.length && (
-                      <>
-                        <div className="content-section-label">
-                          <span>Proposed next steps</span>
-                          <small>NOT EXECUTED</small>
-                        </div>
-                        {investigation.actions.map((action) => (
-                          <article className="action-card" key={action.id}>
-                            <span className="action-icon">
-                              <ArrowRight size={17} />
-                            </span>
-                            <div>
-                              <h3>{action.title}</h3>
-                              <p>{action.description}</p>
-                              {!!action.prerequisites?.length && (
-                                <div className="prerequisites">
-                                  <strong>Before proceeding</strong>
-                                  <ul>
-                                    {action.prerequisites.map((item, index) => (
-                                      <li key={index}>{item}</li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              )}
-                              <span
-                                className={`verification-note ${action.verified ? "verified" : ""}`}
-                              >
-                                {action.verified ? (
-                                  <ShieldCheck size={13} />
-                                ) : (
-                                  <Clock3 size={13} />
-                                )}{" "}
-                                {action.verified
-                                  ? "Proposal checks verified · not executed"
-                                  : "Proposal requires verification"}
-                              </span>
-                            </div>
-                          </article>
-                        ))}
-                      </>
-                    )}
-
-                    {!investigation.actions.length && (
-                      <p>
-                        {running
-                          ? "Proposed next steps will appear as the investigation runs."
-                          : "No proposed actions recorded."}
-                      </p>
-                    )}
-                    <div className="evidence-gaps">
-                      <h3>Evidence gaps & uncertainty</h3>
-                      {evidenceGaps.length ? (
-                        <ul>
-                          {evidenceGaps.map((gap) => (
-                            <li key={gap}>{gap}</li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p>
-                          {running
-                            ? "The investigation is still checking the available evidence."
-                            : "No additional evidence gaps recorded."}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="followup-review" id="investigation-review">
-                    <h2>Human review</h2>
-                    {investigation.review && (
-                      <div
-                        className={`review-receipt ${investigation.review.decision === "needs_changes" ? "needs-changes" : ""}`}
-                      >
-                        <FileCheck2 size={19} />
-                        <div>
-                          <strong>
-                            Human review ·{" "}
-                            {label(investigation.review.decision)}
-                          </strong>
-                          <small>
-                            Reviewed {date(investigation.review.at, true)}
-                          </small>
-                          <p>
-                            {investigation.review.notes ||
-                              "No additional review notes."}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    {!investigation.review && (
-                      <p className="review-pending">Awaiting human review</p>
-                    )}
-                    <p>
-                      Proposed actions have not been executed. Review the
-                      evidence before taking external action.
-                    </p>
-                    {TERMINAL.has(investigation.status) && (
-                      <div className="followup-controls">
-                        <button
-                          className="button primary"
-                          onClick={() => setModal("review")}
-                          disabled={investigation.status !== "completed"}
-                        >
-                          <FileCheck2 size={16} /> Review findings
-                        </button>
-                        <ExportMenu disabled={exporting} onExport={exportRun} />
-                      </div>
-                    )}
-                  </div>
-                </section>
-                <div className="workspace-bottom">
-                  <span>
-                    <Fingerprint size={14} />{" "}
-                    {investigation.mode === "fixture"
-                      ? "Fixture output — no live integration claim"
-                      : investigation.mode === "local-model"
-                        ? "Real model + local data — no Zetaris or PostgreSQL"
-                        : "Live run — verify provider and query provenance"}
-                  </span>
-                  <span>
-                    Snapshot:{" "}
-                    {runDataset
-                      ? `${runDataset.name} · ${runDataset.version}`
-                      : investigation.datasetId}
-                    <br />
-                    Cutoff: {date(runDataset?.asOf, true)} · Investigation
-                    updated: {date(investigation.updatedAt, true)}
-                  </span>
-                </div>
-              </>
-            )}
-          </div>
-        )}
+            </div>
+          ))}
 
         {page === "datasets" && (
           <div className="page datasets-page">
@@ -2271,6 +2034,119 @@ function App() {
           </div>
         )}
       </main>
+      {dialogKey && (
+        <InvestigationDialog
+          open={dialogOpen}
+          investigation={dialogRun}
+          payment={
+            dialogSession?.payment ??
+            cases.find(
+              (item) =>
+                item.datasetId === dialogRun?.datasetId &&
+                item.paymentId === dialogRun?.paymentId,
+            )
+          }
+          pending={dialogSession?.pending ?? true}
+          error={dialogSession?.error || dialogError}
+          stale={dialogSession?.stale}
+          animate={dialogSession?.fresh ?? false}
+          cancelling={dialogSession?.cancelling}
+          busy={reviewBusy}
+          onClose={closeInvestigationDialog}
+          onCancel={() => {
+            if (dialogKey) void investigationSessions.cancel(dialogKey);
+          }}
+          onRetry={() => {
+            if (dialogKey) investigationSessions.retry(dialogKey);
+          }}
+          onBack={() => {
+            if (activeEvidence) setActiveEvidence(null);
+            else setModal(null);
+          }}
+          subviewTitle={
+            activeEvidence ? "Original record" : "Review the investigation"
+          }
+          subview={
+            modal === "review" && dialogRun ? (
+              <>
+                <div hidden={!!activeEvidence}>
+                  <ReviewModal
+                    key={dialogRun.id}
+                    embedded
+                    initialNotes={reviewDraftNotes}
+                    investigation={dialogRun}
+                    onBusyChange={setReviewBusy}
+                    onEvidence={setActiveEvidence}
+                    onUpdated={investigationSessions.updateRun}
+                    onClose={() => setModal(null)}
+                    onReviewed={saveDialogReview}
+                  />
+                </div>
+                {activeEvidence && (
+                  <EvidenceDrawer
+                    embedded
+                    evidence={dialogRun.evidence}
+                    selected={dialogRun.evidence.find(
+                      (item) => item.id === activeEvidence,
+                    )}
+                    onSelect={setActiveEvidence}
+                    onClose={() => setActiveEvidence(null)}
+                    queries={dialogRun.queries}
+                    paymentId={dialogRun.paymentId}
+                  />
+                )}
+              </>
+            ) : undefined
+          }
+        >
+          {dialogRun && (
+            <InvestigationDetail
+              key={dialogRun.id}
+              presentation="dialog"
+              showProgress={false}
+              investigation={dialogRun}
+              payment={
+                dialogSession?.payment ??
+                cases.find(
+                  (item) =>
+                    item.datasetId === dialogRun.datasetId &&
+                    item.paymentId === dialogRun.paymentId,
+                )
+              }
+              dataset={dialogDataset}
+              updatedDataset={dialogUpdatedDataset}
+              stale={dialogSession?.stale ?? ""}
+              starting={dialogSession?.pending ?? false}
+              cancelling={dialogSession?.cancelling ?? false}
+              exporting={exporting}
+              activeEvidence={activeEvidence}
+              activeFinding={activeFinding}
+              onEvidence={setActiveEvidence}
+              onFinding={setActiveFinding}
+              onBack={closeInvestigationDialog}
+              onCancel={() => {
+                if (dialogKey) void investigationSessions.cancel(dialogKey);
+              }}
+              onUpdate={() => void updateDialogInvestigation()}
+              onReview={(notes) => {
+                setActiveEvidence(null);
+                setReviewDraftNotes(notes);
+                setModal("review");
+              }}
+              onReviewed={saveDialogReview}
+              runStatus={<Status status={dialogRun.status} />}
+              diagnostics={<RunDiagnostics investigation={dialogRun} />}
+              timeline={<SourceTimeline investigation={dialogRun} />}
+              exportControl={
+                <ExportMenu
+                  disabled={exporting}
+                  onExport={(format) => exportRun(format, dialogRun)}
+                />
+              }
+            />
+          )}
+        </InvestigationDialog>
+      )}
       {modal === "import" && (
         <ImportModal
           onClose={() => setModal(null)}
@@ -2287,16 +2163,15 @@ function App() {
           }}
         />
       )}
-      {modal === "review" && investigation && (
+      {modal === "review" && investigation && !dialogOpen && (
         <ReviewModal
+          key={investigation.id}
+          initialNotes={reviewDraftNotes}
           investigation={investigation}
           onClose={() => setModal(null)}
           onReviewed={(run) => {
-            setInvestigation(run);
+            savePageReview(run);
             setModal(null);
-            setNotice(
-              "Human review saved. Proposed actions remain unexecuted.",
-            );
           }}
         />
       )}
@@ -2711,165 +2586,6 @@ function ExportMenu({
   );
 }
 
-function EvidencePanel({
-  evidence,
-  selected,
-  activeId,
-  onSelect,
-  queries,
-}: {
-  evidence: Evidence[];
-  selected: Evidence | undefined;
-  activeId: string | null;
-  onSelect: (id: string) => void;
-  queries: unknown[];
-}) {
-  const [tab, setTab] = useState<"record" | "provenance">("record");
-  const query = queries.find(
-    (item) =>
-      item &&
-      typeof item === "object" &&
-      (("id" in item && item.id === selected?.queryId) ||
-        ("queryId" in item && item.queryId === selected?.queryId)),
-  ) as Record<string, unknown> | undefined;
-  return (
-    <aside className="evidence-panel">
-      <div className="evidence-panel-heading">
-        <span>
-          <Layers3 size={17} />
-          <h2>Source evidence</h2>
-        </span>
-        <small>{evidence.length}</small>
-      </div>
-      <p className="evidence-help">
-        Select a finding to inspect the records behind it.
-      </p>
-      {!selected ? (
-        <Empty
-          compact
-          icon={<BookOpen size={26} />}
-          title="Evidence will appear here"
-          text="Source records are displayed when an investigation retrieves them."
-        />
-      ) : (
-        <>
-          <label className="evidence-picker">
-            <span className="sr-only">Evidence record</span>
-            <select
-              value={selected.id}
-              onChange={(event) => onSelect(event.target.value)}
-            >
-              {evidence.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.id} · {item.table}
-                </option>
-              ))}
-            </select>
-            <ChevronDown size={13} />
-          </label>
-          <div className="source-record-top">
-            <span className="source-table">
-              <Database size={13} />
-              {selected.table}
-            </span>
-            <span className="record-id">{selected.recordId}</span>
-          </div>
-          <div className="evidence-subtabs">
-            <button
-              className={tab === "record" ? "active" : ""}
-              onClick={() => setTab("record")}
-            >
-              Record detail
-            </button>
-            <button
-              className={tab === "provenance" ? "active" : ""}
-              onClick={() => setTab("provenance")}
-            >
-              Provenance
-            </button>
-          </div>
-          {tab === "record" ? (
-            <div className="record-fields">
-              {Object.entries(selected.record ?? {}).map(([key, value]) => (
-                <div key={key}>
-                  <dt>{label(key)}</dt>
-                  <dd
-                    className={/id|number|reference/i.test(key) ? "mono" : ""}
-                  >
-                    {textValue(value)}
-                  </dd>
-                </div>
-              ))}
-              {!Object.keys(selected.record ?? {}).length && (
-                <p className="muted">No fields were recorded.</p>
-              )}
-            </div>
-          ) : (
-            <div className="provenance-details">
-              <dl>
-                <dt>Evidence ID</dt>
-                <dd>{selected.id}</dd>
-                <dt>Source table</dt>
-                <dd>{selected.table}</dd>
-                <dt>Source record</dt>
-                <dd>{selected.recordId}</dd>
-                <dt>Query ID</dt>
-                <dd>{selected.queryId || "Not recorded"}</dd>
-                <dt>Dataset version</dt>
-                <dd>{selected.datasetVersion || "Not recorded"}</dd>
-              </dl>
-              <strong className="small">Recorded query</strong>
-              <pre>
-                {query
-                  ? textValue(
-                      query.sql ?? query.statement ?? query.query ?? query,
-                    )
-                  : "No query text was recorded for this evidence."}
-              </pre>
-            </div>
-          )}
-          <div className="provenance-stamp">
-            <Fingerprint size={16} />
-            <div>
-              <strong>Source provenance</strong>
-              <small>
-                {selected.datasetVersion || "Version not recorded"} ·{" "}
-                {selected.queryId || "Query not recorded"}
-              </small>
-            </div>
-          </div>
-          <div className="evidence-record-list">
-            <div className="panel-kicker">ALL EVIDENCE</div>
-            {evidence.map((item) => (
-              <button
-                key={item.id}
-                className={
-                  (activeId ?? selected.id) === item.id ? "active" : ""
-                }
-                onClick={() => {
-                  onSelect(item.id);
-                  setTab("record");
-                }}
-              >
-                <span>
-                  <FileText size={14} />
-                  <span>
-                    <strong>{item.id}</strong>
-                    <small>
-                      {item.table} · {item.recordId}
-                    </small>
-                  </span>
-                </span>
-                <ChevronRight size={13} />
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-    </aside>
-  );
-}
-
 function IntegrationStatus({ health }: { health: Health | null }) {
   return (
     <section className="integration-section">
@@ -3214,17 +2930,29 @@ function MemoryPanel() {
 
 function ReviewModal({
   investigation,
+  initialNotes,
   onClose,
   onReviewed,
+  embedded = false,
+  onBusyChange,
+  onEvidence,
+  onUpdated,
 }: {
   investigation: Investigation;
+  initialNotes?: string;
   onClose: () => void;
   onReviewed: (run: Investigation) => void;
+  embedded?: boolean;
+  onBusyChange?: (busy: boolean) => void;
+  onEvidence?: (id: string) => void;
+  onUpdated?: (run: Investigation) => void;
 }) {
   const [decision, setDecision] = useState<"accepted" | "needs_changes">(
-    "accepted",
+    investigation.review?.decision ?? "accepted",
   );
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState(
+    initialNotes ?? investigation.review?.notes ?? "",
+  );
   const [approveMemory, setApproveMemory] = useState(false);
   const [existingMemories, setExistingMemories] = useState<ApprovedMemory[]>(
     [],
@@ -3300,6 +3028,7 @@ function ReviewModal({
           body: JSON.stringify({ retry }),
         },
       );
+      onUpdated?.(run);
       setDraft(run.memoryDraft);
       setDraftRequests(run.memoryDraftRequests || []);
       if (run.memoryDraft?.status === "ready")
@@ -3317,6 +3046,10 @@ function ReviewModal({
   }
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  useEffect(() => {
+    onBusyChange?.(busy || generating);
+    return () => onBusyChange?.(false);
+  }, [busy, generating, onBusyChange]);
   async function submit() {
     setBusy(true);
     setError("");
@@ -3348,13 +3081,8 @@ function ReviewModal({
       setBusy(false);
     }
   }
-  return (
-    <ModalShell
-      title="Review the investigation"
-      subtitle={`${investigation.paymentId} · Your decision is recorded with the run.`}
-      onClose={onClose}
-      busy={busy || generating}
-    >
+  const content = (
+    <>
       <div className="modal-body">
         <div className="review-options">
           <button
@@ -3427,6 +3155,12 @@ function ReviewModal({
                       <a
                         key={id}
                         href={`?investigation=${encodeURIComponent(investigation.id)}&evidence=${encodeURIComponent(id)}`}
+                        onClick={(event) => {
+                          if (embedded && onEvidence) {
+                            event.preventDefault();
+                            onEvidence(id);
+                          }
+                        }}
                       >
                         {id}{" "}
                       </a>
@@ -3542,6 +3276,23 @@ function ReviewModal({
           {busy ? "Saving review…" : "Save human review"}
         </button>
       </div>
+    </>
+  );
+  return embedded ? (
+    <section
+      aria-label="Review the investigation"
+      className="investigation-review-editor"
+    >
+      {content}
+    </section>
+  ) : (
+    <ModalShell
+      title="Review the investigation"
+      subtitle={`${investigation.paymentId} · Your decision is recorded with the run.`}
+      onClose={onClose}
+      busy={busy || generating}
+    >
+      {content}
     </ModalShell>
   );
 }

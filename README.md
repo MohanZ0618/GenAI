@@ -10,11 +10,11 @@ FinTrace is an evidence-based payment investigation workspace: a constrained age
 
 | 完成的工作 | 具体能力 | 主要实现 |
 |---|---|---|
-| 财务调查工作台 | 付款收件箱、搜索筛选、结果总览、证据详情、校验记录、活动轨迹、人工审核 | [App.tsx](apps/web/src/App.tsx)、[ResultsOverview.tsx](apps/web/src/ResultsOverview.tsx) |
+| 财务调查工作台 | 付款收件箱、搜索筛选、结果总览、实时调查过程、证据详情、校验记录、人工审核 | [App.tsx](apps/web/src/App.tsx)、[ResultsOverview.tsx](apps/web/src/ResultsOverview.tsx)、[InvestigationProgress.tsx](apps/web/src/InvestigationProgress.tsx) |
 | 数据导入与版本管理 | JSON bundle 或 manifest + 九张 CSV；类型、金额、日期、主键与关联校验；不可变版本、版本号复制 | [packages/data](packages/data/src/index.ts)、[store.ts](apps/api/src/store.ts) |
 | 有边界的调查 Agent | 六种固定取证工具、模型规划、反馈循环、取消、超时、恢复、结果复用、批量调查 | [service.ts](apps/api/src/service.ts) |
 | 独立财务校验 | 重复付款 F06、旧供应商信息 F11、缺少银行结算 F12、费用/金额对账 F14；正常及证据不足 | [verifier.ts](apps/api/src/verifier.ts) |
-| 多模式与模型接入 | fixture / local-model / live；OpenAI、NVIDIA、Meterless 统一适配；请求状态与用量轨迹 | [config.ts](apps/api/src/config.ts)、[model.ts](apps/api/src/integrations/model.ts) |
+| 多模式与模型接入 | fixture / local-model / live；OpenAI、DeepSeek、NVIDIA、Meterless 统一适配；请求状态与用量轨迹 | [config.ts](apps/api/src/config.ts)、[model.ts](apps/api/src/integrations/model.ts) |
 | 可审核的记忆 | 召回已批准经验；审核接受且明确批准内容后才能写入；命名空间隔离 | [memory.ts](apps/api/src/integrations/memory.ts) |
 | 报告与验证体系 | HTML / JSON / 证据 CSV 导出；单元、集成、浏览器回归；合成参考集评估 | [export.ts](apps/api/src/export.ts)、[tests](tests)、[evaluation](evaluation) |
 
@@ -151,6 +151,10 @@ npm run dev
 
 前端热更新：另开终端运行 `npm run dev:web`，其 API 代理指向 4310。应用默认绑定 localhost，本地状态写入忽略目录 `.local/`。这是本地原型，未实现生产级多用户认证和部署方案。
 
+在 **Case inbox** 点击 **Investigate / Start investigation**，或仅勾选一笔后点击 **Investigate selected (1)**，都会在原列表上打开调查窗口，保留当前筛选、分页和选中付款。勾选多笔仍使用批量队列。“调查过程”通过现有 1.5 秒轮询读取真实记录，逐条逐字显示工具、查询目的、结果摘要及对应证据。后台提前完成时会明确提示正在展示已记录过程；展示结束后自动收起，再在同一窗口呈现结论、发现、证据、人工审核、记忆编辑和导出。过程和状态统一显示英文；可以点击 **Skip to results** 跳过剩余动画，已完成记录可用 **Expand investigation activity** 展开查看。系统设置减少动态效果时直接显示文字，不提供单独的回放按钮。新文字增长时弹窗内容自动跟到最新位置；手动向上阅读会暂停，滚回底部或点击 **Jump to latest** 后恢复。每步的 **Evidence (N)** 默认收起，结果中的 **Evidence** 表格也可以折叠；查看证据或审核时保留阅读位置。
+
+关闭窗口只隐藏界面，调查仍在后台继续；“停止调查”才会发出取消请求。同一浏览器会话中关闭再打开可继续查看，已完成案例直接使用保存结果。失败或已停止时保留过程，由用户选择是否重新调查。窗口链接带有 `?investigation=…&view=dialog`，刷新可恢复调查；原来的 `?investigation=…` 详情页链接仍可用。该呈现不增加模型请求，也不改变财务判断规则；详细执行事件仍可在 Activity log 中查看。
+
 ### 三种运行模式
 
 | `FINTRACE_MODE` | 证据来源 | 规划方式 | 外部依赖 |
@@ -170,7 +174,21 @@ OPENAI_MODEL=gpt-4.1-mini
 FINTRACE_STORAGE_DIR=.local/manual-openai
 ```
 
+使用 DeepSeek 时，将模型配置改为下面这些字段，保留自己的数据目录配置：
+
+```dotenv
+FINTRACE_MODE=local-model
+MODEL_PROVIDER=deepseek
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+DEEPSEEK_MODEL=deepseek-flash
+DEEPSEEK_API_KEY=<your-local-key>
+```
+
+DeepSeek 使用独立适配器处理 JSON 输出，不能只替换 OpenAI 的 Base URL。当前模型名与接口请以 [DeepSeek 官方文档](https://api-docs.deepseek.com/) 为准。2026-10-27 已用独立合成正常案例完成一次真实 DeepSeek 调查，4 次模型请求成功；该结果验证连接及工作流，不代表真实业务准确率。私人凭证与验证轨迹不随源码交接。
+
 修改配置后重启服务，并清除终端中已有的 `FINTRACE_MODE=fixture` 覆盖值。`npm run preflight` 仅检查配置；`npm run preflight -- --live` 在模型模式下会发出真实、可能计费的请求。模型错误会明确失败，不会静默回退到 fixture。完整配置见 [INTEGRATIONS.md](docs/INTEGRATIONS.md)。
+
+`npm run dev` 是前台进程，使用期间保留该终端。交接时只提交 `.env.example`；队友在自己的 `.env.local` 中填写凭证并按相同命令启动。已保存的 fixture 结果不会转换成真实模型结果，验证新模型时选择未调查案例或明确更新调查。
 
 ## 验证与证据边界
 

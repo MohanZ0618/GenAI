@@ -25,6 +25,7 @@ import type {
   Mode,
   BatchStartResponse,
   BatchStartResult,
+  InvestigationSummary,
 } from "../../../packages/contracts/src/index.ts";
 
 export async function createApp(
@@ -225,6 +226,81 @@ export async function createApp(
         )
         .sort((a, b) => a.vendor.localeCompare(b.vendor)),
     };
+  });
+  app.get("/api/investigations", async () => {
+    const [runs, datasets] = await Promise.all([
+      store.runs(),
+      store.datasets(),
+    ]);
+    const sources = new Map(
+      datasets.map((dataset) => [
+        dataset.info.id,
+        {
+          dataset,
+          cases: new Map(
+            casesFor(dataset).map((payment) => [payment.paymentId, payment]),
+          ),
+        },
+      ]),
+    );
+    const investigations: InvestigationSummary[] = runs
+      .filter(
+        (run) =>
+          run.mode === mode &&
+          (run.memoryNamespace || "workspace") === "workspace",
+      )
+      .sort(
+        (a, b) =>
+          b.createdAt.localeCompare(a.createdAt) || a.id.localeCompare(b.id),
+      )
+      .map((run) => {
+        const source = sources.get(run.datasetId);
+        const payment = source?.cases.get(run.paymentId);
+        const savedPayment = run.evidence.find(
+          (item) =>
+            item.table === "payments" &&
+            item.record.payment_id === run.paymentId,
+        );
+        const vendorId = savedPayment?.record.vendor_id;
+        const savedVendor = vendorId
+          ? run.evidence.find(
+              (item) =>
+                item.table === "vendors" && item.record.vendor_id === vendorId,
+            )
+          : undefined;
+        return {
+          id: run.id,
+          datasetId: run.datasetId,
+          paymentId: run.paymentId,
+          status: run.status,
+          createdAt: run.createdAt,
+          updatedAt: run.updatedAt,
+          outcome: run.status === "completed" ? run.outcome : null,
+          vendor:
+            payment?.vendor ||
+            savedVendor?.record.vendor_name ||
+            vendorId ||
+            "Vendor unavailable",
+          question: payment?.symptom || "Payment reconciliation review",
+          datasetName: source?.dataset.info.name || run.datasetId,
+          datasetVersion:
+            source?.dataset.info.version ||
+            savedPayment?.datasetVersion ||
+            run.evidence[0]?.datasetVersion ||
+            "",
+          datasetRemoved: !!source?.dataset.info.removedAt,
+          ...(run.review
+            ? {
+                review: {
+                  decision: run.review.decision,
+                  notes: run.review.notes,
+                  at: run.review.at,
+                },
+              }
+            : {}),
+        };
+      });
+    return { investigations };
   });
   app.post("/api/investigations", async (request, reply) => {
     const input = startSchema.parse(request.body);

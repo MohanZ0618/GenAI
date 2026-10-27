@@ -1,13 +1,17 @@
 import { test, expect } from "@playwright/test";
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
 test("inbox, investigation, evidence, review, export and browser refresh", async ({
   page,
   request,
 }, testInfo) => {
-  const response = await request.get("/api/datasets");
-  const datasets = (await response.json()).datasets;
-  const packet = datasets.find(
-    (d: { name: string }) => d.name === "Review packet 001",
+  const bundle = JSON.parse(
+    await readFile(resolve("data/manual-test/valid-bundle.json"), "utf8"),
   );
+  bundle.manifest.name = `Workflow packet ${testInfo.testId}`;
+  const imported = await request.post("/api/datasets", { data: bundle });
+  expect(imported.ok()).toBe(true);
+  const { dataset: packet } = await imported.json();
   await page.goto("/");
   await expect(
     page.getByRole("heading", { name: "Make sense of every exception." }),
@@ -20,16 +24,42 @@ test("inbox, investigation, evidence, review, export and browser refresh", async
   await page
     .getByRole("button", { name: "Start investigation", exact: true })
     .click();
+  const investigationDialog = page.getByRole("dialog", {
+    name: "Payment investigation",
+    exact: true,
+  });
+  await expect(investigationDialog).toBeVisible();
+  await expect(page.locator("main")).toHaveAttribute("inert", "");
   await expect(page.locator(".run-status")).toHaveText(/Completed/, {
     timeout: 15000,
   });
+  const runId = new URL(page.url()).searchParams.get("investigation");
+  const savedRun = await (
+    await request.get(`/api/investigations/${runId}`)
+  ).json();
+  const finding =
+    savedRun.findings.find(
+      (item: { category: string }) =>
+        item.category !== "EVIDENCE_GAP" && item.category !== "NO_FAILURE",
+    ) ?? savedRun.findings[0];
   await expect(
-    page.getByRole("heading", { name: "Anomaly supported by evidence" }),
-  ).toBeVisible();
+    page
+      .getByRole("region", { name: "Investigation conclusion" })
+      .getByRole("heading", { level: 2 }),
+  ).toHaveText(finding.title);
   await page.locator(".finding-main").first().click();
   await page.screenshot({ path: testInfo.outputPath("workspace-clean.png") });
-  await page.getByRole("button", { name: "Provenance", exact: true }).click();
-  await expect(page.locator(".provenance-details")).toContainText("Query ID");
+  const drawer = investigationDialog.getByRole("region", {
+    name: "Original record",
+    exact: true,
+  });
+  await expect(page.getByRole("dialog")).toHaveCount(1);
+  await expect(
+    drawer.getByRole("heading", { name: "Query provenance" }),
+  ).toBeVisible();
+  await expect(drawer).toContainText("Query ID");
+  await page.keyboard.press("Escape");
+  await expect(drawer).toBeHidden();
   await page
     .getByRole("button", { name: "Review findings", exact: true })
     .click();

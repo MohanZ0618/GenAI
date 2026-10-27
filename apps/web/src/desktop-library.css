@@ -1,0 +1,818 @@
+/* Dataset library: desktop visual system, isolated from every other page. */
+.app-shell.fintrace-desktop .datasets-page {
+  --ink: #172b4d;
+  --muted: #5f6f85;
+  --line: #e3e8ef;
+  --teal: #295dcc;
+  min-width: 0;
+  max-width: none;
+  padding: 32px;
+  background: #f5f7fa;
+  color: #172b4d;
+  font-family: "Inter Variable", Inter, "Segoe UI", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  :where(button, a, input, select):focus-visible {
+  outline: 3px solid #93b4fc;
+  outline-offset: 3px;
+}
+
+.app-shell.fintrace-desktop .datasets-page .page-heading {
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 26px;
+}
+
+.app-shell.fintrace-desktop .datasets-page .eyebrow {
+  margin-bottom: 9px;
+  color: #5f6f85;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.7px;
+}
+
+.app-shell.fintrace-desktop .datasets-page .page-heading h1 {
+  margin: 0 0 8px;
+  color: #172b4d;
+  font-size: 26px;
+  font-weight: 650;
+  line-height: 1.3;
+  letter-spacing: -0.6px;
+}
+
+.app-shell.fintrace-desktop .datasets-page .page-heading p {
+  margin: 0;
+  color: #5f6f85;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.app-shell.fintrace-desktop .datasets-page .button {
+  min-height: 40px;
+  padding: 9px 13px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 550;
+  line-height: 1.4;
+  box-shadow: none;
+  transform: none;
+}
+
+.app-shell.fintrace-desktop .datasets-page .button.primary {
+  border-color: #295dcc;
+  background: #295dcc;
+  color: #fff;
+  box-shadow: 0 1px 2px #172b4d0d;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  .button.primary:hover:not(:disabled) {
+  border-color: #1d4ed8;
+  background: #1d4ed8;
+  transform: none;
+}
+
+.app-shell.fintrace-desktop .datasets-page .button.secondary {
+  border-color: #dce3ed;
+  background: #fff;
+  color: #40516b;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  .button.secondary:hover:not(:disabled) {
+  border-color: #b6c7e2;
+  background: #f7faff;
+  transform: none;
+}
+
+.app-shell.fintrace-desktop .datasets-page .button:disabled {
+  box-shadow: none;
+  transform: none;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-progress-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin-bottom: 24px;
+  border: 1px solid #e3e8ef;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-progress-stat {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 20px 24px;
+  border: 0;
+  border-right: 1px solid #e9edf3;
+  border-radius: 0;
+  background: transparent;
+  color: #5f6f85;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-progress-stat:last-child {
+  border-right: 0;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  .dataset-progress-stat
+  > span:first-child {
+  color: #52637c;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-progress-stat strong {
+  color: #172b4d;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.7px;
+  font-variant-numeric: tabular-nums;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-progress-stat small {
+  margin-left: 3px;
+  color: #5f6f85;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  .dataset-progress-stat
+  > span:last-child {
+  color: #5f6f85;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-library-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  .dataset-library-search.search-field {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: min(520px, 70%);
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid #dce3ed;
+  border-radius: 6px;
+  background: #fff;
+  color: #5f6f85;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  .dataset-library-search.search-field:focus-within {
+  border-color: #8eaff1;
+  box-shadow: 0 0 0 3px #295dcc0a;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-library-search > svg {
+  width: 17px;
+  height: 17px;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  .dataset-library-search.search-field
+  input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #34445e;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  .dataset-library-search
+  input::placeholder {
+  color: #5f6f85;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-library-search button {
+  display: inline-grid;
+  place-items: center;
+  padding: 1px;
+  border: 0;
+  background: transparent;
+  color: #5f6f85;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-match-count {
+  color: #5f6f85;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.app-shell.fintrace-desktop .datasets-page .resource-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  min-height: 44px;
+  padding: 0 0 15px;
+  margin: 0 0 18px;
+  border: 0;
+  border-bottom: 1px solid #e1e7ef;
+  border-radius: 0;
+  background: transparent;
+  color: #5f6f85;
+  font-size: 12px;
+}
+
+.app-shell.fintrace-desktop .datasets-page .resource-toolbar label {
+  gap: 8px;
+  color: #52637c;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.app-shell.fintrace-desktop .datasets-page .resource-toolbar > span {
+  margin-right: auto;
+  color: #5f6f85;
+}
+
+.app-shell.fintrace-desktop .datasets-page .resource-toolbar .button {
+  min-height: 32px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  :where(.resource-toolbar input, .resource-selection input) {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: #295dcc;
+}
+
+.app-shell.fintrace-desktop .datasets-page .resource-notice {
+  gap: 12px;
+  padding: 12px 14px;
+  margin: 0 0 18px;
+  border: 1px solid #d8e8df;
+  border-radius: 6px;
+  background: #f1f8f4;
+  color: #3b7459;
+  font-size: 13px;
+}
+
+.app-shell.fintrace-desktop .datasets-page .resource-notice .button {
+  min-height: 30px;
+  padding: 5px 9px;
+  font-size: 12px;
+}
+
+.app-shell.fintrace-desktop .datasets-page .resource-remove {
+  color: #a25752;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-explainer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  margin-bottom: 22px;
+  border: 1px solid #e0e7f2;
+  border-radius: 6px;
+  background: #f0f4fb;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-explainer > span {
+  display: flex;
+  color: #7892b7;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-explainer > span > svg {
+  width: 22px;
+  height: 22px;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-explainer > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-explainer h3 {
+  margin: 0 0 4px;
+  color: #40516b;
+  font-size: 14px;
+  font-weight: 550;
+  line-height: 1.5;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-explainer p {
+  max-width: 780px;
+  margin: 0;
+  color: #5f6f85;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-explainer .button {
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 8px 11px;
+  background: #ffffffb3;
+  font-size: 12px;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 20px;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #e1e7ef;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 2px #172b4d03;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-card:hover {
+  border-color: #b9c9e1;
+  box-shadow: 0 2px 8px #172b4d06;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-card.active {
+  border-color: #a7c0f2;
+  box-shadow: 0 0 0 1px #dbe6fc;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  .dataset-card:has(.resource-selection input:checked) {
+  border-color: #92b3f2;
+  box-shadow: 0 0 0 1px #c8d9fa;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  .dataset-card:has(.dataset-open-button:focus-visible) {
+  outline: 3px solid #93b4fc;
+  outline-offset: 3px;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 10px;
+  min-height: 54px;
+}
+
+.app-shell.fintrace-desktop .datasets-page .resource-selection {
+  flex-shrink: 0;
+  padding: 8px 0 8px 0;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 7px;
+  margin-right: auto;
+  border: 1px solid #e4eaf4;
+  border-radius: 6px;
+  background: #f4f7fc;
+  color: #7892b7;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-card-badges {
+  display: grid;
+  justify-items: end;
+  gap: 5px;
+  min-width: 0;
+  text-align: right;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-progress-badge {
+  padding: 3px 7px;
+  border: 1px solid #e4e9f0;
+  border-radius: 4px;
+  background: #f5f7fa;
+  color: #5f6f85;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-progress-badge.completed {
+  border-color: #d4e8dc;
+  background: #eff8f2;
+  color: #3b7b58;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-progress-badge.progress {
+  border-color: #d8e4fc;
+  background: #f0f5ff;
+  color: #4268a7;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-progress-detail {
+  color: #5f6f85;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-selected {
+  gap: 4px;
+  color: #4268a7;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-selected svg {
+  width: 13px;
+  height: 13px;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-card h2 {
+  min-height: 44px;
+  margin: 17px 0 0;
+  color: #263a57;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.2px;
+  overflow-wrap: anywhere;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-identifiers {
+  display: grid;
+  gap: 0;
+  margin-top: 15px;
+  border: 1px solid #e7ebf2;
+  border-radius: 5px;
+  background: #fafbfd;
+  overflow: hidden;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-identifier-copy {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 5px 8px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 0;
+  border-bottom: 1px solid #e7ebf2;
+  border-radius: 0;
+  background: transparent;
+  color: #52637c;
+  font-size: 12px;
+  text-align: left;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-identifier-copy:last-child {
+  border-bottom: 0;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-identifier-copy:hover {
+  background: #f1f5fc;
+  color: #295dcc;
+}
+
+.app-shell.fintrace-desktop .datasets-page .version-copy-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  color: #5f6f85;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.app-shell.fintrace-desktop .datasets-page .version-copy-label svg {
+  width: 13px;
+  height: 13px;
+  color: #8698b1;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-identifier-copy code {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin: 0;
+  color: #52637c;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.65;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.app-shell.fintrace-desktop .datasets-page .version-copy-hint {
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+  color: #5b7298;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-properties {
+  display: grid;
+  gap: 11px;
+  padding: 16px 0;
+  margin: 0 0 16px;
+  border: 0;
+  border-bottom: 1px solid #edf0f5;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-properties > span {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  color: #5f6f85;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-properties strong {
+  color: #40516b;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  .dataset-card
+  > .dataset-open-button {
+  width: 100%;
+  min-height: 38px;
+  margin-top: auto;
+  padding: 9px 10px;
+  border-color: #dce3ed;
+  border-radius: 5px;
+  background: #fff;
+  color: #52637c;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: normal;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  .dataset-card
+  > .dataset-open-button.soft {
+  border-color: #d7e3fa;
+  background: #f0f5ff;
+  color: #3c69bb;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  .dataset-open-button
+  > svg:last-child {
+  margin-left: auto;
+}
+
+.app-shell.fintrace-desktop .datasets-page .dataset-card > .resource-remove {
+  align-self: center;
+  width: auto;
+  min-height: 30px;
+  padding: 5px 8px;
+  margin-top: 9px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #a26762;
+  font-size: 12px;
+  font-weight: 400;
+  box-shadow: none;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  .dataset-card
+  > .resource-remove:hover:not(:disabled) {
+  background: #fff6f5;
+  color: #a14f48;
+}
+
+.app-shell.fintrace-desktop .datasets-page .import-format-note {
+  display: flex;
+  gap: 11px;
+  padding: 20px 2px;
+  margin: 14px 0 8px;
+  border: 0;
+  border-bottom: 1px solid #e1e7ef;
+  border-radius: 0;
+  background: transparent;
+  color: #7f92ae;
+}
+
+.app-shell.fintrace-desktop .datasets-page .import-format-note strong {
+  color: #52637c;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.app-shell.fintrace-desktop .datasets-page .import-format-note p {
+  max-width: 900px;
+  margin: 5px 0 0;
+  color: #5f6f85;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.app-shell.fintrace-desktop .datasets-page .integration-section {
+  padding-top: 12px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  .integration-section
+  .section-header {
+  align-items: center;
+  gap: 16px;
+  padding: 0 0 16px;
+  border: 0;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  .integration-section
+  .section-header
+  h2 {
+  margin: 0 0 5px;
+  color: #52637c;
+  font-size: 14px;
+  font-weight: 550;
+  letter-spacing: 0;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  .integration-section
+  .section-header
+  p {
+  margin: 0;
+  color: #5f6f85;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.app-shell.fintrace-desktop .datasets-page .version-tag {
+  max-width: none;
+  padding: 3px 7px;
+  border-color: #e1e7ef;
+  border-radius: 4px;
+  background: #fff;
+  color: #5f6f85;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.app-shell.fintrace-desktop .datasets-page .integration-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 24px;
+  padding: 0;
+}
+
+.app-shell.fintrace-desktop .datasets-page .integration-item {
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 13px 0;
+  border: 0;
+  border-top: 1px solid #e6eaf1;
+  border-radius: 0;
+}
+
+.app-shell.fintrace-desktop .datasets-page .integration-item > div {
+  min-width: 0;
+}
+
+.app-shell.fintrace-desktop .datasets-page .integration-logo {
+  color: #8ba0bf;
+}
+
+.app-shell.fintrace-desktop .datasets-page .integration-item strong {
+  color: #52637c;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.app-shell.fintrace-desktop .datasets-page .integration-item small {
+  margin-top: 4px;
+  color: #5f6f85;
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.app-shell.fintrace-desktop .datasets-page .integration-state {
+  flex-shrink: 0;
+  max-width: 38%;
+  color: #5f6f85;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.app-shell.fintrace-desktop
+  .datasets-page
+  :where(.empty-state, .loading-state) {
+  padding: 34px 20px;
+  border-color: #e3e8ef;
+  color: #5f6f85;
+  font-size: 14px;
+}
+
+.app-shell.fintrace-desktop .datasets-page .empty-state h3 {
+  color: #40516b;
+  font-size: 16px;
+}
+
+.app-shell.fintrace-desktop .datasets-page .empty-state p {
+  color: #5f6f85;
+  font-size: 14px;
+}
+
+.app-shell.fintrace-desktop .datasets-page .inline-error {
+  color: #a25752;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+@media (min-width: 1360px) {
+  .app-shell.fintrace-desktop .datasets-page .dataset-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1250px) {
+  .app-shell.fintrace-desktop .datasets-page {
+    padding: 28px;
+  }
+
+  .app-shell.fintrace-desktop .datasets-page .dataset-progress-stat {
+    padding: 18px 20px;
+  }
+
+  .app-shell.fintrace-desktop .datasets-page .dataset-explainer {
+    gap: 12px;
+    padding: 15px 16px;
+  }
+
+  .app-shell.fintrace-desktop .datasets-page .dataset-card {
+    padding: 18px;
+  }
+}

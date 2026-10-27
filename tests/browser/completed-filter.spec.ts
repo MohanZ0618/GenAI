@@ -1,9 +1,35 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import type {
   Case,
   Dataset,
   Investigation,
 } from "../../packages/contracts/src/index";
+
+async function completedDialog(page: Page) {
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toHaveCount(1);
+  await expect(dialog.locator(".run-status")).toHaveText(/Completed/, {
+    timeout: 15000,
+  });
+  await expect(page).toHaveURL(/[?&]view=dialog(?:&|$)/);
+}
+
+async function caseInbox(page: Page) {
+  const close = page.getByRole("button", {
+    name: "Close investigation",
+    exact: true,
+  });
+  if (new URL(page.url()).searchParams.get("view") === "dialog")
+    await expect(close).toBeVisible({ timeout: 15000 });
+  if (await close.isVisible()) {
+    await close.click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+  }
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("button", { name: /^Case inbox/ })
+    .click();
+}
 
 test("completing three of eight cases updates filters and survives reload", async ({
   page,
@@ -103,11 +129,11 @@ test("completing three of eight cases updates filters and survives reload", asyn
         exact: true,
       })
       .click();
-    await expect(page.locator(".run-status")).toHaveText(/Completed/);
+    await completedDialog(page);
     await expect(
       page.getByRole("region", { name: "Next steps and human review" }),
     ).toContainText("Awaiting human review");
-    await page.getByRole("button", { name: "Case inbox", exact: true }).click();
+    await caseInbox(page);
     await expect(unreviewed.locator(".filter-count")).toHaveText(
       String(7 - index),
     );
@@ -134,10 +160,15 @@ test("completing three of eight cases updates filters and survives reload", asyn
   await expect(reviewed.locator(".filter-count")).toHaveText("1");
   await expect(unreviewed.locator(".filter-count")).toHaveText("0");
   await expect(rows).toHaveCount(1);
-
+  // Reopen the saved result explicitly so refresh verifies dialog deep-link
+  // recovery as well as the completed/unreviewed counts.
+  await page
+    .getByRole("button", { name: "View result PAY_FILTER_0", exact: true })
+    .click();
+  await completedDialog(page);
   await page.reload();
-  await expect(page.locator(".run-status")).toHaveText(/Completed/);
-  await page.getByRole("button", { name: "Case inbox", exact: true }).click();
+  await completedDialog(page);
+  await caseInbox(page);
   await expect(unreviewed.locator(".filter-count")).toHaveText("5");
   await expect(reviewed.locator(".filter-count")).toHaveText("3");
   await reviewed.click();
@@ -150,4 +181,5 @@ test("completing three of eight cases updates filters and survives reload", asyn
   expect([...runs.values()].every((run) => run.review === undefined)).toBe(
     true,
   );
+  expect(runs.size).toBe(3);
 });

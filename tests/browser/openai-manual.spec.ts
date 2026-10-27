@@ -1,6 +1,37 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
+
+async function completedDialog(page: Page) {
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toHaveCount(1);
+  const status = dialog.locator(".run-status");
+  const skip = dialog.getByRole("button", {
+    name: "Skip to results",
+    exact: true,
+  });
+  await expect(status.or(skip)).toBeVisible({ timeout: 15000 });
+  if (await skip.isVisible()) await skip.click();
+  await expect(status).toHaveText(/Completed/, { timeout: 15000 });
+  await expect(page).toHaveURL(/[?&]view=dialog(?:&|$)/);
+}
+
+async function caseInbox(page: Page) {
+  const close = page.getByRole("button", {
+    name: "Close investigation",
+    exact: true,
+  });
+  if (new URL(page.url()).searchParams.get("view") === "dialog")
+    await expect(close).toBeVisible({ timeout: 15000 });
+  if (await close.isVisible()) {
+    await close.click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+  }
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("button", { name: /^Case inbox/ })
+    .click();
+}
 
 test("manual package exposes eight cases, cutoff checks and Chinese approved memory", async ({
   page,
@@ -37,42 +68,55 @@ test("manual package exposes eight cases, cutoff checks and Chinese approved mem
         exact: true,
       })
       .click();
-    await expect(page.locator(".run-status")).toHaveText(/Completed/, {
-      timeout: 15000,
-    });
-    const title =
-      code === "FUTURE_EVENT"
-        ? "More evidence is needed"
-        : ["NORMAL", "CONTEXT_TAIL"].includes(code)
-          ? "No anomaly supported"
-          : "Anomaly supported by evidence";
+    await completedDialog(page);
+    const titles: Record<string, string> = {
+      NORMAL: "The evidence supports normal processing",
+      CONTEXT_TAIL: "The evidence supports normal processing",
+      DUP: "The invoice was paid more than once",
+      STALE: "Superseded vendor instructions caused a return",
+      MISSING: "Payment did not reach bank settlement",
+      FEE: "Settlement fee has no supporting journal",
+      FUTURE_FEE: "Settlement fee has no supporting journal",
+      FUTURE_EVENT: "The available evidence does not establish a cause",
+    };
     await expect(
-      page.getByRole("heading", { name: title, exact: true }),
-    ).toBeVisible();
+      page
+        .getByRole("dialog")
+        .getByRole("region", { name: "Investigation conclusion" })
+        .getByRole("heading", { level: 2 }),
+    ).toHaveText(titles[code]);
     if (code.startsWith("FUTURE_")) {
-      await page.getByRole("tab", { name: /Validation/ }).click();
-      await expect(page.locator(".checks-content")).toContainText(
+      const validation = page
+        .getByRole("dialog")
+        .locator("details[aria-label='Validation']");
+      await validation.locator("summary").click();
+      await expect(validation.locator(".checks-content")).toContainText(
         "Future evidence excluded from the assessment",
       );
     }
-    await page.getByRole("tab", { name: /Activity log/ }).click();
+    await page
+      .getByRole("dialog")
+      .locator("details[aria-label='Activity log'] > summary")
+      .click();
     await expect(
       page.getByRole("region", { name: "Run diagnostics" }),
     ).toContainText("No model API calls in fixture mode.");
-    if (code !== "CONTEXT_TAIL")
-      await page
-        .getByRole("button", { name: "Case inbox", exact: true })
-        .click();
+    if (code !== "CONTEXT_TAIL") await caseInbox(page);
   }
   await page
     .getByRole("button", { name: "Review findings", exact: true })
     .click();
+  await expect(page.getByRole("dialog")).toHaveCount(1);
+  await expect(
+    page.getByRole("dialog", { name: "Review the investigation", exact: true }),
+  ).toBeVisible();
   await page.getByLabel("Approve a reusable memory").check();
   await page
     .getByRole("textbox", { name: "Confirmed lesson", exact: true })
     .fill("请先检查供应商变更历史，再复核付款分录。");
   await page.getByRole("button", { name: "Save human review" }).click();
-  await page.getByRole("button", { name: "Case inbox", exact: true }).click();
+  await expect(page.locator(".review-receipt")).toContainText("Accepted");
+  await caseInbox(page);
   const revisedBundle = JSON.parse(
     await readFile(
       resolve("data/openai-manual/04-revised-bundle.json"),
@@ -92,10 +136,11 @@ test("manual package exposes eight cases, cutoff checks and Chinese approved mem
       exact: true,
     })
     .click();
-  await expect(page.locator(".run-status")).toHaveText(/Completed/, {
-    timeout: 15000,
-  });
-  await page.getByRole("tab", { name: /Activity log/ }).click();
+  await completedDialog(page);
+  await page
+    .getByRole("dialog")
+    .locator("details[aria-label='Activity log'] > summary")
+    .click();
   await expect(
     page.getByRole("region", { name: "Run diagnostics" }),
   ).toContainText("请先检查供应商变更历史，再复核付款分录。");
