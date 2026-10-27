@@ -1,0 +1,825 @@
+{
+  "startedAt": "2026-10-27T22:01:48.167Z",
+  "mode": "live",
+  "provider": "meterless",
+  "model": "gemini-3.5-flash-lite",
+  "syntheticDataOnly": true,
+  "namespace": "workspace",
+  "runs": [
+    {
+      "label": "normal",
+      "passed": true,
+      "expectedOutcome": "no_anomaly_supported",
+      "expectedCategory": "NO_FAILURE",
+      "runId": "run-20c7b6e1-3cb5-43db-ad6e-7555fc9445d8",
+      "datasetId": "ds-b3184dbfd1dc3cda",
+      "paymentId": "PAY_DEMO_NORMAL",
+      "status": "completed",
+      "mode": "live",
+      "provider": "meterless",
+      "model": "gemini-3.5-flash-lite",
+      "outcome": "no_anomaly_supported",
+      "categories": [
+        "NO_FAILURE"
+      ],
+      "citationsValid": true,
+      "successfulQueries": 5,
+      "queryCount": 5,
+      "queryTables": [
+        "payments",
+        "invoices",
+        "vendors",
+        "payment_allocations",
+        "bank_transactions",
+        "gl_entries",
+        "vendor_change_log"
+      ],
+      "successfulModelRequests": 4,
+      "returnedModels": [
+        "gemini-3.5-flash-lite"
+      ],
+      "totalTokens": 9380,
+      "memoryIds": [],
+      "durationMs": 27257,
+      "review": null,
+      "runtimeProvenance": {
+        "passed": true,
+        "successfulRequests": 4,
+        "correlatedSuccessfulRequests": 4,
+        "winnerModels": [
+          "gemini-3.5-flash-lite"
+        ],
+        "winningProviders": [
+          "google"
+        ],
+        "failedAttempts": 0
+      }
+    },
+    {
+      "label": "partial-coverage",
+      "passed": true,
+      "expectedOutcome": "insufficient_evidence",
+      "expectedCategory": "EVIDENCE_GAP",
+      "runId": "run-202402fd-745a-4310-ae24-f56379bc1045",
+      "datasetId": "ds-839517a09adcac1b",
+      "paymentId": "PAY_DEMO_NORMAL",
+      "status": "completed",
+      "mode": "live",
+      "provider": "meterless",
+      "model": "gemini-3.5-flash-lite",
+      "outcome": "insufficient_evidence",
+      "categories": [
+        "EVIDENCE_GAP"
+      ],
+      "citationsValid": true,
+      "successfulQueries": 5,
+      "queryCount": 5,
+      "queryTables": [
+        "payments",
+        "invoices",
+        "vendors",
+        "payment_allocations",
+        "bank_transactions",
+        "gl_entries",
+        "vendor_change_log"
+      ],
+      "successfulModelRequests": 4,
+      "returnedModels": [
+        "gemini-3.5-flash-lite"
+      ],
+      "totalTokens": 9355,
+      "memoryIds": [],
+      "durationMs": 21405,
+      "review": null,
+      "runtimeProvenance": {
+        "passed": true,
+        "successfulRequests": 4,
+        "correlatedSuccessfulRequests": 4,
+        "winnerModels": [
+          "gemini-3.5-flash-lite"
+        ],
+        "winningProviders": [
+          "google"
+        ],
+        "failedAttempts": 0
+      }
+    },
+    {
+      "label": "independent-anomaly-lesson",
+      "passed": true,
+      "expectedOutcome": "anomaly_supported",
+      "expectedCategory": "F06",
+      "runId": "run-0eed9ff7-31f3-4ad9-ac28-15d4c1de1dc0",
+      "datasetId": "ds-b447d62667a8aed3",
+      "paymentId": "PAY_NIGHTSHIFT_LESSON_DUP",
+      "status": "completed",
+      "mode": "live",
+      "provider": "meterless",
+      "model": "gemini-3.5-flash-lite",
+      "outcome": "anomaly_supported",
+      "categories": [
+        "F06"
+      ],
+      "citationsValid": true,
+      "successfulQueries": 5,
+      "queryCount": 5,
+      "queryTables": [
+        "payments",
+        "invoices",
+        "vendors",
+        "payment_allocations",
+        "bank_transactions",
+        "gl_entries",
+        "vendor_change_log"
+      ],
+      "successfulModelRequests": 4,
+      "returnedModels": [
+        "gemini-3.5-flash-lite"
+      ],
+      "totalTokens": 12111,
+      "memoryIds": [],
+      "durationMs": 20938,
+      "review": null,
+      "runtimeProvenance": {
+        "passed": true,
+        "successfulRequests": 4,
+        "correlatedSuccessfulRequests": 4,
+        "winnerModels": [
+          "gemini-3.5-flash-lite"
+        ],
+        "winningProviders": [
+          "google"
+        ],
+        "failedAttempts": 0
+      }
+    },
+    {
+      "label": "target-anomaly-with-recall",
+      "passed": true,
+      "expectedOutcome": "anomaly_supported",
+      "expectedCategory": "F06",
+      "runId": "run-2a344a72-dfe6-4aca-9189-e55b717b67b4",
+      "datasetId": "ds-b3184dbfd1dc3cda",
+      "paymentId": "PAY_DEMO_DUP",
+      "status": "completed",
+      "mode": "live",
+      "provider": "meterless",
+      "model": "gemini-3.5-flash-lite",
+      "outcome": "anomaly_supported",
+      "categories": [
+        "F06"
+      ],
+      "citationsValid": true,
+      "successfulQueries": 5,
+      "queryCount": 5,
+      "queryTables": [
+        "payments",
+        "invoices",
+        "vendors",
+        "payment_allocations",
+        "bank_transactions",
+        "gl_entries",
+        "vendor_change_log"
+      ],
+      "successfulModelRequests": 4,
+      "returnedModels": [
+        "gemini-3.5-flash-lite"
+      ],
+      "totalTokens": 13669,
+      "memoryIds": [
+        "mem-1"
+      ],
+      "durationMs": 21995,
+      "review": null,
+      "runtimeProvenance": {
+        "passed": true,
+        "successfulRequests": 4,
+        "correlatedSuccessfulRequests": 4,
+        "winnerModels": [
+          "gemini-3.5-flash-lite"
+        ],
+        "winningProviders": [
+          "google"
+        ],
+        "failedAttempts": 0
+      }
+    }
+  ],
+  "lifecycle": [
+    {
+      "stage": "generate-edit-approve",
+      "sourceRunId": "run-0eed9ff7-31f3-4ad9-ac28-15d4c1de1dc0",
+      "draftId": "draft-a4cbdd86-aa34-456e-8bae-f9865addc1ec",
+      "draftProvider": "meterless",
+      "draftModel": "gemini-3.5-flash-lite",
+      "draftRequestCount": 1,
+      "runtimeProvenance": {
+        "passed": true,
+        "successfulRequests": 1,
+        "correlatedSuccessfulRequests": 1,
+        "winnerModels": [
+          "gemini-3.5-flash-lite"
+        ],
+        "winningProviders": [
+          "google"
+        ],
+        "failedAttempts": 0
+      },
+      "approvedMemoryId": "mem-1"
+    },
+    {
+      "stage": "reopen-and-check-persistence",
+      "passed": true,
+      "sourceRunId": "run-0eed9ff7-31f3-4ad9-ac28-15d4c1de1dc0",
+      "memoryId": "mem-1"
+    }
+  ],
+  "runtimeCorrelations": [
+    {
+      "runId": "run-20c7b6e1-3cb5-43db-ad6e-7555fc9445d8",
+      "operation": "investigation",
+      "traceId": "2df17b31-81a2-434f-9cac-796fbc545da5",
+      "applicationStatus": "succeeded",
+      "applicationProvider": "meterless",
+      "requestedModel": "gemini-3.5-flash-lite",
+      "returnedModel": "gemini-3.5-flash-lite",
+      "httpRequestId": null,
+      "meterlessDecisionId": "req_khdk1ley",
+      "meterlessRoutedModel": "gemini-3.5-flash-lite",
+      "meterlessWinningProvider": "google",
+      "lookupSucceeded": true,
+      "correlationValid": true,
+      "httpStatus": 200,
+      "explanation": {
+        "decision_id": "req_khdk1ley",
+        "request_id": "req_khdk1ley",
+        "selected_strategy": "race",
+        "winner": "gemini-3.5-flash-lite",
+        "policy_version": "v8",
+        "app": "fintrace",
+        "mode": "auto",
+        "estimated_cost": 0.000602,
+        "estimated_savings": 0,
+        "reflex_ms": 0,
+        "candidate_sources": [
+          "gemini-3.5-flash-lite"
+        ]
+      }
+    },
+    {
+      "runId": "run-20c7b6e1-3cb5-43db-ad6e-7555fc9445d8",
+      "operation": "investigation",
+      "traceId": "e6d02bc1-32c7-4d56-903c-06d6883c8efc",
+      "applicationStatus": "succeeded",
+      "applicationProvider": "meterless",
+      "requestedModel": "gemini-3.5-flash-lite",
+      "returnedModel": "gemini-3.5-flash-lite",
+      "httpRequestId": null,
+      "meterlessDecisionId": "req_2ppzur3w",
+      "meterlessRoutedModel": "gemini-3.5-flash-lite",
+      "meterlessWinningProvider": "google",
+      "lookupSucceeded": true,
+      "correlationValid": true,
+      "httpStatus": 200,
+      "explanation": {
+        "decision_id": "req_2ppzur3w",
+        "request_id": "req_2ppzur3w",
+        "selected_strategy": "race",
+        "winner": "gemini-3.5-flash-lite",
+        "policy_version": "v8",
+        "app": "fintrace",
+        "mode": "auto",
+        "estimated_cost": 0.000731,
+        "estimated_savings": 0,
+        "reflex_ms": 0,
+        "candidate_sources": [
+          "gemini-3.5-flash-lite"
+        ]
+      }
+    },
+    {
+      "runId": "run-20c7b6e1-3cb5-43db-ad6e-7555fc9445d8",
+      "operation": "investigation",
+      "traceId": "b16cc60b-7943-4d2a-9149-75ebce8481b6",
+      "applicationStatus": "succeeded",
+      "applicationProvider": "meterless",
+      "requestedModel": "gemini-3.5-flash-lite",
+      "returnedModel": "gemini-3.5-flash-lite",
+      "httpRequestId": null,
+      "meterlessDecisionId": "req_e9kyl4ch",
+      "meterlessRoutedModel": "gemini-3.5-flash-lite",
+      "meterlessWinningProvider": "google",
+      "lookupSucceeded": true,
+      "correlationValid": true,
+      "httpStatus": 200,
+      "explanation": {
+        "decision_id": "req_e9kyl4ch",
+        "request_id": "req_e9kyl4ch",
+        "selected_strategy": "race",
+        "winner": "gemini-3.5-flash-lite",
+        "policy_version": "v8",
+        "app": "fintrace",
+        "mode": "auto",
+        "estimated_cost": 0.0008294,
+        "estimated_savings": 0,
+        "reflex_ms": 0,
+        "candidate_sources": [
+          "gemini-3.5-flash-lite"
+        ]
+      }
+    },
+    {
+      "runId": "run-20c7b6e1-3cb5-43db-ad6e-7555fc9445d8",
+      "operation": "investigation",
+      "traceId": "036acde6-d055-41ce-8675-faa185df7754",
+      "applicationStatus": "succeeded",
+      "applicationProvider": "meterless",
+      "requestedModel": "gemini-3.5-flash-lite",
+      "returnedModel": "gemini-3.5-flash-lite",
+      "httpRequestId": null,
+      "meterlessDecisionId": "req_wxbao3jv",
+      "meterlessRoutedModel": "gemini-3.5-flash-lite",
+      "meterlessWinningProvider": "google",
+      "lookupSucceeded": true,
+      "correlationValid": true,
+      "httpStatus": 200,
+      "explanation": {
+        "decision_id": "req_wxbao3jv",
+        "request_id": "req_wxbao3jv",
+        "selected_strategy": "race",
+        "winner": "gemini-3.5-flash-lite",
+        "policy_version": "v8",
+        "app": "fintrace",
+        "mode": "auto",
+        "estimated_cost": 0.0009728,
+        "estimated_savings": 0,
+        "reflex_ms": 0,
+        "candidate_sources": [
+          "gemini-3.5-flash-lite"
+        ]
+      }
+    },
+    {
+      "runId": "run-202402fd-745a-4310-ae24-f56379bc1045",
+      "operation": "investigation",
+      "traceId": "869a2031-c54b-43cd-ad05-3c9bd2fc4981",
+      "applicationStatus": "succeeded",
+      "applicationProvider": "meterless",
+      "requestedModel": "gemini-3.5-flash-lite",
+      "returnedModel": "gemini-3.5-flash-lite",
+      "httpRequestId": null,
+      "meterlessDecisionId": "req_pgt9mnhj",
+      "meterlessRoutedModel": "gemini-3.5-flash-lite",
+      "meterlessWinningProvider": "google",
+      "lookupSucceeded": true,
+      "correlationValid": true,
+      "httpStatus": 200,
+      "explanation": {
+        "decision_id": "req_pgt9mnhj",
+        "request_id": "req_pgt9mnhj",
+        "selected_strategy": "race",
+        "winner": "gemini-3.5-flash-lite",
+        "policy_version": "v8",
+        "app": "fintrace",
+        "mode": "auto",
+        "estimated_cost": 0.0005999,
+        "estimated_savings": 0,
+        "reflex_ms": 0,
+        "candidate_sources": [
+          "gemini-3.5-flash-lite"
+        ]
+      }
+    },
+    {
+      "runId": "run-202402fd-745a-4310-ae24-f56379bc1045",
+      "operation": "investigation",
+      "traceId": "7fb4c271-c4ef-4746-8d19-83b6f65b3205",
+      "applicationStatus": "succeeded",
+      "applicationProvider": "meterless",
+      "requestedModel": "gemini-3.5-flash-lite",
+      "returnedModel": "gemini-3.5-flash-lite",
+      "httpRequestId": null,
+      "meterlessDecisionId": "req_py8t31bi",
+      "meterlessRoutedModel": "gemini-3.5-flash-lite",
+      "meterlessWinningProvider": "google",
+      "lookupSucceeded": true,
+      "correlationValid": true,
+      "httpStatus": 200,
+      "explanation": {
+        "decision_id": "req_py8t31bi",
+        "request_id": "req_py8t31bi",
+        "selected_strategy": "race",
+        "winner": "gemini-3.5-flash-lite",
+        "policy_version": "v8",
+        "app": "fintrace",
+        "mode": "auto",
+        "estimated_cost": 0.0007289,
+        "estimated_savings": 0,
+        "reflex_ms": 0,
+        "candidate_sources": [
+          "gemini-3.5-flash-lite"
+        ]
+      }
+    },
+    {
+      "runId": "run-202402fd-745a-4310-ae24-f56379bc1045",
+      "operation": "investigation",
+      "traceId": "56f0adf4-995b-4f46-be59-c1d852ca3b49",
+      "applicationStatus": "succeeded",
+      "applicationProvider": "meterless",
+      "requestedModel": "gemini-3.5-flash-lite",
+      "returnedModel": "gemini-3.5-flash-lite",
+      "httpRequestId": null,
+      "meterlessDecisionId": "req_r1yco2dc",
+      "meterlessRoutedModel": "gemini-3.5-flash-lite",
+      "meterlessWinningProvider": "google",
+      "lookupSucceeded": true,
+      "correlationValid": true,
+      "httpStatus": 200,
+      "explanation": {
+        "decision_id": "req_r1yco2dc",
+        "request_id": "req_r1yco2dc",
+        "selected_strategy": "race",
+        "winner": "gemini-3.5-flash-lite",
+        "policy_version": "v8",
+        "app": "fintrace",
+        "mode": "auto",
+        "estimated_cost": 0.0008282,
+        "estimated_savings": 0,
+        "reflex_ms": 0,
+        "candidate_sources": [
+          "gemini-3.5-flash-lite"
+        ]
+      }
+    },
+    {
+      "runId": "run-202402fd-745a-4310-ae24-f56379bc1045",
+      "operation": "investigation",
+      "traceId": "346fa6ad-38b8-4ff9-9820-c528e9163a78",
+      "applicationStatus": "succeeded",
+      "applicationProvider": "meterless",
+      "requestedModel": "gemini-3.5-flash-lite",
+      "returnedModel": "gemini-3.5-flash-lite",
+      "httpRequestId": null,
+      "meterlessDecisionId": "req_shg1bxmo",
+      "meterlessRoutedModel": "gemini-3.5-flash-lite",
+      "meterlessWinningProvider": "google",
+      "lookupSucceeded": true,
+      "correlationValid": true,
+      "httpStatus": 200,
+      "explanation": {
+        "decision_id": "req_shg1bxmo",
+        "request_id": "req_shg1bxmo",
+        "selected_strategy": "race",
+        "winner": "gemini-3.5-flash-lite",
+        "policy_version": "v8",
+        "app": "fintrace",
+        "mode": "auto",
+        "estimated_cost": 0.0009706999999999999,
+        "estimated_savings": 0,
+        "reflex_ms": 0,
+        "candidate_sources": [
+          "gemini-3.5-flash-lite"
+        ]
+      }
+    },
+    {
+      "runId": "run-0eed9ff7-31f3-4ad9-ac28-15d4c1de1dc0",
+      "operation": "investigation",
+      "traceId": "88c527c8-16e9-47e1-ade9-b0d9e62cc1f8",
+      "applicationStatus": "succeeded",
+      "applicationProvider": "meterless",
+      "requestedModel": "gemini-3.5-flash-lite",
+      "returnedModel": "gemini-3.5-flash-lite",
+      "httpRequestId": null,
+      "meterlessDecisionId": "req_ay6wtezz",
+      "meterlessRoutedModel": "gemini-3.5-flash-lite",
+      "meterlessWinningProvider": "google",
+      "lookupSucceeded": true,
+      "correlationValid": true,
+      "httpStatus": 200,
+      "explanation": {
+        "decision_id": "req_ay6wtezz",
+        "request_id": "req_ay6wtezz",
+        "selected_strategy": "race",
+        "winner": "gemini-3.5-flash-lite",
+        "policy_version": "v8",
+        "app": "fintrace",
+        "mode": "auto",
+        "estimated_cost": 0.0006261,
+        "estimated_savings": 0,
+        "reflex_ms": 0,
+        "candidate_sources": [
+          "gemini-3.5-flash-lite"
+        ]
+      }
+    },
+    {
+      "runId": "run-0eed9ff7-31f3-4ad9-ac28-15d4c1de1dc0",
+      "operation": "investigation",
+      "traceId": "003b2133-4d57-4b89-b144-2cbef7a6d7f5",
+      "applicationStatus": "succeeded",
+      "applicationProvider": "meterless",
+      "requestedModel": "gemini-3.5-flash-lite",
+      "returnedModel": "gemini-3.5-flash-lite",
+      "httpRequestId": null,
+      "meterlessDecisionId": "req_w85zy72c",
+      "meterlessRoutedModel": "gemini-3.5-flash-lite",
+      "meterlessWinningProvider": "google",
+      "lookupSucceeded": true,
+      "correlationValid": true,
+      "httpStatus": 200,
+      "explanation": {
+        "decision_id": "req_w85zy72c",
+        "request_id": "req_w85zy72c",
+        "selected_strategy": "race",
+        "winner": "gemini-3.5-flash-lite",
+        "policy_version": "v8",
+        "app": "fintrace",
+        "mode": "auto",
+        "estimated_cost": 0.0009189,
+        "estimated_savings": 0,
+        "reflex_ms": 0,
+        "candidate_sources": [
+          "gemini-3.5-flash-lite"
+        ]
+      }
+    },
+    {
+      "runId": "run-0eed9ff7-31f3-4ad9-ac28-15d4c1de1dc0",
+      "operation": "investigation",
+      "traceId": "902277a4-350d-45c6-b917-7e75386f9be1",
+      "applicationStatus": "succeeded",
+      "applicationProvider": "meterless",
+      "requestedModel": "gemini-3.5-flash-lite",
+      "returnedModel": "gemini-3.5-flash-lite",
+      "httpRequestId": null,
+      "meterlessDecisionId": "req_28ifd3f2",
+      "meterlessRoutedModel": "gemini-3.5-flash-lite",
+      "meterlessWinningProvider": "google",
+      "lookupSucceeded": true,
+      "correlationValid": true,
+      "httpStatus": 200,
+      "explanation": {
+        "decision_id": "req_28ifd3f2",
+        "request_id": "req_28ifd3f2",
+        "selected_strategy": "race",
+        "winner": "gemini-3.5-flash-lite",
+        "policy_version": "v8",
+        "app": "fintrace",
+        "mode": "auto",
+        "estimated_cost": 0.0010657,
+        "estimated_savings": 0,
+        "reflex_ms": 0,
+        "candidate_sources": [
+          "gemini-3.5-flash-lite"
+        ]
+      }
+    },
+    {
+      "runId": "run-0eed9ff7-31f3-4ad9-ac28-15d4c1de1dc0",
+      "operation": "investigation",
+      "traceId": "8999325e-e447-43bd-b947-0bcaec09c537",
+      "applicationStatus": "succeeded",
+      "applicationProvider": "meterless",
+      "requestedModel": "gemini-3.5-flash-lite",
+      "returnedModel": "gemini-3.5-flash-lite",
+      "httpRequestId": null,
+      "meterlessDecisionId": "req_7scngee2",
+      "meterlessRoutedModel": "gemini-3.5-flash-lite",
+      "meterlessWinningProvider": "google",
+      "lookupSucceeded": true,
+      "correlationValid": true,
+      "httpStatus": 200,
+      "explanation": {
+        "decision_id": "req_7scngee2",
+        "request_id": "req_7scngee2",
+        "selected_strategy": "race",
+        "winner": "gemini-3.5-flash-lite",
+        "policy_version": "v8",
+        "app": "fintrace",
+        "mode": "auto",
+        "estimated_cost": 0.0013415999999999999,
+        "estimated_savings": 0,
+        "reflex_ms": 0,
+        "candidate_sources": [
+          "gemini-3.5-flash-lite"
+        ]
+      }
+    },
+    {
+      "runId": "run-0eed9ff7-31f3-4ad9-ac28-15d4c1de1dc0",
+      "operation": "memory-draft",
+      "traceId": "b529ffb6-3c99-4870-b547-e7b680ed9a63",
+      "applicationStatus": "succeeded",
+      "applicationProvider": "meterless",
+      "requestedModel": "gemini-3.5-flash-lite",
+      "returnedModel": "gemini-3.5-flash-lite",
+      "httpRequestId": null,
+      "meterlessDecisionId": "req_94mnt1wa",
+      "meterlessRoutedModel": "gemini-3.5-flash-lite",
+      "meterlessWinningProvider": "google",
+      "lookupSucceeded": true,
+      "correlationValid": true,
+      "httpStatus": 200,
+      "explanation": {
+        "decision_id": "req_94mnt1wa",
+        "request_id": "req_94mnt1wa",
+        "selected_strategy": "race",
+        "winner": "gemini-3.5-flash-lite",
+        "policy_version": "v8",
+        "app": "fintrace",
+        "mode": "auto",
+        "estimated_cost": 0.0018206999999999997,
+        "estimated_savings": 0,
+        "reflex_ms": 0,
+        "candidate_sources": [
+          "gemini-3.5-flash-lite"
+        ]
+      }
+    },
+    {
+      "runId": "run-2a344a72-dfe6-4aca-9189-e55b717b67b4",
+      "operation": "investigation",
+      "traceId": "d5c2560f-dac1-49de-a072-db42c120af7c",
+      "applicationStatus": "succeeded",
+      "applicationProvider": "meterless",
+      "requestedModel": "gemini-3.5-flash-lite",
+      "returnedModel": "gemini-3.5-flash-lite",
+      "httpRequestId": null,
+      "meterlessDecisionId": "req_q954p7bd",
+      "meterlessRoutedModel": "gemini-3.5-flash-lite",
+      "meterlessWinningProvider": "google",
+      "lookupSucceeded": true,
+      "correlationValid": true,
+      "httpStatus": 200,
+      "explanation": {
+        "decision_id": "req_q954p7bd",
+        "request_id": "req_q954p7bd",
+        "selected_strategy": "race",
+        "winner": "gemini-3.5-flash-lite",
+        "policy_version": "v8",
+        "app": "fintrace",
+        "mode": "auto",
+        "estimated_cost": 0.0007487,
+        "estimated_savings": 0,
+        "reflex_ms": 0,
+        "candidate_sources": [
+          "gemini-3.5-flash-lite"
+        ]
+      }
+    },
+    {
+      "runId": "run-2a344a72-dfe6-4aca-9189-e55b717b67b4",
+      "operation": "investigation",
+      "traceId": "0c73842c-e1bf-4057-a43a-fd193e438432",
+      "applicationStatus": "succeeded",
+      "applicationProvider": "meterless",
+      "requestedModel": "gemini-3.5-flash-lite",
+      "returnedModel": "gemini-3.5-flash-lite",
+      "httpRequestId": null,
+      "meterlessDecisionId": "req_kh5u951r",
+      "meterlessRoutedModel": "gemini-3.5-flash-lite",
+      "meterlessWinningProvider": "google",
+      "lookupSucceeded": true,
+      "correlationValid": true,
+      "httpStatus": 200,
+      "explanation": {
+        "decision_id": "req_kh5u951r",
+        "request_id": "req_kh5u951r",
+        "selected_strategy": "race",
+        "winner": "gemini-3.5-flash-lite",
+        "policy_version": "v8",
+        "app": "fintrace",
+        "mode": "auto",
+        "estimated_cost": 0.0010286,
+        "estimated_savings": 0,
+        "reflex_ms": 0,
+        "candidate_sources": [
+          "gemini-3.5-flash-lite"
+        ]
+      }
+    },
+    {
+      "runId": "run-2a344a72-dfe6-4aca-9189-e55b717b67b4",
+      "operation": "investigation",
+      "traceId": "9ab47867-3628-495c-b7c8-7290e6db8500",
+      "applicationStatus": "succeeded",
+      "applicationProvider": "meterless",
+      "requestedModel": "gemini-3.5-flash-lite",
+      "returnedModel": "gemini-3.5-flash-lite",
+      "httpRequestId": null,
+      "meterlessDecisionId": "req_wbcpi7h2",
+      "meterlessRoutedModel": "gemini-3.5-flash-lite",
+      "meterlessWinningProvider": "google",
+      "lookupSucceeded": true,
+      "correlationValid": true,
+      "httpStatus": 200,
+      "explanation": {
+        "decision_id": "req_wbcpi7h2",
+        "request_id": "req_wbcpi7h2",
+        "selected_strategy": "race",
+        "winner": "gemini-3.5-flash-lite",
+        "policy_version": "v8",
+        "app": "fintrace",
+        "mode": "auto",
+        "estimated_cost": 0.0011873,
+        "estimated_savings": 0,
+        "reflex_ms": 0,
+        "candidate_sources": [
+          "gemini-3.5-flash-lite"
+        ]
+      }
+    },
+    {
+      "runId": "run-2a344a72-dfe6-4aca-9189-e55b717b67b4",
+      "operation": "investigation",
+      "traceId": "a2495371-b9b3-445b-8e19-846db5354fb6",
+      "applicationStatus": "succeeded",
+      "applicationProvider": "meterless",
+      "requestedModel": "gemini-3.5-flash-lite",
+      "returnedModel": "gemini-3.5-flash-lite",
+      "httpRequestId": null,
+      "meterlessDecisionId": "req_08kjoxo3",
+      "meterlessRoutedModel": "gemini-3.5-flash-lite",
+      "meterlessWinningProvider": "google",
+      "lookupSucceeded": true,
+      "correlationValid": true,
+      "httpStatus": 200,
+      "explanation": {
+        "decision_id": "req_08kjoxo3",
+        "request_id": "req_08kjoxo3",
+        "selected_strategy": "race",
+        "winner": "gemini-3.5-flash-lite",
+        "policy_version": "v8",
+        "app": "fintrace",
+        "mode": "auto",
+        "estimated_cost": 0.0014639,
+        "estimated_savings": 0,
+        "reflex_ms": 0,
+        "candidate_sources": [
+          "gemini-3.5-flash-lite"
+        ]
+      }
+    }
+  ],
+  "passed": true,
+  "signedReceiptVerified": false,
+  "reviewer": "Scripted synthetic reviewer exercising the real review API; not a customer decision or unobserved human approval.",
+  "notice": "Selected synthetic acceptance cases. Scripted reviewer exercises the application's real review API; this is not a customer decision, held-out accuracy evaluation or measured memory-efficiency improvement. Nightshift completion decisions are matched to read-only Runtime explanations. Their metadata is not a cryptographically signed receipt. Query IDs are application trace IDs, not Zetaris server-issued IDs.",
+  "runtimeHealthHttpStatus": 200,
+  "runtime": {
+    "engine": "meterless",
+    "served": "app",
+    "build": "m1-m4",
+    "configuredProviders": [
+      "google"
+    ]
+  },
+  "probe": {
+    "at": "2026-10-27T22:01:48.872Z",
+    "durationMs": 641,
+    "httpStatus": 200,
+    "requestedModel": "gemini-3.5-flash-lite",
+    "passed": true,
+    "jsonContractValid": true,
+    "decisionId": "req_kop33joc",
+    "httpRequestId": null,
+    "explanationHttpStatus": 200,
+    "explanation": {
+      "decision_id": "req_kop33joc",
+      "request_id": "req_kop33joc",
+      "selected_strategy": "race",
+      "winner": "gemini-3.5-flash-lite",
+      "policy_version": "v8",
+      "app": "fintrace",
+      "mode": "auto",
+      "estimated_cost": 0.000017,
+      "estimated_savings": 0,
+      "reflex_ms": 0,
+      "candidate_sources": [
+        "gemini-3.5-flash-lite"
+      ]
+    }
+  },
+  "expectedRoute": {
+    "requestedModel": "gemini-3.5-flash-lite",
+    "returnedModel": "gemini-3.5-flash-lite",
+    "routedModel": "gemini-3.5-flash-lite",
+    "winner": "gemini-3.5-flash-lite",
+    "winningProvider": "google"
+  },
+  "minRequestIntervalMs": 5000,
+  "datasets": {
+    "target": "ds-b3184dbfd1dc3cda",
+    "partial": "ds-839517a09adcac1b",
+    "independentLesson": "ds-b447d62667a8aed3"
+  },
+  "runtimeWinnerModels": [
+    "gemini-3.5-flash-lite"
+  ],
+  "runtimeWinningProviders": [
+    "google"
+  ],
+  "completedAt": "2026-10-27T22:03:31.590Z"
+}

@@ -8,15 +8,19 @@ The supplied document sets **27 October 2026, 23:45 UTC = 6:45 PM Chicago (CDT)*
 
 | Requirement | FinTrace evidence / implementation | Remaining action |
 |---|---|---|
-| Zetaris as the data layer | Live evidence adapter queries registered PostgreSQL source views. Historical direct-OpenAI live tests passed on synthetic data. | Record a current investigation visibly querying Zetaris. Confirm actual source configuration. |
-| At least one Meterless Engine in a working feature | H-MEM supports human-approved investigation procedures, scoped recall, provenance and deactivation. | Run engine conformance and application lifecycle tests; demonstrate the feature. |
-| Nightshift as the primary AI provider | Existing `meterless` adapter covers investigation planning, memory suggestions and the optional model baseline. Contract tests are mocked. | **BLOCKER:** connect a real Runtime, route the final app through it, verify a returned result and the underlying model. |
+| Zetaris as the data layer | Four fresh PostgreSQL/Zetaris/Nightshift synthetic investigations passed with snapshot checks and 20 successful evidence queries; the separate [three-feed USL/DQ package](ZETARIS_USL.md) contains executed source/semantic queries and native quality results. | Include the actual query and model workflow in the final recording. |
+| At least one Meterless Engine in a working feature | H-MEM supports approved procedures, scoped recall, provenance and deactivation. Its 13 conformance checks and application lifecycle tests passed; live Nightshift draft/approval/persistence/recall also passed. | Demonstrate the actual feature; identify the automated acceptance reviewer as scripted and synthetic. |
+| Nightshift as the primary AI provider | [Real acceptance](NIGHTSHIFT_ACCEPTANCE.md) passed through Nightshift to Google `gemini-3.5-flash-lite`; all 17 business model calls matched Runtime explanations. | Record the real app and matching Runtime evidence; keep the configured Runtime available for the demo. |
 | Real sponsor use in the demo | UI records evidence queries, model request metadata and recalled memories. | Show Zetaris, the H-MEM feature, and a real request through Nightshift. A provider label alone is not proof. |
 | NVIDIA wherever it contributes | NVIDIA adapter exists; no verified use in the current submission route. | State no verified NVIDIA use. Do not claim the NVIDIA award. |
 | NVIDIA award, if entered | Optional, outside the selected delivery scope. | Requires a working feature using a Nemotron model through Nightshift plus actual-model evidence. |
 | Cursor | Optional under the supplied document. | Only describe actual team usage; this preparation uses Codex. |
 
-Using OpenAI as the underlying model is the selected plan. The app must call Nightshift for the final runtime; a successful direct OpenAI request does not meet that requirement. The installed Runtime must actually support the chosen cloud route. If it cannot, record the blocker and obtain a revised model decision.
+The tested application calls Nightshift with Google `gemini-3.5-flash-lite`, an actual underlying model supported by the installed Runtime. Fresh normal, anomaly and evidence-gap workflows plus memory drafting, scripted review, persistence and recall passed. Earlier direct-provider results and failed local/limited-quota trials remain separate from this evidence. See [Nightshift acceptance](NIGHTSHIFT_ACCEPTANCE.md). Final recordings, public access and submission confirmation still need to be completed.
+
+## Separate Zetaris scoring materials
+
+[ZETARIS_USL.md](ZETARIS_USL.md) maps the team's supplied scoring-summary checklist to three simulated source feeds, two executed exploration queries per source, one deployed USL with its complete DDL, three executed USL queries, native data-quality results and the three requested reflections. It also includes a working hand-written source-query comparison. The evidence establishes these local synthetic workflows; it is not an organizer ruling about eligibility or an integration with three real enterprise systems.
 
 ## Required submission components
 
@@ -24,8 +28,8 @@ Using OpenAI as the underlying model is the selected plan. The app must call Nig
 |---|---|---|
 | 1–4 minute demo | [TEAM_HANDOFF.md](TEAM_HANDOFF.md): shot list, narration and evidence gates | Classmates record/edit/upload the final video from real runs. |
 | Slide deck | [TEAM_HANDOFF.md](TEAM_HANDOFF.md): eight-slide outline covering every required topic | Classmates build/export/share the deck. |
-| Public GitHub repository | English README, source, tests, sample data, licenses and release allowlist | User creates a new public repository, uploads reviewed source, and checks anonymous access. Do not upload private Git history. |
-| Sponsor technology explanation | [SPONSOR_EXPLANATION.md](SPONSOR_EXPLANATION.md) | Update Nightshift evidence only after the real test passes. |
+| Public GitHub repository | [MohanZ0618/GenAI](https://github.com/MohanZ0618/GenAI) is public and readable signed out; English source, samples and release allowlist are prepared locally. | Synchronize the latest validated changes, then verify a clean clone of the actual public revision. |
+| Sponsor technology explanation | [SPONSOR_EXPLANATION.md](SPONSOR_EXPLANATION.md), including the verified Nightshift route | Use the tested model and scope in final submission copy. |
 | Project name and description | [SUBMISSION_COPY.md](SUBMISSION_COPY.md) | Copy into the actual form; adjust only for its field limits. |
 | Exactly one primary track | Track 02 — The Agent That Can Explain Why | Team lead selects it in HackOS. |
 | Pre-existing work disclosure | Draft with pinned upstream commits and explicit review items | Team confirms which original code/data predates the build window. |

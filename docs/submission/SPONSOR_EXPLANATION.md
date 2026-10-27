@@ -1,6 +1,6 @@
 # Sponsor technology explanation
 
-**Current, evidence-bounded draft.** This text describes the code and historical validation honestly. The final submission still needs real Nightshift acceptance; do not remove that status without new evidence. The team's target underlying model is OpenAI, routed through Nightshift.
+**Current evidence: 27 October 2026.** The tested route is PostgreSQL + Zetaris + Meterless Nightshift + Google `gemini-3.5-flash-lite`. Four fresh synthetic investigations and the review-to-memory lifecycle passed. The [acceptance record](NIGHTSHIFT_ACCEPTANCE.md) links the sanitized results; final video, slides and submission remain separate tasks.
 
 ## Zetaris — read-only financial evidence
 
@@ -8,7 +8,9 @@ FinTrace uses Zetaris as its evidence-query layer in `live` mode. The investigat
 
 Retrieved rows are checked against the immutable imported source snapshot before they support a finding. Source coverage, observation cutoffs and exact evidence references help distinguish an empty result from a failed query or incomplete extract. PostgreSQL also stores application state and imports directly; those writes do not go through Zetaris.
 
-Historical integration tests connected PostgreSQL, Zetaris and direct OpenAI and completed 15 synthetic acceptance runs across nine scenarios, including repetitions. That demonstrates the tested local workflow, not real-customer accuracy. The current tested sources are multiple tables in one PostgreSQL database; we do not claim a demonstrated federation across multiple enterprise systems.
+Historical integration tests connected PostgreSQL, Zetaris and direct OpenAI and completed 15 synthetic acceptance runs across nine scenarios, including repetitions. The current Mac also completed four fresh PostgreSQL/Zetaris/DeepSeek investigations with valid citations and memory approval/persistence/recall. These selected synthetic cases demonstrate the tested local workflow, not real-customer accuracy.
+
+The [USL scoring package](ZETARIS_USL.md) separately deploys a typed, related model across PostgreSQL payment facts, a bank CSV and a supplier-policy HTTP API. It includes six source-exploration queries, three USL queries, executed native data-quality checks and a hand-written source-query comparison. These are three separately connected simulated feeds; ERP and bank records share a synthetic scenario generator. No connection to three real enterprise systems is claimed. The original investigation tools retain their immutable-snapshot evidence contract.
 
 Code: `apps/api/src/integrations/zetaris.ts`, `apps/api/src/evidence.ts`, `apps/api/src/store.ts`.
 
@@ -26,13 +28,13 @@ Code: `apps/api/src/integrations/memory.ts`, `apps/api/src/service.ts`, `third_p
 
 The implementation has a configurable Nightshift provider selected by `MODEL_PROVIDER=meterless`. It sends investigation planning, memory-suggestion and optional baseline requests to the configured Runtime's OpenAI-compatible `/chat/completions` endpoint using a Runtime token. The application validates output contracts and citations locally, records provider/model request metadata, and does not silently fall back to a direct cloud provider when Nightshift fails.
 
-The intended final route is **FinTrace → Nightshift → OpenAI**. OpenAI credentials belong in the Runtime's provider configuration for this route; FinTrace uses the Nightshift credential. The underlying model and route must be confirmed in the installed Nightshift version rather than inferred from OpenAI-compatible protocol support.
+The verified route is **FinTrace → Nightshift → Google `gemini-3.5-flash-lite`**. Provider credentials belong in the Runtime's settings; FinTrace uses the Nightshift credential. The installed official Mac M1-M4 application is version 0.92.7. Exact Runtime decisions and actual model/provider metadata establish the tested route independently of the protocol's OpenAI compatibility.
 
-**Unverified as of this preparation pass:** no real Nightshift request or complete Nightshift-routed investigation was executed. Automated adapter tests use mocked responses. Historical direct OpenAI validation cannot be relabeled as Nightshift validation. This is an outstanding submission requirement.
+The completed acceptance covered normal payment, partial evidence coverage, an independent duplicate-payment lesson and a later duplicate-payment investigation recalling the approved procedure. All 20 Zetaris evidence queries succeeded and all finding/check references resolved. Sixteen planning calls and one model-generated memory draft matched authenticated Runtime explanations, including decision ID, model, Google provider and `fintrace` context. The scripted synthetic reviewer edited and approved the procedure through the real review API; review and memory survived application-wrapper recreation, then the later case recalled that exact memory. This is a working feature test rather than a customer decision, held-out accuracy experiment or measured efficiency gain.
 
-Code: `apps/api/src/integrations/model.ts`, `scripts/preflight.ts`, `tests/meterless-submission.test.ts`. Setup and required capture: [NIGHTSHIFT_SETUP.md](NIGHTSHIFT_SETUP.md).
+Earlier OpenAI quota failures, two incomplete local Qwen attempts and a Google 3.6 Flash quota-limited attempt are preserved as diagnostics. They are not counted as successful cases. The completed route uses a five-second per-process request interval, with no direct-provider or fixture fallback. Runtime explanations are unsigned; no cryptographic receipt verification is claimed. See [the full record](NIGHTSHIFT_ACCEPTANCE.md).
 
-After real acceptance, replace the status paragraph with a short factual record containing the test date, Runtime version, actual underlying model, cases run, result, and a reference to sanitized evidence. Do not fill these values speculatively.
+Code: `apps/api/src/integrations/model.ts`, `scripts/preflight.ts`, `scripts/verify_nightshift.ts`, `tests/meterless-submission.test.ts`. Setup and required capture: [NIGHTSHIFT_SETUP.md](NIGHTSHIFT_SETUP.md).
 
 ## NVIDIA and development tooling
 

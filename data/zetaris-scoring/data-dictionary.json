@@ -1,0 +1,58 @@
+{
+  "scope": "Synthetic FinTrace three-source scoring demonstration; no real customer data",
+  "erp_payments": {
+    "grain": "dataset_id + payment_id",
+    "row_count": 9,
+    "columns": {
+      "payment_id": "Required unique payment identifier within dataset",
+      "vendor_id": "Required vendor/policy join key",
+      "payment_date": "ISO date used for the effective-policy join",
+      "payment_currency": "ISO currency code; monetary joins must match currency",
+      "payment_amount": "Decimal string; cast DECIMAL(18,2) for arithmetic",
+      "payment_status": "ERP operational status",
+      "settlement_status": "ERP reported status, distinct from bank observation",
+      "reference_number": "Required bank-reference join key"
+    }
+  },
+  "bank_settlements": {
+    "grain": "bank_transaction_id",
+    "row_count": 7,
+    "columns": {
+      "bank_transaction_id": "Required unique transaction identifier",
+      "payment_reference": "Required ERP reference join key; unique per currency only in this sample",
+      "transaction_date": "ISO date",
+      "posted_date": "ISO date; respect observation cutoff",
+      "transaction_type": "payment in this sample",
+      "amount": "Positive decimal string; direction is separate",
+      "currency": "ISO currency code",
+      "direction": "debit in this sample",
+      "status": "posted or returned; returned does not count as posted settlement",
+      "source_system": "FinTrace-Synthetic-BankFeed simulation label"
+    }
+  },
+  "vendor_policy": {
+    "grain": "One active vendor/currency/effective interval",
+    "row_count": 8,
+    "columns": {
+      "vendor_id": "Required policy join key",
+      "policy_id": "Required unique policy identifier",
+      "policy_version": "ISO date/version marker",
+      "currency": "ISO currency code for threshold amounts",
+      "max_unreviewed_payment": "Decimal string; 1000.00 demonstration review threshold",
+      "variance_review_threshold": "Decimal string; 25.00 demonstration threshold, not evidence that a difference is a fee",
+      "settlement_grace_days": "Integer 10; illustrative calendar-day parameter",
+      "bank_change_review_required": "Boolean true; demonstration procedure",
+      "effective_from": "Inclusive ISO date start",
+      "effective_to": "Inclusive ISO date end",
+      "source_system": "FinTrace-Synthetic-VendorControls simulation label"
+    }
+  },
+  "quality_expectations": [
+    "Required identifiers must be present and unique at their declared grain.",
+    "Bank payment_reference and currency must be present for a safe join.",
+    "Keep absent bank rows NULL; do not silently substitute amount zero.",
+    "Avoid overlapping effective policies and aggregate one-to-many bank feeds before joining.",
+    "Include currency in monetary joins and aggregation groups."
+  ],
+  "publication_caveat": "Three separately connected simulated business feeds, not three independent real enterprise systems. Bank and ERP mock records share a scenario generator."
+}

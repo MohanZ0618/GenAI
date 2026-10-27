@@ -2,7 +2,7 @@
 
 Audience: teammates producing the English presentation and demo video. Use the README for the product overview, [SPONSOR_EXPLANATION.md](SPONSOR_EXPLANATION.md) for sponsor details and [VALIDATION.md](VALIDATION.md) for defensible results.
 
-**Do not record the final sponsor-compliance segment until Nightshift live acceptance passes.** UI footage in fixture mode can demonstrate interface behavior but cannot prove model, Zetaris or Nightshift execution. The current preparation provides source and copy; no new final video or deck has been produced.
+**Nightshift live acceptance passed using Google `gemini-3.5-flash-lite`.** Use the current live application and matching Runtime records for the sponsor segment. UI footage in fixture mode demonstrates interface behavior separately. Source, evidence and narration are prepared; no final video or deck has been produced.
 
 ## Core story
 
@@ -24,7 +24,7 @@ Audience: teammates producing the English presentation and demo video. Use the R
 | 4 | **Technical stack and data contract** — React/Vite, Fastify/TypeScript, Zod/Decimal.js, immutable snapshots, PostgreSQL and six typed tools. | Show three example records linked by IDs and an evidence citation. |
 | 5 | **Sponsor technologies doing actual work** — Zetaris queries; H-MEM approved recall; Nightshift inference gateway and actual underlying model. | Capture one verifiable artifact per integration. No unsupported NVIDIA/Cursor claims. |
 | 6 | **What makes the approach distinctive** — procedures guide evidence order without changing financial truth; failed queries differ from missing records; coverage gaps lead to abstention. | Side-by-side normal, anomaly and insufficient-evidence outputs. |
-| 7 | **Validation and product evidence** — current automated checks plus historical synthetic live results, clearly separated. | Use exact results from VALIDATION.md. Do not add percentages suggesting real-world accuracy. |
+| 7 | **Validation and product evidence** — four fresh Nightshift-backed synthetic cases, the working memory lifecycle and current automated checks; keep historical provider results separate. | Use exact results from VALIDATION.md. Do not add percentages suggesting real-world accuracy. |
 | 8 | **Next steps and limitations** — authorized reviewer feedback, broader sources, independent evaluations, authentication and deployment controls. | Public repository and demo links; acknowledge prototype scope. |
 
 This covers all eight required deck topics: problem/users, solution, workflow/architecture, technical stack, sponsor use, unique sponsor contribution, product visuals and future enhancements. Do not use an old offline deck as evidence of a new live integration.
@@ -47,7 +47,7 @@ Use a desktop viewport (for example, 1440 × 1000). The browser suite currently 
 | 0:00–0:20 | Title, inbox and one payment | “When a payment does not reconcile, finance teams need to know which records support the explanation. FinTrace investigates synthetic payment records and keeps the evidence inspectable.” |
 | 0:20–0:40 | Brief architecture graphic | “Our model selects read-only evidence tools. Zetaris supplies the records, an independent verifier checks the financial claims, and a person reviews the result.” |
 | 0:40–1:25 | Start a fresh investigation; show an evidence query and record details | “The investigator checks the relevant sources and responds to missing-evidence feedback. Each finding links back to retrieved records. These are synthetic records, and this run uses the live integration.” Use that last sentence only for a verified live run. |
-| 1:25–1:50 | Matching Nightshift Runtime request and app request metadata | After verification: “This request passed through Meterless Nightshift and was answered by [ACTUAL MODEL]. The application stores the request status and returned model information.” Show actual evidence and replace the placeholder. |
+| 1:25–1:50 | Matching Nightshift Runtime request and app request metadata | “This request passed through Meterless Nightshift and was answered by Google Gemini 3.5 Flash Lite. We match the application's Runtime decision ID with the actual model and provider.” Show matching evidence from the recorded run. |
 | 1:50–2:40 | Review findings → Suggest memory → edit and explicitly approve; import version 02 and Update investigation; show recalled memory | “The model proposes a reusable investigation procedure. A reviewer must approve it. On a later version, H-MEM supplies the approved procedure with its provenance. It can guide tool priority, but cannot override the financial verifier.” Shorten waiting time transparently. |
 | 2:40–3:05 | Switch to a normal and a coverage-deficient result | “FinTrace distinguishes supported anomalies from normal outcomes and insufficient evidence. A missing record does not automatically become an anomaly.” |
 | 3:05–3:25 | Human review and export | “The reviewer keeps control. The exported report retains findings, checks, citations and the memory context used for that investigation.” |

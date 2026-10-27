@@ -1,0 +1,94 @@
+{
+  "syntheticDataOnly": true,
+  "generator": {
+    "path": "scripts/prepare_openai_manual.ts",
+    "export": "buildManualPackets().main"
+  },
+  "datasetName": "FinTrace USL scoring synthetic sample",
+  "expectedDatasetId": "ds-f9be2f5bab44f603",
+  "datasetVersion": "f9be2f5bab44f6035f8f4e9f9e87dfacdf74294464408c8e7be5d410f8202604",
+  "cutoff": "2026-10-22T23:59:59Z",
+  "rowCounts": {
+    "erp_payments": 9,
+    "bank_settlements": 7,
+    "vendor_policy": 8
+  },
+  "paymentIds": [
+    "PAY_DEMO_NORMAL",
+    "PAY_DEMO_DUP_OTHER",
+    "PAY_DEMO_DUP",
+    "PAY_DEMO_STALE",
+    "PAY_DEMO_MISSING",
+    "PAY_DEMO_FEE",
+    "PAY_DEMO_FUTURE_EVENT",
+    "PAY_DEMO_FUTURE_FEE",
+    "PAY_DEMO_CONTEXT_TAIL"
+  ],
+  "vendorIds": [
+    "VND_DEMO_NORMAL",
+    "VND_DEMO_DUP",
+    "VND_DEMO_STALE",
+    "VND_DEMO_MISSING",
+    "VND_DEMO_FEE",
+    "VND_DEMO_FUTURE_EVENT",
+    "VND_DEMO_FUTURE_FEE",
+    "VND_DEMO_CONTEXT_TAIL"
+  ],
+  "sources": [
+    {
+      "role": "ERP payment facts",
+      "transport": "PostgreSQL connector",
+      "grain": "dataset_id + payment_id",
+      "origin": "Full immutable synthetic manual packet saved as a separate scoring dataset; USL selects only the nine listed payments."
+    },
+    {
+      "role": "Bank settlement feed",
+      "transport": "CSV file connector",
+      "path": "bank_settlements.csv",
+      "grain": "bank_transaction_id",
+      "origin": "Bank-domain projection from the same synthetic scenario generator. Simulates a separately delivered bank feed; not independent real-world evidence or a copy of the ERP payment table. USL reads the file source, not FINTRACE.bank_transactions."
+    },
+    {
+      "role": "Supplier control policy",
+      "transport": "Read-only local HTTP API",
+      "path": "vendor_policy.json",
+      "endpointPath": "/vendor-policy",
+      "envelope": "{data: policies}",
+      "grain": "One active policy per vendor_id/currency/effective interval",
+      "origin": "New synthetic operational policies. Uniform thresholds are declared demonstration assumptions, not evaluation labels. A local server simulates a supplier-control system; no external supplier is contacted."
+    }
+  ],
+  "joins": [
+    {
+      "left": "ERP.reference_number + ERP.payment_currency",
+      "right": "bank.payment_reference + bank.currency",
+      "shape": "LEFT JOIN; at most one bank row per reference/currency in this sample",
+      "warning": "Missing bank observations remain NULL. A returned transaction is not a posted settlement."
+    },
+    {
+      "left": "ERP.vendor_id + ERP.payment_currency + ERP.payment_date",
+      "right": "policy.vendor_id + policy.currency + effective_from/effective_to",
+      "shape": "LEFT JOIN to the effective policy; one interval per vendor in this sample"
+    }
+  ],
+  "files": {
+    "erp_payments_preview.csv": {
+      "sha256": "73673e367a5b7630add31c150dc30bf13aa724990cd096409b66a3a250c4490b",
+      "bytes": 910,
+      "purpose": "Inspection fixture only; not registered as an additional source or read by the USL"
+    },
+    "bank_settlements.csv": {
+      "sha256": "5314f247ceded7da85fff51c7c005b01827cec23f4eb8f19f019bd52d1bcdf29",
+      "bytes": 878
+    },
+    "vendor_policy.json": {
+      "sha256": "79b67e26a1fabd416a12733809312490ba6aaf6ea0d4f9ffef0da8137cf451e5",
+      "bytes": 3429
+    }
+  },
+  "notEvidenceOf": [
+    "Independent enterprise systems or real customer data",
+    "Held-out model accuracy",
+    "Proof that an observed amount difference is a bank fee"
+  ]
+}

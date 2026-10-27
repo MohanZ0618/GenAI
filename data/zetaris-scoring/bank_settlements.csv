@@ -1,0 +1,8 @@
+bank_transaction_id,payment_reference,transaction_date,posted_date,transaction_type,amount,currency,direction,status,source_system
+BT_NORMAL,REF_NORMAL,2026-09-07,2026-09-07,payment,600.00,USD,debit,posted,FinTrace-Synthetic-BankFeed
+BT_DUP_OTHER,REF_DUP_OTHER,2026-09-07,2026-09-07,payment,1000.00,USD,debit,posted,FinTrace-Synthetic-BankFeed
+BT_DUP,REF_DUP,2026-09-07,2026-09-07,payment,1000.00,USD,debit,posted,FinTrace-Synthetic-BankFeed
+BT_STALE,REF_STALE,2026-09-07,2026-09-07,payment,900.00,USD,debit,returned,FinTrace-Synthetic-BankFeed
+BT_FEE,REF_FEE,2026-09-07,2026-09-07,payment,1180.00,USD,debit,posted,FinTrace-Synthetic-BankFeed
+BT_FUTURE_FEE,REF_FUTURE_FEE,2026-09-07,2026-09-07,payment,1180.00,USD,debit,posted,FinTrace-Synthetic-BankFeed
+BT_CONTEXT_TAIL,REF_CONTEXT_TAIL,2026-09-07,2026-09-07,payment,350.00,USD,debit,posted,FinTrace-Synthetic-BankFeed

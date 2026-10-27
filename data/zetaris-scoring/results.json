@@ -1,0 +1,909 @@
+{
+  "startedAt": "2026-10-27T21:17:59.486Z",
+  "syntheticDataOnly": true,
+  "passed": true,
+  "datasetId": "ds-f9be2f5bab44f603",
+  "usl": "lightning.metastore.fintrace_scoring.payment_review",
+  "notice": "Three simulated business feeds over PostgreSQL, CSV and HTTP. ERP and bank records share a synthetic scenario generator. No customer data, model accuracy, Nightshift completion, measured development-time saving or automatic financial decision is claimed.",
+  "queries": [
+    {
+      "id": "ERP-1",
+      "source": "PostgreSQL / FINTRACE.payments",
+      "question": "Which nine payment facts are in this scoring scope?",
+      "sql": "SELECT\n  get_json_object(payload, '$.payment_id') AS payment_id,\n  get_json_object(payload, '$.vendor_id') AS vendor_id,\n  CAST(get_json_object(payload, '$.payment_date') AS DATE) AS payment_date,\n  get_json_object(payload, '$.reference_number') AS reference_number,\n  get_json_object(payload, '$.payment_currency') AS currency,\n  CAST(get_json_object(payload, '$.payment_amount') AS DECIMAL(18,2)) AS payment_amount,\n  get_json_object(payload, '$.payment_status') AS payment_status\nFROM FINTRACE.payments WHERE dataset_id = 'ds-f9be2f5bab44f603' AND get_json_object(payload, '$.payment_id') IN ('PAY_DEMO_NORMAL', 'PAY_DEMO_DUP_OTHER', 'PAY_DEMO_DUP', 'PAY_DEMO_STALE', 'PAY_DEMO_MISSING', 'PAY_DEMO_FEE', 'PAY_DEMO_FUTURE_EVENT', 'PAY_DEMO_FUTURE_FEE', 'PAY_DEMO_CONTEXT_TAIL')\nORDER BY payment_id",
+      "httpStatus": 200,
+      "elapsedMs": 856,
+      "rowCount": 9,
+      "rows": [
+        {
+          "payment_id": "PAY_DEMO_CONTEXT_TAIL",
+          "vendor_id": "VND_DEMO_CONTEXT_TAIL",
+          "payment_date": "2026-09-07",
+          "reference_number": "REF_CONTEXT_TAIL",
+          "currency": "USD",
+          "payment_amount": "350.00",
+          "payment_status": "completed"
+        },
+        {
+          "payment_id": "PAY_DEMO_DUP",
+          "vendor_id": "VND_DEMO_DUP",
+          "payment_date": "2026-09-07",
+          "reference_number": "REF_DUP",
+          "currency": "USD",
+          "payment_amount": "1000.00",
+          "payment_status": "completed"
+        },
+        {
+          "payment_id": "PAY_DEMO_DUP_OTHER",
+          "vendor_id": "VND_DEMO_DUP",
+          "payment_date": "2026-09-07",
+          "reference_number": "REF_DUP_OTHER",
+          "currency": "USD",
+          "payment_amount": "1000.00",
+          "payment_status": "completed"
+        },
+        {
+          "payment_id": "PAY_DEMO_FEE",
+          "vendor_id": "VND_DEMO_FEE",
+          "payment_date": "2026-09-07",
+          "reference_number": "REF_FEE",
+          "currency": "USD",
+          "payment_amount": "1200.00",
+          "payment_status": "completed"
+        },
+        {
+          "payment_id": "PAY_DEMO_FUTURE_EVENT",
+          "vendor_id": "VND_DEMO_FUTURE_EVENT",
+          "payment_date": "2026-09-07",
+          "reference_number": "REF_FUTURE_EVENT",
+          "currency": "USD",
+          "payment_amount": "700.00",
+          "payment_status": "completed"
+        },
+        {
+          "payment_id": "PAY_DEMO_FUTURE_FEE",
+          "vendor_id": "VND_DEMO_FUTURE_FEE",
+          "payment_date": "2026-09-07",
+          "reference_number": "REF_FUTURE_FEE",
+          "currency": "USD",
+          "payment_amount": "1200.00",
+          "payment_status": "completed"
+        },
+        {
+          "payment_id": "PAY_DEMO_MISSING",
+          "vendor_id": "VND_DEMO_MISSING",
+          "payment_date": "2026-09-07",
+          "reference_number": "REF_MISSING",
+          "currency": "USD",
+          "payment_amount": "800.00",
+          "payment_status": "completed"
+        },
+        {
+          "payment_id": "PAY_DEMO_NORMAL",
+          "vendor_id": "VND_DEMO_NORMAL",
+          "payment_date": "2026-09-07",
+          "reference_number": "REF_NORMAL",
+          "currency": "USD",
+          "payment_amount": "600.00",
+          "payment_status": "completed"
+        },
+        {
+          "payment_id": "PAY_DEMO_STALE",
+          "vendor_id": "VND_DEMO_STALE",
+          "payment_date": "2026-09-07",
+          "reference_number": "REF_STALE",
+          "currency": "USD",
+          "payment_amount": "900.00",
+          "payment_status": "completed"
+        }
+      ]
+    },
+    {
+      "id": "ERP-2",
+      "source": "PostgreSQL / FINTRACE.payments",
+      "question": "How many scoped payments and what ERP amounts belong to each vendor and currency?",
+      "sql": "SELECT get_json_object(payload, '$.vendor_id') AS vendor_id,\n  get_json_object(payload, '$.payment_currency') AS currency,\n  COUNT(*) AS payment_count,\n  SUM(CAST(get_json_object(payload, '$.payment_amount') AS DECIMAL(18,2))) AS payment_amount\nFROM FINTRACE.payments WHERE dataset_id = 'ds-f9be2f5bab44f603' AND get_json_object(payload, '$.payment_id') IN ('PAY_DEMO_NORMAL', 'PAY_DEMO_DUP_OTHER', 'PAY_DEMO_DUP', 'PAY_DEMO_STALE', 'PAY_DEMO_MISSING', 'PAY_DEMO_FEE', 'PAY_DEMO_FUTURE_EVENT', 'PAY_DEMO_FUTURE_FEE', 'PAY_DEMO_CONTEXT_TAIL')\nGROUP BY get_json_object(payload, '$.vendor_id'), get_json_object(payload, '$.payment_currency')\nORDER BY vendor_id, currency",
+      "httpStatus": 200,
+      "elapsedMs": 759,
+      "rowCount": 8,
+      "rows": [
+        {
+          "vendor_id": "VND_DEMO_CONTEXT_TAIL",
+          "currency": "USD",
+          "payment_count": "1",
+          "payment_amount": "350.00"
+        },
+        {
+          "vendor_id": "VND_DEMO_DUP",
+          "currency": "USD",
+          "payment_count": "2",
+          "payment_amount": "2000.00"
+        },
+        {
+          "vendor_id": "VND_DEMO_FEE",
+          "currency": "USD",
+          "payment_count": "1",
+          "payment_amount": "1200.00"
+        },
+        {
+          "vendor_id": "VND_DEMO_FUTURE_EVENT",
+          "currency": "USD",
+          "payment_count": "1",
+          "payment_amount": "700.00"
+        },
+        {
+          "vendor_id": "VND_DEMO_FUTURE_FEE",
+          "currency": "USD",
+          "payment_count": "1",
+          "payment_amount": "1200.00"
+        },
+        {
+          "vendor_id": "VND_DEMO_MISSING",
+          "currency": "USD",
+          "payment_count": "1",
+          "payment_amount": "800.00"
+        },
+        {
+          "vendor_id": "VND_DEMO_NORMAL",
+          "currency": "USD",
+          "payment_count": "1",
+          "payment_amount": "600.00"
+        },
+        {
+          "vendor_id": "VND_DEMO_STALE",
+          "currency": "USD",
+          "payment_count": "1",
+          "payment_amount": "900.00"
+        }
+      ]
+    },
+    {
+      "id": "BANK-1",
+      "source": "CSV / FINTRACE_BANK.bank_settlements",
+      "question": "Which bank references were observed, and were they posted or returned?",
+      "sql": "SELECT bank_transaction_id, payment_reference,\n  CAST(currency AS STRING) AS currency,\n  CAST(amount AS DECIMAL(18,2)) AS settled_amount,\n  CAST(status AS STRING) AS settlement_status,\n  CAST(posted_date AS DATE) AS posted_date\nFROM FINTRACE_BANK.bank_settlements\nORDER BY bank_transaction_id",
+      "httpStatus": 200,
+      "elapsedMs": 559,
+      "rowCount": 7,
+      "rows": [
+        {
+          "bank_transaction_id": "BT_CONTEXT_TAIL",
+          "payment_reference": "REF_CONTEXT_TAIL",
+          "currency": "USD",
+          "settled_amount": "350.00",
+          "settlement_status": "posted",
+          "posted_date": "2026-09-07"
+        },
+        {
+          "bank_transaction_id": "BT_DUP",
+          "payment_reference": "REF_DUP",
+          "currency": "USD",
+          "settled_amount": "1000.00",
+          "settlement_status": "posted",
+          "posted_date": "2026-09-07"
+        },
+        {
+          "bank_transaction_id": "BT_DUP_OTHER",
+          "payment_reference": "REF_DUP_OTHER",
+          "currency": "USD",
+          "settled_amount": "1000.00",
+          "settlement_status": "posted",
+          "posted_date": "2026-09-07"
+        },
+        {
+          "bank_transaction_id": "BT_FEE",
+          "payment_reference": "REF_FEE",
+          "currency": "USD",
+          "settled_amount": "1180.00",
+          "settlement_status": "posted",
+          "posted_date": "2026-09-07"
+        },
+        {
+          "bank_transaction_id": "BT_FUTURE_FEE",
+          "payment_reference": "REF_FUTURE_FEE",
+          "currency": "USD",
+          "settled_amount": "1180.00",
+          "settlement_status": "posted",
+          "posted_date": "2026-09-07"
+        },
+        {
+          "bank_transaction_id": "BT_NORMAL",
+          "payment_reference": "REF_NORMAL",
+          "currency": "USD",
+          "settled_amount": "600.00",
+          "settlement_status": "posted",
+          "posted_date": "2026-09-07"
+        },
+        {
+          "bank_transaction_id": "BT_STALE",
+          "payment_reference": "REF_STALE",
+          "currency": "USD",
+          "settled_amount": "900.00",
+          "settlement_status": "returned",
+          "posted_date": "2026-09-07"
+        }
+      ]
+    },
+    {
+      "id": "BANK-2",
+      "source": "CSV / FINTRACE_BANK.bank_settlements",
+      "question": "What are the bank row counts and amounts by currency and bank status?",
+      "sql": "SELECT currency, status, COUNT(*) AS record_count,\n  SUM(CAST(amount AS DECIMAL(18,2))) AS bank_amount\nFROM FINTRACE_BANK.bank_settlements\nGROUP BY currency, status ORDER BY currency, status",
+      "httpStatus": 200,
+      "elapsedMs": 331,
+      "rowCount": 2,
+      "rows": [
+        {
+          "currency": "USD",
+          "status": "posted",
+          "record_count": "6",
+          "bank_amount": "5310.00"
+        },
+        {
+          "currency": "USD",
+          "status": "returned",
+          "record_count": "1",
+          "bank_amount": "900.00"
+        }
+      ]
+    },
+    {
+      "id": "POLICY-1",
+      "source": "HTTP / FINTRACE_POLICY.vendor_policy",
+      "question": "What effective supplier review thresholds are supplied by the policy API?",
+      "sql": "SELECT policy.vendor_id, policy.currency,\n  CAST(policy.max_unreviewed_payment AS DECIMAL(18,2)) AS max_unreviewed_payment,\n  CAST(policy.variance_review_threshold AS DECIMAL(18,2)) AS variance_review_threshold,\n  CAST(policy.settlement_grace_days AS INT) AS settlement_grace_days,\n  CAST(policy.effective_from AS DATE) AS effective_from,\n  CAST(policy.effective_to AS DATE) AS effective_to\nFROM FINTRACE_POLICY.vendor_policy\nLATERAL VIEW explode(data) policy_rows AS policy\nORDER BY vendor_id",
+      "httpStatus": 200,
+      "elapsedMs": 617,
+      "rowCount": 8,
+      "rows": [
+        {
+          "vendor_id": "VND_DEMO_CONTEXT_TAIL",
+          "currency": "USD",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00",
+          "settlement_grace_days": "10",
+          "effective_from": "2026-08-01",
+          "effective_to": "2026-12-31"
+        },
+        {
+          "vendor_id": "VND_DEMO_DUP",
+          "currency": "USD",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00",
+          "settlement_grace_days": "10",
+          "effective_from": "2026-08-01",
+          "effective_to": "2026-12-31"
+        },
+        {
+          "vendor_id": "VND_DEMO_FEE",
+          "currency": "USD",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00",
+          "settlement_grace_days": "10",
+          "effective_from": "2026-08-01",
+          "effective_to": "2026-12-31"
+        },
+        {
+          "vendor_id": "VND_DEMO_FUTURE_EVENT",
+          "currency": "USD",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00",
+          "settlement_grace_days": "10",
+          "effective_from": "2026-08-01",
+          "effective_to": "2026-12-31"
+        },
+        {
+          "vendor_id": "VND_DEMO_FUTURE_FEE",
+          "currency": "USD",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00",
+          "settlement_grace_days": "10",
+          "effective_from": "2026-08-01",
+          "effective_to": "2026-12-31"
+        },
+        {
+          "vendor_id": "VND_DEMO_MISSING",
+          "currency": "USD",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00",
+          "settlement_grace_days": "10",
+          "effective_from": "2026-08-01",
+          "effective_to": "2026-12-31"
+        },
+        {
+          "vendor_id": "VND_DEMO_NORMAL",
+          "currency": "USD",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00",
+          "settlement_grace_days": "10",
+          "effective_from": "2026-08-01",
+          "effective_to": "2026-12-31"
+        },
+        {
+          "vendor_id": "VND_DEMO_STALE",
+          "currency": "USD",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00",
+          "settlement_grace_days": "10",
+          "effective_from": "2026-08-01",
+          "effective_to": "2026-12-31"
+        }
+      ]
+    },
+    {
+      "id": "POLICY-2",
+      "source": "HTTP / FINTRACE_POLICY.vendor_policy",
+      "question": "Do the policy feeds have one row per vendor and consistent declared currency/thresholds?",
+      "sql": "SELECT policy.currency, COUNT(*) AS policy_count,\n  COUNT(DISTINCT policy.vendor_id) AS distinct_vendors,\n  MIN(CAST(policy.max_unreviewed_payment AS DECIMAL(18,2))) AS minimum_review_threshold,\n  MAX(CAST(policy.max_unreviewed_payment AS DECIMAL(18,2))) AS maximum_review_threshold,\n  MIN(CAST(policy.variance_review_threshold AS DECIMAL(18,2))) AS minimum_variance_threshold\nFROM FINTRACE_POLICY.vendor_policy\nLATERAL VIEW explode(data) policy_rows AS policy\nGROUP BY policy.currency ORDER BY policy.currency",
+      "httpStatus": 200,
+      "elapsedMs": 1559,
+      "rowCount": 1,
+      "rows": [
+        {
+          "currency": "USD",
+          "policy_count": "8",
+          "distinct_vendors": "8",
+          "minimum_review_threshold": "1000.00",
+          "maximum_review_threshold": "1000.00",
+          "minimum_variance_threshold": "25.00"
+        }
+      ]
+    },
+    {
+      "id": "USL-1",
+      "source": "lightning.metastore.fintrace_scoring.payment_review",
+      "question": "What bank observation and effective supplier policy belong to each payment?",
+      "sql": "SELECT p.payment_id, p.vendor_id, p.currency, p.payment_amount,\n  b.bank_transaction_id, b.settlement_status, b.settled_amount,\n  CASE WHEN b.bank_transaction_id IS NULL THEN 'no_bank_observation'\n  WHEN b.settlement_status = 'returned' THEN 'returned'\n  WHEN b.settlement_status = 'posted' THEN 'posted' ELSE 'other' END AS bank_observation,\n  CASE WHEN b.settlement_status = 'posted'\n    THEN CAST(p.payment_amount - b.settled_amount AS DECIMAL(18,2))\n    ELSE CAST(NULL AS DECIMAL(18,2)) END AS observed_variance,\n  v.max_unreviewed_payment, v.variance_review_threshold\nFROM lightning.metastore.fintrace_scoring.payment_review.payments p\nLEFT JOIN lightning.metastore.fintrace_scoring.payment_review.bank_settlements b ON p.payment_id = b.payment_id AND p.currency = b.currency\nLEFT JOIN lightning.metastore.fintrace_scoring.payment_review.vendor_policy v ON p.vendor_id = v.vendor_id AND p.currency = v.currency\n  AND p.payment_date BETWEEN v.effective_from AND v.effective_to\nORDER BY p.payment_id",
+      "httpStatus": 200,
+      "elapsedMs": 6702,
+      "rowCount": 9,
+      "rows": [
+        {
+          "payment_id": "PAY_DEMO_CONTEXT_TAIL",
+          "vendor_id": "VND_DEMO_CONTEXT_TAIL",
+          "currency": "USD",
+          "payment_amount": "350.00",
+          "bank_transaction_id": "BT_CONTEXT_TAIL",
+          "settlement_status": "posted",
+          "settled_amount": "350.00",
+          "bank_observation": "posted",
+          "observed_variance": "0.00",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00"
+        },
+        {
+          "payment_id": "PAY_DEMO_DUP",
+          "vendor_id": "VND_DEMO_DUP",
+          "currency": "USD",
+          "payment_amount": "1000.00",
+          "bank_transaction_id": "BT_DUP",
+          "settlement_status": "posted",
+          "settled_amount": "1000.00",
+          "bank_observation": "posted",
+          "observed_variance": "0.00",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00"
+        },
+        {
+          "payment_id": "PAY_DEMO_DUP_OTHER",
+          "vendor_id": "VND_DEMO_DUP",
+          "currency": "USD",
+          "payment_amount": "1000.00",
+          "bank_transaction_id": "BT_DUP_OTHER",
+          "settlement_status": "posted",
+          "settled_amount": "1000.00",
+          "bank_observation": "posted",
+          "observed_variance": "0.00",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00"
+        },
+        {
+          "payment_id": "PAY_DEMO_FEE",
+          "vendor_id": "VND_DEMO_FEE",
+          "currency": "USD",
+          "payment_amount": "1200.00",
+          "bank_transaction_id": "BT_FEE",
+          "settlement_status": "posted",
+          "settled_amount": "1180.00",
+          "bank_observation": "posted",
+          "observed_variance": "20.00",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00"
+        },
+        {
+          "payment_id": "PAY_DEMO_FUTURE_EVENT",
+          "vendor_id": "VND_DEMO_FUTURE_EVENT",
+          "currency": "USD",
+          "payment_amount": "700.00",
+          "bank_transaction_id": null,
+          "settlement_status": null,
+          "settled_amount": null,
+          "bank_observation": "no_bank_observation",
+          "observed_variance": null,
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00"
+        },
+        {
+          "payment_id": "PAY_DEMO_FUTURE_FEE",
+          "vendor_id": "VND_DEMO_FUTURE_FEE",
+          "currency": "USD",
+          "payment_amount": "1200.00",
+          "bank_transaction_id": "BT_FUTURE_FEE",
+          "settlement_status": "posted",
+          "settled_amount": "1180.00",
+          "bank_observation": "posted",
+          "observed_variance": "20.00",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00"
+        },
+        {
+          "payment_id": "PAY_DEMO_MISSING",
+          "vendor_id": "VND_DEMO_MISSING",
+          "currency": "USD",
+          "payment_amount": "800.00",
+          "bank_transaction_id": null,
+          "settlement_status": null,
+          "settled_amount": null,
+          "bank_observation": "no_bank_observation",
+          "observed_variance": null,
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00"
+        },
+        {
+          "payment_id": "PAY_DEMO_NORMAL",
+          "vendor_id": "VND_DEMO_NORMAL",
+          "currency": "USD",
+          "payment_amount": "600.00",
+          "bank_transaction_id": "BT_NORMAL",
+          "settlement_status": "posted",
+          "settled_amount": "600.00",
+          "bank_observation": "posted",
+          "observed_variance": "0.00",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00"
+        },
+        {
+          "payment_id": "PAY_DEMO_STALE",
+          "vendor_id": "VND_DEMO_STALE",
+          "currency": "USD",
+          "payment_amount": "900.00",
+          "bank_transaction_id": "BT_STALE",
+          "settlement_status": "returned",
+          "settled_amount": "900.00",
+          "bank_observation": "returned",
+          "observed_variance": null,
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00"
+        }
+      ]
+    },
+    {
+      "id": "USL-2",
+      "source": "lightning.metastore.fintrace_scoring.payment_review",
+      "question": "How many payments have posted, returned or missing bank observations, without mixing their monetary meaning?",
+      "sql": "SELECT p.currency, CASE WHEN b.bank_transaction_id IS NULL THEN 'no_bank_observation'\n  WHEN b.settlement_status = 'returned' THEN 'returned'\n  WHEN b.settlement_status = 'posted' THEN 'posted' ELSE 'other' END AS bank_observation,\n  COUNT(*) AS payment_count, SUM(p.payment_amount) AS erp_payment_amount,\n  SUM(CASE WHEN b.settlement_status = 'posted' THEN b.settled_amount ELSE CAST(NULL AS DECIMAL(18,2)) END) AS posted_bank_amount,\n  SUM(CASE WHEN b.settlement_status = 'posted' THEN p.payment_amount - b.settled_amount ELSE CAST(NULL AS DECIMAL(18,2)) END) AS posted_observed_variance\nFROM lightning.metastore.fintrace_scoring.payment_review.payments p\nLEFT JOIN lightning.metastore.fintrace_scoring.payment_review.bank_settlements b ON p.payment_id = b.payment_id AND p.currency = b.currency\nGROUP BY p.currency, CASE WHEN b.bank_transaction_id IS NULL THEN 'no_bank_observation'\n  WHEN b.settlement_status = 'returned' THEN 'returned'\n  WHEN b.settlement_status = 'posted' THEN 'posted' ELSE 'other' END\nORDER BY p.currency, bank_observation",
+      "httpStatus": 200,
+      "elapsedMs": 2130,
+      "rowCount": 3,
+      "rows": [
+        {
+          "currency": "USD",
+          "bank_observation": "no_bank_observation",
+          "payment_count": "2",
+          "erp_payment_amount": "1500.00",
+          "posted_bank_amount": null,
+          "posted_observed_variance": null
+        },
+        {
+          "currency": "USD",
+          "bank_observation": "posted",
+          "payment_count": "6",
+          "erp_payment_amount": "5350.00",
+          "posted_bank_amount": "5310.00",
+          "posted_observed_variance": "40.00"
+        },
+        {
+          "currency": "USD",
+          "bank_observation": "returned",
+          "payment_count": "1",
+          "erp_payment_amount": "900.00",
+          "posted_bank_amount": null,
+          "posted_observed_variance": null
+        }
+      ]
+    },
+    {
+      "id": "USL-3",
+      "source": "lightning.metastore.fintrace_scoring.payment_review",
+      "question": "Which payments exceed the effective policy's illustrative manual-review threshold?",
+      "sql": "SELECT p.payment_id, p.vendor_id, p.currency, p.payment_amount, v.max_unreviewed_payment\nFROM lightning.metastore.fintrace_scoring.payment_review.payments p\nLEFT JOIN lightning.metastore.fintrace_scoring.payment_review.vendor_policy v ON p.vendor_id = v.vendor_id AND p.currency = v.currency\n  AND p.payment_date BETWEEN v.effective_from AND v.effective_to\nWHERE p.payment_amount > v.max_unreviewed_payment\nORDER BY p.payment_id",
+      "httpStatus": 200,
+      "elapsedMs": 2668,
+      "rowCount": 2,
+      "rows": [
+        {
+          "payment_id": "PAY_DEMO_FEE",
+          "vendor_id": "VND_DEMO_FEE",
+          "currency": "USD",
+          "payment_amount": "1200.00",
+          "max_unreviewed_payment": "1000.00"
+        },
+        {
+          "payment_id": "PAY_DEMO_FUTURE_FEE",
+          "vendor_id": "VND_DEMO_FUTURE_FEE",
+          "currency": "USD",
+          "payment_amount": "1200.00",
+          "max_unreviewed_payment": "1000.00"
+        }
+      ]
+    },
+    {
+      "id": "BONUS-MANUAL",
+      "source": "Direct PostgreSQL + CSV + HTTP source tables",
+      "question": "Does a hand-written source-normalization query return exactly the same rows as USL-1?",
+      "sql": "WITH erp AS (SELECT\n  get_json_object(payload, '$.payment_id') AS payment_id,\n  get_json_object(payload, '$.vendor_id') AS vendor_id,\n  CAST(get_json_object(payload, '$.payment_date') AS DATE) AS payment_date,\n  get_json_object(payload, '$.reference_number') AS reference_number,\n  get_json_object(payload, '$.payment_currency') AS currency,\n  CAST(get_json_object(payload, '$.payment_amount') AS DECIMAL(18,2)) AS payment_amount,\n  get_json_object(payload, '$.payment_status') AS payment_status\nFROM FINTRACE.payments WHERE dataset_id = 'ds-f9be2f5bab44f603' AND get_json_object(payload, '$.payment_id') IN ('PAY_DEMO_NORMAL', 'PAY_DEMO_DUP_OTHER', 'PAY_DEMO_DUP', 'PAY_DEMO_STALE', 'PAY_DEMO_MISSING', 'PAY_DEMO_FEE', 'PAY_DEMO_FUTURE_EVENT', 'PAY_DEMO_FUTURE_FEE', 'PAY_DEMO_CONTEXT_TAIL')),\nbank_feed AS (SELECT bank_transaction_id, payment_reference,\n  CAST(currency AS STRING) AS currency,\n  CAST(amount AS DECIMAL(18,2)) AS settled_amount,\n  CAST(status AS STRING) AS settlement_status,\n  CAST(posted_date AS DATE) AS posted_date\nFROM FINTRACE_BANK.bank_settlements),\npolicies AS (SELECT policy.vendor_id, policy.currency,\n  CAST(policy.max_unreviewed_payment AS DECIMAL(18,2)) AS max_unreviewed_payment,\n  CAST(policy.variance_review_threshold AS DECIMAL(18,2)) AS variance_review_threshold,\n  CAST(policy.settlement_grace_days AS INT) AS settlement_grace_days,\n  CAST(policy.effective_from AS DATE) AS effective_from,\n  CAST(policy.effective_to AS DATE) AS effective_to\nFROM FINTRACE_POLICY.vendor_policy\nLATERAL VIEW explode(data) policy_rows AS policy)\nSELECT p.payment_id, p.vendor_id, p.currency, p.payment_amount,\n  b.bank_transaction_id, b.settlement_status, b.settled_amount,\n  CASE WHEN b.bank_transaction_id IS NULL THEN 'no_bank_observation'\n  WHEN b.settlement_status = 'returned' THEN 'returned'\n  WHEN b.settlement_status = 'posted' THEN 'posted' ELSE 'other' END AS bank_observation,\n  CASE WHEN b.settlement_status = 'posted'\n    THEN CAST(p.payment_amount - b.settled_amount AS DECIMAL(18,2))\n    ELSE CAST(NULL AS DECIMAL(18,2)) END AS observed_variance,\n  v.max_unreviewed_payment, v.variance_review_threshold\nFROM erp p\nLEFT JOIN bank_feed b ON p.reference_number = b.payment_reference AND p.currency = b.currency\nLEFT JOIN policies v ON p.vendor_id = v.vendor_id AND p.currency = v.currency\n  AND p.payment_date BETWEEN v.effective_from AND v.effective_to\nORDER BY p.payment_id",
+      "httpStatus": 200,
+      "elapsedMs": 1124,
+      "rowCount": 9,
+      "rows": [
+        {
+          "payment_id": "PAY_DEMO_CONTEXT_TAIL",
+          "vendor_id": "VND_DEMO_CONTEXT_TAIL",
+          "currency": "USD",
+          "payment_amount": "350.00",
+          "bank_transaction_id": "BT_CONTEXT_TAIL",
+          "settlement_status": "posted",
+          "settled_amount": "350.00",
+          "bank_observation": "posted",
+          "observed_variance": "0.00",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00"
+        },
+        {
+          "payment_id": "PAY_DEMO_DUP",
+          "vendor_id": "VND_DEMO_DUP",
+          "currency": "USD",
+          "payment_amount": "1000.00",
+          "bank_transaction_id": "BT_DUP",
+          "settlement_status": "posted",
+          "settled_amount": "1000.00",
+          "bank_observation": "posted",
+          "observed_variance": "0.00",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00"
+        },
+        {
+          "payment_id": "PAY_DEMO_DUP_OTHER",
+          "vendor_id": "VND_DEMO_DUP",
+          "currency": "USD",
+          "payment_amount": "1000.00",
+          "bank_transaction_id": "BT_DUP_OTHER",
+          "settlement_status": "posted",
+          "settled_amount": "1000.00",
+          "bank_observation": "posted",
+          "observed_variance": "0.00",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00"
+        },
+        {
+          "payment_id": "PAY_DEMO_FEE",
+          "vendor_id": "VND_DEMO_FEE",
+          "currency": "USD",
+          "payment_amount": "1200.00",
+          "bank_transaction_id": "BT_FEE",
+          "settlement_status": "posted",
+          "settled_amount": "1180.00",
+          "bank_observation": "posted",
+          "observed_variance": "20.00",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00"
+        },
+        {
+          "payment_id": "PAY_DEMO_FUTURE_EVENT",
+          "vendor_id": "VND_DEMO_FUTURE_EVENT",
+          "currency": "USD",
+          "payment_amount": "700.00",
+          "bank_transaction_id": null,
+          "settlement_status": null,
+          "settled_amount": null,
+          "bank_observation": "no_bank_observation",
+          "observed_variance": null,
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00"
+        },
+        {
+          "payment_id": "PAY_DEMO_FUTURE_FEE",
+          "vendor_id": "VND_DEMO_FUTURE_FEE",
+          "currency": "USD",
+          "payment_amount": "1200.00",
+          "bank_transaction_id": "BT_FUTURE_FEE",
+          "settlement_status": "posted",
+          "settled_amount": "1180.00",
+          "bank_observation": "posted",
+          "observed_variance": "20.00",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00"
+        },
+        {
+          "payment_id": "PAY_DEMO_MISSING",
+          "vendor_id": "VND_DEMO_MISSING",
+          "currency": "USD",
+          "payment_amount": "800.00",
+          "bank_transaction_id": null,
+          "settlement_status": null,
+          "settled_amount": null,
+          "bank_observation": "no_bank_observation",
+          "observed_variance": null,
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00"
+        },
+        {
+          "payment_id": "PAY_DEMO_NORMAL",
+          "vendor_id": "VND_DEMO_NORMAL",
+          "currency": "USD",
+          "payment_amount": "600.00",
+          "bank_transaction_id": "BT_NORMAL",
+          "settlement_status": "posted",
+          "settled_amount": "600.00",
+          "bank_observation": "posted",
+          "observed_variance": "0.00",
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00"
+        },
+        {
+          "payment_id": "PAY_DEMO_STALE",
+          "vendor_id": "VND_DEMO_STALE",
+          "currency": "USD",
+          "payment_amount": "900.00",
+          "bank_transaction_id": "BT_STALE",
+          "settlement_status": "returned",
+          "settled_amount": "900.00",
+          "bank_observation": "returned",
+          "observed_variance": null,
+          "max_unreviewed_payment": "1000.00",
+          "variance_review_threshold": "25.00"
+        }
+      ]
+    },
+    {
+      "id": "DQ-PAYMENTS",
+      "source": "lightning.metastore.fintrace_scoring.payment_review.payments",
+      "question": "Execute the registered positive-payment amount rule in Zetaris.",
+      "sql": "RUN DQ positive_payment_amount TABLE lightning.metastore.fintrace_scoring.payment_review.payments",
+      "httpStatus": 200,
+      "elapsedMs": 1530,
+      "rowCount": 1,
+      "rows": [
+        {
+          "name": "positive_payment_amount",
+          "table": "payments",
+          "type": "Custom Data Quality",
+          "total_record": "9",
+          "valid_record": "9",
+          "invalid_record": "0"
+        }
+      ]
+    },
+    {
+      "id": "DQ-PAYMENTS-INVALID",
+      "source": "lightning.metastore.fintrace_scoring.payment_review.payments",
+      "question": "Inspect rows rejected by the positive-payment amount rule.",
+      "sql": "SHOW DQ INVALID RECORD positive_payment_amount TABLE lightning.metastore.fintrace_scoring.payment_review.payments",
+      "httpStatus": 200,
+      "elapsedMs": 540,
+      "rowCount": 0,
+      "rows": []
+    },
+    {
+      "id": "DQ-POLICY",
+      "source": "lightning.metastore.fintrace_scoring.payment_review.vendor_policy",
+      "question": "Execute the registered policy-threshold validity rule in Zetaris.",
+      "sql": "RUN DQ policy_threshold_valid TABLE lightning.metastore.fintrace_scoring.payment_review.vendor_policy",
+      "httpStatus": 200,
+      "elapsedMs": 1770,
+      "rowCount": 1,
+      "rows": [
+        {
+          "name": "policy_threshold_valid",
+          "table": "vendor_policy",
+          "type": "Custom Data Quality",
+          "total_record": "8",
+          "valid_record": "8",
+          "invalid_record": "0"
+        }
+      ]
+    },
+    {
+      "id": "DQ-POLICY-INVALID",
+      "source": "lightning.metastore.fintrace_scoring.payment_review.vendor_policy",
+      "question": "Inspect rows rejected by the policy-threshold validity rule.",
+      "sql": "SHOW DQ INVALID RECORD policy_threshold_valid TABLE lightning.metastore.fintrace_scoring.payment_review.vendor_policy",
+      "httpStatus": 200,
+      "elapsedMs": 1384,
+      "rowCount": 0,
+      "rows": []
+    },
+    {
+      "id": "DQ-STATUS",
+      "source": "lightning.metastore.fintrace_scoring.payment_review",
+      "question": "Read the USL's native constraint and DQ status after execution.",
+      "sql": "LIST DQ USL lightning.metastore.fintrace_scoring.payment_review",
+      "httpStatus": 200,
+      "elapsedMs": 99,
+      "rowCount": 7,
+      "rows": [
+        {
+          "name": "vendor_id",
+          "table": "vendor_policy",
+          "type": "Primary key constraints",
+          "expression": ""
+        },
+        {
+          "name": "policy_threshold_valid",
+          "table": "vendor_policy",
+          "type": "Custom Data Quality",
+          "expression": "max_unreviewed_payment IS NOT NULL AND max_unreviewed_payment >= 0 AND variance_review_threshold IS NOT NULL AND variance_review_threshold >= 0 AND settlement_grace_days IS NOT NULL AND settlement_grace_days >= 0 AND effective_from IS NOT NULL AND effective_to IS NOT NULL AND effective_to >= effective_from"
+        },
+        {
+          "name": "payment_id",
+          "table": "payments",
+          "type": "Primary key constraints",
+          "expression": ""
+        },
+        {
+          "name": "vendor_id",
+          "table": "payments",
+          "type": "Foreign key constraints",
+          "expression": ""
+        },
+        {
+          "name": "positive_payment_amount",
+          "table": "payments",
+          "type": "Custom Data Quality",
+          "expression": "payment_amount IS NOT NULL AND payment_amount > 0"
+        },
+        {
+          "name": "bank_transaction_id",
+          "table": "bank_settlements",
+          "type": "Primary key constraints",
+          "expression": ""
+        },
+        {
+          "name": "payment_id",
+          "table": "bank_settlements",
+          "type": "Foreign key constraints",
+          "expression": ""
+        }
+      ]
+    },
+    {
+      "id": "DQ-KEY-vendor_policy-vendor_id",
+      "source": "lightning.metastore.fintrace_scoring.payment_review.vendor_policy",
+      "question": "Execute the USL-generated primary or foreign key constraint.",
+      "sql": "RUN DQ vendor_id TABLE lightning.metastore.fintrace_scoring.payment_review.vendor_policy",
+      "httpStatus": 200,
+      "elapsedMs": 1207,
+      "rowCount": 1,
+      "rows": [
+        {
+          "name": "vendor_id",
+          "table": "vendor_policy",
+          "type": "Primary Key Constraint",
+          "total_record": "8",
+          "valid_record": "8",
+          "invalid_record": "0"
+        }
+      ]
+    },
+    {
+      "id": "DQ-KEY-payments-payment_id",
+      "source": "lightning.metastore.fintrace_scoring.payment_review.payments",
+      "question": "Execute the USL-generated primary or foreign key constraint.",
+      "sql": "RUN DQ payment_id TABLE lightning.metastore.fintrace_scoring.payment_review.payments",
+      "httpStatus": 200,
+      "elapsedMs": 680,
+      "rowCount": 1,
+      "rows": [
+        {
+          "name": "payment_id",
+          "table": "payments",
+          "type": "Primary Key Constraint",
+          "total_record": "9",
+          "valid_record": "9",
+          "invalid_record": "0"
+        }
+      ]
+    },
+    {
+      "id": "DQ-KEY-payments-vendor_id",
+      "source": "lightning.metastore.fintrace_scoring.payment_review.payments",
+      "question": "Execute the USL-generated primary or foreign key constraint.",
+      "sql": "RUN DQ vendor_id TABLE lightning.metastore.fintrace_scoring.payment_review.payments",
+      "httpStatus": 200,
+      "elapsedMs": 1926,
+      "rowCount": 1,
+      "rows": [
+        {
+          "name": "vendor_id",
+          "table": "payments",
+          "type": "Foreign Key Constraint",
+          "total_record": "9",
+          "valid_record": "9",
+          "invalid_record": "0"
+        }
+      ]
+    },
+    {
+      "id": "DQ-KEY-bank_settlements-bank_transaction_id",
+      "source": "lightning.metastore.fintrace_scoring.payment_review.bank_settlements",
+      "question": "Execute the USL-generated primary or foreign key constraint.",
+      "sql": "RUN DQ bank_transaction_id TABLE lightning.metastore.fintrace_scoring.payment_review.bank_settlements",
+      "httpStatus": 200,
+      "elapsedMs": 2702,
+      "rowCount": 1,
+      "rows": [
+        {
+          "name": "bank_transaction_id",
+          "table": "bank_settlements",
+          "type": "Primary Key Constraint",
+          "total_record": "7",
+          "valid_record": "7",
+          "invalid_record": "0"
+        }
+      ]
+    },
+    {
+      "id": "DQ-KEY-bank_settlements-payment_id",
+      "source": "lightning.metastore.fintrace_scoring.payment_review.bank_settlements",
+      "question": "Execute the USL-generated primary or foreign key constraint.",
+      "sql": "RUN DQ payment_id TABLE lightning.metastore.fintrace_scoring.payment_review.bank_settlements",
+      "httpStatus": 200,
+      "elapsedMs": 3500,
+      "rowCount": 1,
+      "rows": [
+        {
+          "name": "payment_id",
+          "table": "bank_settlements",
+          "type": "Foreign Key Constraint",
+          "total_record": "7",
+          "valid_record": "7",
+          "invalid_record": "0"
+        }
+      ]
+    }
+  ],
+  "checks": {
+    "threeSourceTransports": [
+      "PostgreSQL",
+      "CSV",
+      "HTTP API"
+    ],
+    "actualSourceRows": {
+      "erp": 9,
+      "bank": 7,
+      "policy": 8
+    },
+    "joinedRows": 9,
+    "uniquePayments": 9,
+    "bankObservations": {
+      "posted": 6,
+      "no_bank_observation": 2,
+      "returned": 1
+    },
+    "effectivePolicyMatches": 9,
+    "nullPreservedForMissingAndReturned": true,
+    "sourceFixtureComparison": "passed",
+    "policyReviewRows": 2,
+    "handwrittenMatchesUsl": true,
+    "sourceSqlCharacters": 2406,
+    "uslConsumerSqlCharacters": 1002,
+    "measuredDevelopmentTimeSaving": null,
+    "qualityInvalidRows": {
+      "positive_payment_amount": 0,
+      "policy_threshold_valid": 0
+    },
+    "nativeQualityRulesExecuted": 7,
+    "summaryRows": 3
+  },
+  "completedAt": "2026-10-27T21:18:32.169Z"
+}

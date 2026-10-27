@@ -80,7 +80,7 @@ export async function runPreflight(
           history: [],
           memories: [],
         },
-        AbortSignal.timeout(90000),
+        AbortSignal.timeout(provider.name === "meterless" ? 180000 : 90000),
         async (trace) => {
           requests.push(trace);
         },

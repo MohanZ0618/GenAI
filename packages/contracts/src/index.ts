@@ -151,6 +151,9 @@ export type ModelRequestTrace = {
   durationMs: number;
   httpStatus?: number;
   requestId?: string;
+  meterlessDecisionId?: string;
+  meterlessWinningProvider?: string;
+  meterlessRoutedModel?: string;
   returnedModel?: string;
   inputTokens?: number;
   outputTokens?: number;

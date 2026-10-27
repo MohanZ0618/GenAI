@@ -25,6 +25,7 @@
     "prepare:hmem-demo": "tsx scripts/prepare_hmem_demo.ts",
     "verify:hmem": "tsx scripts/verify_hmem.ts",
     "verify:business": "tsx scripts/verify_business_cases.ts",
+    "verify:nightshift": "tsx scripts/verify_nightshift.ts",
     "evaluate": "tsx apps/api/src/cli.ts evaluate",
     "investigate": "tsx apps/api/src/cli.ts investigate",
     "db:init": "tsx apps/api/src/cli.ts db-init"

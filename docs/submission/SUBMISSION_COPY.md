@@ -1,6 +1,6 @@
 # Submission-form copy
 
-This file contains English draft text for the actual HackOS form. Field names/limits may differ. Fill team and link placeholders locally. **Do not submit a statement that Nightshift is working until its live acceptance is complete.**
+This file contains English draft text for the actual HackOS form. Field names/limits may differ. Fill team and media-link placeholders locally. Nightshift live acceptance passed on 27 October 2026; the latest validated source still needs to be synchronized and checked in the public repository.
 
 ## Project name
 
@@ -37,11 +37,11 @@ The user selects a payment from an immutable data snapshot. The model planner ch
 
 ## Technical stack
 
-TypeScript; React/Vite; Fastify; Zod; Decimal.js; PostgreSQL; Zetaris; Meterless H-MEM; a configurable Nightshift-compatible model provider; Vitest and Playwright. The final planned inference path is Nightshift with an OpenAI cloud model. Actual Runtime compatibility and execution are still awaiting verification.
+TypeScript; React/Vite; Fastify; Zod; Decimal.js; PostgreSQL; Zetaris; Meterless H-MEM; Meterless Nightshift; Vitest and Playwright. The verified live inference path is FinTrace → Nightshift → Google `gemini-3.5-flash-lite`. Evidence queries pass through Zetaris to PostgreSQL source views, with immutable-snapshot checks.
 
 ## Sponsor explanation
 
-Use [SPONSOR_EXPLANATION.md](SPONSOR_EXPLANATION.md). Do not replace it with a generic list of sponsor logos. It distinguishes the working H-MEM feature, historical Zetaris integration, and the outstanding Nightshift requirement.
+Use [SPONSOR_EXPLANATION.md](SPONSOR_EXPLANATION.md). It describes the verified Zetaris evidence queries, H-MEM review-to-memory feature, Nightshift inference route and separate three-feed USL/data-quality demonstration, with links to actual results.
 
 ## What is new / distinctive
 
@@ -49,7 +49,7 @@ FinTrace combines inspectable evidence retrieval, an independent financial verif
 
 ## Validation and limitations
 
-The project uses synthetic financial records. Historical live PostgreSQL/Zetaris/direct-OpenAI acceptance matched expected results in 15 runs across nine scenarios, including repeated cases. A separate historical H-MEM/OpenAI local-data experiment matched 12/12 expected outcomes and citation checks. Current offline regression results are in `docs/submission/VALIDATION.md`. These checks demonstrate supported workflow behavior, not real-customer accuracy, statistically significant model advantages or cost savings. Nightshift live validation remains open; production authentication and multi-instance operation are outside the demonstrated prototype.
+The project uses synthetic financial records. Four fresh live investigations through PostgreSQL, Zetaris, Nightshift and Google `gemini-3.5-flash-lite` matched expected normal, anomaly and insufficient-evidence outcomes. All 20 evidence queries succeeded and all 17 business model calls matched Runtime explanations. Model-generated memory drafting, scripted synthetic review/approval, application-wrapper persistence and later recall passed. The current unit/API suite passed 189 tests and H-MEM reference conformance passed 13 checks; the complete browser suite still has 11 known layout/UI failures. See [VALIDATION.md](VALIDATION.md). These checks demonstrate the selected workflow, not real-customer accuracy, model superiority, cryptographically signed receipts or cost savings. Production authentication and multi-instance operation remain outside the demonstrated prototype.
 
 ## Pre-existing components disclosure — team must review
 
@@ -67,11 +67,11 @@ Validate with authorized finance reviewers and appropriately permissioned real d
 |---|---|
 | Team name | `[TEAM NAME]` |
 | Team members | `[CONFIRMED ROSTER — CHECK BEFORE FIRST SUBMISSION]` |
-| Public repository | `[PUBLIC GITHUB URL — USER WILL CREATE]` |
+| Public repository | https://github.com/MohanZ0618/GenAI — public access verified; synchronize and verify the latest validated source before submission |
 | Demo video | `[ACCESSIBLE 1–4 MINUTE VIDEO LINK]` |
 | Slide deck | `[ACCESSIBLE DECK LINK]` |
 | Colab | Not applicable: local TypeScript application |
-| Nightshift evidence | `[PENDING: ACTUAL RUNTIME VERSION, MODEL AND VERIFIED RUN]` |
+| Nightshift evidence | Official Mac M1-M4 0.92.7 → Google `gemini-3.5-flash-lite`; four synthetic cases and memory lifecycle passed; see [NIGHTSHIFT_ACCEPTANCE.md](NIGHTSHIFT_ACCEPTANCE.md) |
 | Pre-existing original work | `[TEAM-VERIFIED INVENTORY AND DATES]` |
 
 Check all links signed out. Replace placeholders before submitting. The copy is not a substitute for completing the technical requirements.

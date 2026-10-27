@@ -1,0 +1,533 @@
+{
+  "startedAt": "2026-10-27T21:17:02.505Z",
+  "syntheticDataOnly": true,
+  "namespace": "lightning.metastore.fintrace_scoring",
+  "model": "payment_review",
+  "datasetId": "ds-f9be2f5bab44f603",
+  "sourceNames": [
+    "FINTRACE",
+    "FINTRACE_BANK",
+    "FINTRACE_POLICY"
+  ],
+  "operations": [
+    {
+      "operation": "verify-existing-erp-source",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "name": "FINTRACE",
+          "description": "FinTrace source",
+          "id": "442"
+        }
+      ]
+    },
+    {
+      "operation": "inspect-FINTRACE_BANK",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "name": "FINTRACE_BANK",
+          "description": "FinTrace synthetic bank CSV",
+          "id": "848"
+        },
+        {
+          "name": "FINTRACE_POLICY",
+          "description": "FinTrace synthetic vendor policy API",
+          "id": "863"
+        },
+        {
+          "name": "NY_TAXI",
+          "description": "NY Taxi sample data",
+          "id": "6"
+        },
+        {
+          "name": "TPCDS_DB",
+          "description": "TPC-DS benchmark sample data",
+          "id": "307"
+        }
+      ]
+    },
+    {
+      "operation": "inspect-FINTRACE_BANK-tables",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "name": "bank_settlements",
+          "materialized_table": null,
+          "source_table": "file:///home/zetaris/customer-data/shared/fintrace-scoring/bank_settlements.csv",
+          "table_type": "filestore",
+          "format": "csv",
+          "id": "849"
+        }
+      ]
+    },
+    {
+      "operation": "describe-FINTRACE_BANK-bank_settlements",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "col_name": "bank_transaction_id",
+          "data_type": "\"string\"",
+          "comment": "",
+          "description": "",
+          "tags": ""
+        },
+        {
+          "col_name": "payment_reference",
+          "data_type": "\"string\"",
+          "comment": "",
+          "description": "",
+          "tags": ""
+        },
+        {
+          "col_name": "transaction_date",
+          "data_type": "\"date\"",
+          "comment": "",
+          "description": "",
+          "tags": ""
+        },
+        {
+          "col_name": "posted_date",
+          "data_type": "\"date\"",
+          "comment": "",
+          "description": "",
+          "tags": ""
+        },
+        {
+          "col_name": "transaction_type",
+          "data_type": "\"string\"",
+          "comment": "",
+          "description": "",
+          "tags": ""
+        },
+        {
+          "col_name": "amount",
+          "data_type": "\"double\"",
+          "comment": "",
+          "description": "",
+          "tags": ""
+        },
+        {
+          "col_name": "currency",
+          "data_type": "\"string\"",
+          "comment": "",
+          "description": "",
+          "tags": ""
+        },
+        {
+          "col_name": "direction",
+          "data_type": "\"string\"",
+          "comment": "",
+          "description": "",
+          "tags": ""
+        },
+        {
+          "col_name": "status",
+          "data_type": "\"string\"",
+          "comment": "",
+          "description": "",
+          "tags": ""
+        },
+        {
+          "col_name": "source_system",
+          "data_type": "\"string\"",
+          "comment": "",
+          "description": "",
+          "tags": ""
+        }
+      ]
+    },
+    {
+      "operation": "sample-FINTRACE_BANK-bank_settlements",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "bank_transaction_id": "BT_NORMAL",
+          "payment_reference": "REF_NORMAL",
+          "transaction_date": "2026-09-07",
+          "posted_date": "2026-09-07",
+          "transaction_type": "payment",
+          "amount": "600.0",
+          "currency": "USD",
+          "direction": "debit",
+          "status": "posted",
+          "source_system": "FinTrace-Synthetic-BankFeed"
+        },
+        {
+          "bank_transaction_id": "BT_DUP_OTHER",
+          "payment_reference": "REF_DUP_OTHER",
+          "transaction_date": "2026-09-07",
+          "posted_date": "2026-09-07",
+          "transaction_type": "payment",
+          "amount": "1000.0",
+          "currency": "USD",
+          "direction": "debit",
+          "status": "posted",
+          "source_system": "FinTrace-Synthetic-BankFeed"
+        }
+      ]
+    },
+    {
+      "operation": "inspect-FINTRACE_POLICY",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "name": "FINTRACE_BANK",
+          "description": "FinTrace synthetic bank CSV",
+          "id": "848"
+        },
+        {
+          "name": "FINTRACE_POLICY",
+          "description": "FinTrace synthetic vendor policy API",
+          "id": "863"
+        },
+        {
+          "name": "NY_TAXI",
+          "description": "NY Taxi sample data",
+          "id": "6"
+        },
+        {
+          "name": "TPCDS_DB",
+          "description": "TPC-DS benchmark sample data",
+          "id": "307"
+        }
+      ]
+    },
+    {
+      "operation": "inspect-FINTRACE_POLICY-tables",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "name": "vendor_policy",
+          "materialized_table": null,
+          "source_table": "http://host.docker.internal:4315/vendor-policy",
+          "table_type": "rest",
+          "format": null,
+          "id": "864"
+        }
+      ]
+    },
+    {
+      "operation": "describe-FINTRACE_POLICY-vendor_policy",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "col_name": "data",
+          "data_type": "{\"type\":\"array\",\"elementType\":{\"type\":\"struct\",\"fields\":[{\"name\":\"bank_change_review_required\",\"type\":\"boolean\",\"nullable\":true,\"metadata\":{}},{\"name\":\"currency\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"effective_from\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"effective_to\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"max_unreviewed_payment\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"policy_id\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"policy_version\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"settlement_grace_days\",\"type\":\"long\",\"nullable\":true,\"metadata\":{}},{\"name\":\"source_system\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"variance_review_threshold\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}},{\"name\":\"vendor_id\",\"type\":\"string\",\"nullable\":true,\"metadata\":{}}]},\"containsNull\":true}",
+          "comment": "",
+          "description": "",
+          "tags": ""
+        }
+      ]
+    },
+    {
+      "operation": "sample-FINTRACE_POLICY-vendor_policy",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "data": "[{\"bank_change_review_required\":true,\"currency\":\"USD\",\"effective_from\":\"2026-08-01\",\"effective_to\":\"2026-12-31\",\"max_unreviewed_payment\":\"1000.00\",\"policy_id\":\"SYNTHETIC-CTRL-001\",\"policy_version\":\"2026-08-01\",\"settlement_grace_days\":10,\"source_system\":\"FinTrace-Synthetic-VendorControls\",\"variance_review_threshold\":\"25.00\",\"vendor_id\":\"VND_DEMO_NORMAL\"},{\"bank_change_review_required\":true,\"currency\":\"USD\",\"effective_from\":\"2026-08-01\",\"effective_to\":\"2026-12-31\",\"max_unreviewed_payment\":\"1000.00\",\"policy_id\":\"SYNTHETIC-CTRL-002\",\"policy_version\":\"2026-08-01\",\"settlement_grace_days\":10,\"source_system\":\"FinTrace-Synthetic-VendorControls\",\"variance_review_threshold\":\"25.00\",\"vendor_id\":\"VND_DEMO_DUP\"},{\"bank_change_review_required\":true,\"currency\":\"USD\",\"effective_from\":\"2026-08-01\",\"effective_to\":\"2026-12-31\",\"max_unreviewed_payment\":\"1000.00\",\"policy_id\":\"SYNTHETIC-CTRL-003\",\"policy_version\":\"2026-08-01\",\"settlement_grace_days\":10,\"source_system\":\"FinTrace-Synthetic-VendorControls\",\"variance_review_threshold\":\"25.00\",\"vendor_id\":\"VND_DEMO_STALE\"},{\"bank_change_review_required\":true,\"currency\":\"USD\",\"effective_from\":\"2026-08-01\",\"effective_to\":\"2026-12-31\",\"max_unreviewed_payment\":\"1000.00\",\"policy_id\":\"SYNTHETIC-CTRL-004\",\"policy_version\":\"2026-08-01\",\"settlement_grace_days\":10,\"source_system\":\"FinTrace-Synthetic-VendorControls\",\"variance_review_threshold\":\"25.00\",\"vendor_id\":\"VND_DEMO_MISSING\"},{\"bank_change_review_required\":true,\"currency\":\"USD\",\"effective_from\":\"2026-08-01\",\"effective_to\":\"2026-12-31\",\"max_unreviewed_payment\":\"1000.00\",\"policy_id\":\"SYNTHETIC-CTRL-005\",\"policy_version\":\"2026-08-01\",\"settlement_grace_days\":10,\"source_system\":\"FinTrace-Synthetic-VendorControls\",\"variance_review_threshold\":\"25.00\",\"vendor_id\":\"VND_DEMO_FEE\"},{\"bank_change_review_required\":true,\"currency\":\"USD\",\"effective_from\":\"2026-08-01\",\"effective_to\":\"2026-12-31\",\"max_unreviewed_payment\":\"1000.00\",\"policy_id\":\"SYNTHETIC-CTRL-006\",\"policy_version\":\"2026-08-01\",\"settlement_grace_days\":10,\"source_system\":\"FinTrace-Synthetic-VendorControls\",\"variance_review_threshold\":\"25.00\",\"vendor_id\":\"VND_DEMO_FUTURE_EVENT\"},{\"bank_change_review_required\":true,\"currency\":\"USD\",\"effective_from\":\"2026-08-01\",\"effective_to\":\"2026-12-31\",\"max_unreviewed_payment\":\"1000.00\",\"policy_id\":\"SYNTHETIC-CTRL-007\",\"policy_version\":\"2026-08-01\",\"settlement_grace_days\":10,\"source_system\":\"FinTrace-Synthetic-VendorControls\",\"variance_review_threshold\":\"25.00\",\"vendor_id\":\"VND_DEMO_FUTURE_FEE\"},{\"bank_change_review_required\":true,\"currency\":\"USD\",\"effective_from\":\"2026-08-01\",\"effective_to\":\"2026-12-31\",\"max_unreviewed_payment\":\"1000.00\",\"policy_id\":\"SYNTHETIC-CTRL-008\",\"policy_version\":\"2026-08-01\",\"settlement_grace_days\":10,\"source_system\":\"FinTrace-Synthetic-VendorControls\",\"variance_review_threshold\":\"25.00\",\"vendor_id\":\"VND_DEMO_CONTEXT_TAIL\"}]"
+        }
+      ]
+    },
+    {
+      "operation": "ensure-parent-metastore",
+      "httpStatus": 200,
+      "rows": []
+    },
+    {
+      "operation": "inspect-scoring-namespace",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "name": "fintrace_scoring",
+          "type": "namespace",
+          "usl_id": null,
+          "count": "1",
+          "activated": null
+        }
+      ]
+    },
+    {
+      "operation": "inspect-model",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "name": "payment_review",
+          "type": "usl",
+          "usl_id": "873",
+          "count": "3",
+          "activated": null
+        }
+      ]
+    },
+    {
+      "operation": "count-vendor_policy",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "row_count": "8"
+        }
+      ]
+    },
+    {
+      "operation": "count-payments",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "row_count": "9"
+        }
+      ]
+    },
+    {
+      "operation": "count-bank_settlements",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "row_count": "7"
+        }
+      ]
+    },
+    {
+      "operation": "load-usl-definition",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "json": "{\"namespace\":[\"metastore\",\"fintrace_scoring\"],\"name\":\"payment_review\",\"tables\":[{\"name\":\"vendor_policy\",\"columnSpecs\":[{\"name\":\"vendor_id\",\"dataType\":\"\\\"varchar(100)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"currency\",\"dataType\":\"\\\"varchar(3)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"max_unreviewed_payment\",\"dataType\":\"\\\"decimal(18,2)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"variance_review_threshold\",\"dataType\":\"\\\"decimal(18,2)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"settlement_grace_days\",\"dataType\":\"\\\"integer\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"bank_change_review_required\",\"dataType\":\"\\\"boolean\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"effective_from\",\"dataType\":\"\\\"date\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"effective_to\",\"dataType\":\"\\\"date\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"fintrace_scoring\",\"payment_review\"],\"dqAnnotations\":[{\"name\":\"policy_threshold_valid\",\"expression\":\"max_unreviewed_payment IS NOT NULL AND max_unreviewed_payment >= 0 AND variance_review_threshold IS NOT NULL AND variance_review_threshold >= 0 AND settlement_grace_days IS NOT NULL AND settlement_grace_days >= 0 AND effective_from IS NOT NULL AND effective_to IS NOT NULL AND effective_to >= effective_from\",\"cte\":{}}],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(CAST(p.vendor_id AS STRING), '') AS vendor_id,\\n  CAST(p.currency AS STRING) AS currency,\\n  CAST(p.max_unreviewed_payment AS DECIMAL(18,2)) AS max_unreviewed_payment,\\n  CAST(p.variance_review_threshold AS DECIMAL(18,2)) AS variance_review_threshold,\\n  CAST(p.settlement_grace_days AS INT) AS settlement_grace_days,\\n  CAST(p.bank_change_review_required AS BOOLEAN) AS bank_change_review_required,\\n  CAST(p.effective_from AS DATE) AS effective_from,\\n  CAST(p.effective_to AS DATE) AS effective_to\\nFROM FINTRACE_POLICY.vendor_policy\\nLATERAL VIEW explode(data) AS p\"},{\"name\":\"payments\",\"columnSpecs\":[{\"name\":\"payment_id\",\"dataType\":\"\\\"varchar(100)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"vendor_id\",\"dataType\":\"\\\"varchar(100)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.fintrace_scoring.payment_review.vendor_policy\"],\"refColumns\":[\"vendor_id\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"payment_date\",\"dataType\":\"\\\"date\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"reference_number\",\"dataType\":\"\\\"varchar(100)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"currency\",\"dataType\":\"\\\"varchar(3)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"payment_amount\",\"dataType\":\"\\\"decimal(18,2)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"payment_status\",\"dataType\":\"\\\"varchar(30)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"fintrace_scoring\",\"payment_review\"],\"dqAnnotations\":[{\"name\":\"positive_payment_amount\",\"expression\":\"payment_amount IS NOT NULL AND payment_amount > 0\",\"cte\":{}}],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(get_json_object(payload, '$.payment_id'), '') AS payment_id,\\n  get_json_object(payload, '$.vendor_id') AS vendor_id,\\n  CAST(get_json_object(payload, '$.payment_date') AS DATE) AS payment_date,\\n  get_json_object(payload, '$.reference_number') AS reference_number,\\n  get_json_object(payload, '$.payment_currency') AS currency,\\n  CAST(get_json_object(payload, '$.payment_amount') AS DECIMAL(18,2)) AS payment_amount,\\n  get_json_object(payload, '$.payment_status') AS payment_status\\nFROM FINTRACE.payments WHERE dataset_id = 'ds-f9be2f5bab44f603' AND get_json_object(payload, '$.payment_id') IN ('PAY_DEMO_NORMAL', 'PAY_DEMO_DUP_OTHER', 'PAY_DEMO_DUP', 'PAY_DEMO_STALE', 'PAY_DEMO_MISSING', 'PAY_DEMO_FEE', 'PAY_DEMO_FUTURE_EVENT', 'PAY_DEMO_FUTURE_FEE', 'PAY_DEMO_CONTEXT_TAIL')\"},{\"name\":\"bank_settlements\",\"columnSpecs\":[{\"name\":\"bank_transaction_id\",\"dataType\":\"\\\"varchar(100)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"payment_id\",\"dataType\":\"\\\"varchar(100)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.fintrace_scoring.payment_review.payments\"],\"refColumns\":[\"payment_id\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"payment_reference\",\"dataType\":\"\\\"varchar(100)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"currency\",\"dataType\":\"\\\"varchar(3)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"settled_amount\",\"dataType\":\"\\\"decimal(18,2)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"settlement_status\",\"dataType\":\"\\\"varchar(30)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"posted_date\",\"dataType\":\"\\\"date\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"fintrace_scoring\",\"payment_review\"],\"dqAnnotations\":[],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(CAST(b.bank_transaction_id AS STRING), '') AS bank_transaction_id,\\n  p.payment_id AS payment_id,\\n  CAST(b.payment_reference AS STRING) AS payment_reference,\\n  CAST(b.currency AS STRING) AS currency,\\n  CAST(b.amount AS DECIMAL(18,2)) AS settled_amount,\\n  CAST(b.status AS STRING) AS settlement_status,\\n  CAST(b.posted_date AS DATE) AS posted_date\\nFROM FINTRACE_BANK.bank_settlements b\\nLEFT JOIN lightning.metastore.fintrace_scoring.payment_review.payments p\\n  ON b.payment_reference = p.reference_number AND b.currency = p.currency\"}]}"
+        }
+      ]
+    },
+    {
+      "operation": "inspect-rule-positive_payment_amount",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "name": "vendor_id",
+          "table": "vendor_policy",
+          "type": "Primary key constraints",
+          "expression": ""
+        },
+        {
+          "name": "policy_threshold_valid",
+          "table": "vendor_policy",
+          "type": "Custom Data Quality",
+          "expression": "max_unreviewed_payment IS NOT NULL AND max_unreviewed_payment >= 0 AND variance_review_threshold IS NOT NULL AND variance_review_threshold >= 0 AND settlement_grace_days IS NOT NULL AND settlement_grace_days >= 0 AND effective_from IS NOT NULL AND effective_to IS NOT NULL AND effective_to >= effective_from"
+        },
+        {
+          "name": "payment_id",
+          "table": "payments",
+          "type": "Primary key constraints",
+          "expression": ""
+        },
+        {
+          "name": "vendor_id",
+          "table": "payments",
+          "type": "Foreign key constraints",
+          "expression": ""
+        },
+        {
+          "name": "positive_payment_amount",
+          "table": "payments",
+          "type": "Custom Data Quality",
+          "expression": "payment_amount IS NOT NULL AND payment_amount > 0"
+        },
+        {
+          "name": "bank_transaction_id",
+          "table": "bank_settlements",
+          "type": "Primary key constraints",
+          "expression": ""
+        },
+        {
+          "name": "payment_id",
+          "table": "bank_settlements",
+          "type": "Foreign key constraints",
+          "expression": ""
+        }
+      ]
+    },
+    {
+      "operation": "run-rule-positive_payment_amount",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "name": "positive_payment_amount",
+          "table": "payments",
+          "type": "Custom Data Quality",
+          "total_record": "9",
+          "valid_record": "9",
+          "invalid_record": "0"
+        }
+      ]
+    },
+    {
+      "operation": "invalid-records-positive_payment_amount",
+      "httpStatus": 200,
+      "rows": []
+    },
+    {
+      "operation": "inspect-rule-policy_threshold_valid",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "name": "vendor_id",
+          "table": "vendor_policy",
+          "type": "Primary key constraints",
+          "expression": ""
+        },
+        {
+          "name": "policy_threshold_valid",
+          "table": "vendor_policy",
+          "type": "Custom Data Quality",
+          "expression": "max_unreviewed_payment IS NOT NULL AND max_unreviewed_payment >= 0 AND variance_review_threshold IS NOT NULL AND variance_review_threshold >= 0 AND settlement_grace_days IS NOT NULL AND settlement_grace_days >= 0 AND effective_from IS NOT NULL AND effective_to IS NOT NULL AND effective_to >= effective_from"
+        },
+        {
+          "name": "payment_id",
+          "table": "payments",
+          "type": "Primary key constraints",
+          "expression": ""
+        },
+        {
+          "name": "vendor_id",
+          "table": "payments",
+          "type": "Foreign key constraints",
+          "expression": ""
+        },
+        {
+          "name": "positive_payment_amount",
+          "table": "payments",
+          "type": "Custom Data Quality",
+          "expression": "payment_amount IS NOT NULL AND payment_amount > 0"
+        },
+        {
+          "name": "bank_transaction_id",
+          "table": "bank_settlements",
+          "type": "Primary key constraints",
+          "expression": ""
+        },
+        {
+          "name": "payment_id",
+          "table": "bank_settlements",
+          "type": "Foreign key constraints",
+          "expression": ""
+        }
+      ]
+    },
+    {
+      "operation": "run-rule-policy_threshold_valid",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "name": "policy_threshold_valid",
+          "table": "vendor_policy",
+          "type": "Custom Data Quality",
+          "total_record": "8",
+          "valid_record": "8",
+          "invalid_record": "0"
+        }
+      ]
+    },
+    {
+      "operation": "invalid-records-policy_threshold_valid",
+      "httpStatus": 200,
+      "rows": []
+    },
+    {
+      "operation": "list-all-usl-quality-rules",
+      "httpStatus": 200,
+      "rows": [
+        {
+          "name": "vendor_id",
+          "table": "vendor_policy",
+          "type": "Primary key constraints",
+          "expression": ""
+        },
+        {
+          "name": "policy_threshold_valid",
+          "table": "vendor_policy",
+          "type": "Custom Data Quality",
+          "expression": "max_unreviewed_payment IS NOT NULL AND max_unreviewed_payment >= 0 AND variance_review_threshold IS NOT NULL AND variance_review_threshold >= 0 AND settlement_grace_days IS NOT NULL AND settlement_grace_days >= 0 AND effective_from IS NOT NULL AND effective_to IS NOT NULL AND effective_to >= effective_from"
+        },
+        {
+          "name": "payment_id",
+          "table": "payments",
+          "type": "Primary key constraints",
+          "expression": ""
+        },
+        {
+          "name": "vendor_id",
+          "table": "payments",
+          "type": "Foreign key constraints",
+          "expression": ""
+        },
+        {
+          "name": "positive_payment_amount",
+          "table": "payments",
+          "type": "Custom Data Quality",
+          "expression": "payment_amount IS NOT NULL AND payment_amount > 0"
+        },
+        {
+          "name": "bank_transaction_id",
+          "table": "bank_settlements",
+          "type": "Primary key constraints",
+          "expression": ""
+        },
+        {
+          "name": "payment_id",
+          "table": "bank_settlements",
+          "type": "Foreign key constraints",
+          "expression": ""
+        }
+      ]
+    }
+  ],
+  "success": true,
+  "modelDefinition": [
+    {
+      "json": "{\"namespace\":[\"metastore\",\"fintrace_scoring\"],\"name\":\"payment_review\",\"tables\":[{\"name\":\"vendor_policy\",\"columnSpecs\":[{\"name\":\"vendor_id\",\"dataType\":\"\\\"varchar(100)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"currency\",\"dataType\":\"\\\"varchar(3)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"max_unreviewed_payment\",\"dataType\":\"\\\"decimal(18,2)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"variance_review_threshold\",\"dataType\":\"\\\"decimal(18,2)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"settlement_grace_days\",\"dataType\":\"\\\"integer\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"bank_change_review_required\",\"dataType\":\"\\\"boolean\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"effective_from\",\"dataType\":\"\\\"date\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"effective_to\",\"dataType\":\"\\\"date\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"fintrace_scoring\",\"payment_review\"],\"dqAnnotations\":[{\"name\":\"policy_threshold_valid\",\"expression\":\"max_unreviewed_payment IS NOT NULL AND max_unreviewed_payment >= 0 AND variance_review_threshold IS NOT NULL AND variance_review_threshold >= 0 AND settlement_grace_days IS NOT NULL AND settlement_grace_days >= 0 AND effective_from IS NOT NULL AND effective_to IS NOT NULL AND effective_to >= effective_from\",\"cte\":{}}],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(CAST(p.vendor_id AS STRING), '') AS vendor_id,\\n  CAST(p.currency AS STRING) AS currency,\\n  CAST(p.max_unreviewed_payment AS DECIMAL(18,2)) AS max_unreviewed_payment,\\n  CAST(p.variance_review_threshold AS DECIMAL(18,2)) AS variance_review_threshold,\\n  CAST(p.settlement_grace_days AS INT) AS settlement_grace_days,\\n  CAST(p.bank_change_review_required AS BOOLEAN) AS bank_change_review_required,\\n  CAST(p.effective_from AS DATE) AS effective_from,\\n  CAST(p.effective_to AS DATE) AS effective_to\\nFROM FINTRACE_POLICY.vendor_policy\\nLATERAL VIEW explode(data) AS p\"},{\"name\":\"payments\",\"columnSpecs\":[{\"name\":\"payment_id\",\"dataType\":\"\\\"varchar(100)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"vendor_id\",\"dataType\":\"\\\"varchar(100)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.fintrace_scoring.payment_review.vendor_policy\"],\"refColumns\":[\"vendor_id\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"payment_date\",\"dataType\":\"\\\"date\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"reference_number\",\"dataType\":\"\\\"varchar(100)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"currency\",\"dataType\":\"\\\"varchar(3)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"payment_amount\",\"dataType\":\"\\\"decimal(18,2)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"payment_status\",\"dataType\":\"\\\"varchar(30)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"fintrace_scoring\",\"payment_review\"],\"dqAnnotations\":[{\"name\":\"positive_payment_amount\",\"expression\":\"payment_amount IS NOT NULL AND payment_amount > 0\",\"cte\":{}}],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(get_json_object(payload, '$.payment_id'), '') AS payment_id,\\n  get_json_object(payload, '$.vendor_id') AS vendor_id,\\n  CAST(get_json_object(payload, '$.payment_date') AS DATE) AS payment_date,\\n  get_json_object(payload, '$.reference_number') AS reference_number,\\n  get_json_object(payload, '$.payment_currency') AS currency,\\n  CAST(get_json_object(payload, '$.payment_amount') AS DECIMAL(18,2)) AS payment_amount,\\n  get_json_object(payload, '$.payment_status') AS payment_status\\nFROM FINTRACE.payments WHERE dataset_id = 'ds-f9be2f5bab44f603' AND get_json_object(payload, '$.payment_id') IN ('PAY_DEMO_NORMAL', 'PAY_DEMO_DUP_OTHER', 'PAY_DEMO_DUP', 'PAY_DEMO_STALE', 'PAY_DEMO_MISSING', 'PAY_DEMO_FEE', 'PAY_DEMO_FUTURE_EVENT', 'PAY_DEMO_FUTURE_FEE', 'PAY_DEMO_CONTEXT_TAIL')\"},{\"name\":\"bank_settlements\",\"columnSpecs\":[{\"name\":\"bank_transaction_id\",\"dataType\":\"\\\"varchar(100)\\\"\",\"primaryKey\":{\"columns\":[]},\"notNull\":{\"columns\":[]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"payment_id\",\"dataType\":\"\\\"varchar(100)\\\"\",\"foreignKey\":{\"columns\":[],\"refTable\":[\"lightning.metastore.fintrace_scoring.payment_review.payments\"],\"refColumns\":[\"payment_id\"]},\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"payment_reference\",\"dataType\":\"\\\"varchar(100)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"currency\",\"dataType\":\"\\\"varchar(3)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"settled_amount\",\"dataType\":\"\\\"decimal(18,2)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"settlement_status\",\"dataType\":\"\\\"varchar(30)\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]},{\"name\":\"posted_date\",\"dataType\":\"\\\"date\\\"\",\"dqAnnotations\":[],\"acAnnotations\":[]}],\"unique\":[],\"foreignKeys\":[],\"checks\":[],\"ifNotExit\":false,\"namespace\":[\"lightning\",\"metastore\",\"fintrace_scoring\",\"payment_review\"],\"dqAnnotations\":[],\"acAnnotations\":[],\"activateQuery\":\"SELECT COALESCE(CAST(b.bank_transaction_id AS STRING), '') AS bank_transaction_id,\\n  p.payment_id AS payment_id,\\n  CAST(b.payment_reference AS STRING) AS payment_reference,\\n  CAST(b.currency AS STRING) AS currency,\\n  CAST(b.amount AS DECIMAL(18,2)) AS settled_amount,\\n  CAST(b.status AS STRING) AS settlement_status,\\n  CAST(b.posted_date AS DATE) AS posted_date\\nFROM FINTRACE_BANK.bank_settlements b\\nLEFT JOIN lightning.metastore.fintrace_scoring.payment_review.payments p\\n  ON b.payment_reference = p.reference_number AND b.currency = p.currency\"}]}"
+    }
+  ],
+  "rules": [
+    {
+      "name": "vendor_id",
+      "table": "vendor_policy",
+      "type": "Primary key constraints",
+      "expression": ""
+    },
+    {
+      "name": "policy_threshold_valid",
+      "table": "vendor_policy",
+      "type": "Custom Data Quality",
+      "expression": "max_unreviewed_payment IS NOT NULL AND max_unreviewed_payment >= 0 AND variance_review_threshold IS NOT NULL AND variance_review_threshold >= 0 AND settlement_grace_days IS NOT NULL AND settlement_grace_days >= 0 AND effective_from IS NOT NULL AND effective_to IS NOT NULL AND effective_to >= effective_from"
+    },
+    {
+      "name": "payment_id",
+      "table": "payments",
+      "type": "Primary key constraints",
+      "expression": ""
+    },
+    {
+      "name": "vendor_id",
+      "table": "payments",
+      "type": "Foreign key constraints",
+      "expression": ""
+    },
+    {
+      "name": "positive_payment_amount",
+      "table": "payments",
+      "type": "Custom Data Quality",
+      "expression": "payment_amount IS NOT NULL AND payment_amount > 0"
+    },
+    {
+      "name": "bank_transaction_id",
+      "table": "bank_settlements",
+      "type": "Primary key constraints",
+      "expression": ""
+    },
+    {
+      "name": "payment_id",
+      "table": "bank_settlements",
+      "type": "Foreign key constraints",
+      "expression": ""
+    }
+  ],
+  "completedAt": "2026-10-27T21:17:20.892Z"
+}

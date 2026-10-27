@@ -35,6 +35,10 @@ The adapter follows the official UI-proxy helper at commit `98a2d30603c6e2c001ce
 
 Only application-constructed SELECTs are accepted. Queries request 1001 rows and reject evidence tables above the verified 1000-row bound instead of silently treating truncated output as complete. Every returned financial table is checked against a canonical checksum of the immutable imported snapshot, preventing silently truncated or mismatched sources from supporting a conclusion. Errors and unrecognised response shapes throw; a successful empty response is different from a failed request.
 
+On 27 October 2026, the current official local Docker bundle was also verified on Apple M4. Its legacy `run-query` route returned the supported `headers`/`data` matrix. The newer `/api/proxy/query/sql/start` route returned a different `records` envelope and is not used by this adapter. Nine `FINTRACE` native datasource views, snapshot-integrity checks, four synthetic live investigations and H-MEM approval/persistence/recall passed with direct DeepSeek; see [the current validation record](submission/VALIDATION.md). This does not establish a Nightshift route. The separate [three-feed USL and native DQ demonstration](submission/ZETARIS_USL.md) records its own deployment, source SQL, results and reproduction commands; it does not replace the application's snapshot-checked evidence path.
+
+For an isolated local profile, put the database, Zetaris and selected model settings in an ignored `.env.zetaris.local`, with a separate `FINTRACE_STORAGE_DIR` and free `PORT`. Start it with `node --env-file=.env.zetaris.local --import tsx apps/api/src/server.ts`; run `node --env-file=.env.zetaris.local --import tsx scripts/preflight.ts --live` for a real connection check. Ordinary login JWTs in the tested bundle expire after approximately 15 minutes. The UI's Management → API Tokens flow supplies expiring API credentials; treat them as secrets and check the account permissions they inherit. The application does not refresh login JWTs automatically.
+
 ## Model provider
 
 Choose one explicit provider. Configuration changes require a server restart.
@@ -50,6 +54,10 @@ For OpenAI with local evidence, use `FINTRACE_MODE=local-model`. This uses local
 **Meterless Runtime:** start the official Runtime, enable its OpenAI-compatible endpoint, and set `MODEL_PROVIDER=meterless`, `METERLESS_BASE_URL`, `METERLESS_RUNTIME_TOKEN`, and `METERLESS_MODEL` to the values actually provided by that Runtime. No provider switch is automatic.
 
 The Meterless adapter supplies each operation's JSON schema in the system prompt and validates returned values locally. It does not assume all Runtime models support strict JSON-schema request parameters. Planning, memory suggestions and baseline calls share the selected provider. Authentication errors fail immediately; bounded retries remain on the same endpoint. The preflight reports requested and returned models, when available, but the actual underlying route must also be verified in Nightshift. Cloud keys belong in Nightshift's provider settings for this route; FinTrace uses its Runtime token.
+
+The 27 October 2026 acceptance used the official Mac M1-M4 Runtime 0.92.7 and Google `gemini-3.5-flash-lite`. Four fresh synthetic live investigations, a real memory draft, scripted approval, application-wrapper recreation and later recall passed. All 17 business model calls matched their Runtime decision, Google provider and model; see [the results and reproduction steps](submission/NIGHTSHIFT_ACCEPTANCE.md).
+
+Optional `METERLESS_MIN_REQUEST_INTERVAL_MS` sets request-start spacing from 0 to 60000 milliseconds; the default is 0. The tested demo uses 5000. Planning, drafts, concurrent calls and retries share this gate for the same Runtime endpoint within one FinTrace process, and cancelled waiting calls are not sent. It does not coordinate other processes or increase the provider's daily quota. Check the selected provider's actual account limits before a demonstration.
 
 The planner emits a strict typed tool request. Transient model HTTP errors receive one retry. Output that chooses an unknown tool or fails schema validation terminates as a technical failure. Financial outcomes are determined by independent rules, not the model's self-assessment.
 

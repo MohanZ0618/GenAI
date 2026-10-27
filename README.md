@@ -4,7 +4,7 @@ FinTrace helps accounts-payable and finance-operations teams answer **why a paym
 
 **Track:** 02 — The Agent That Can Explain Why.
 
-> **Submission status:** The application and Meterless H-MEM feature are implemented. Historical synthetic runs verified PostgreSQL + Zetaris + direct OpenAI. The Nightshift adapter has automated contract tests, but a real Nightshift-routed investigation has **not yet been verified**. Direct OpenAI results do not satisfy the supplied requirement to use Nightshift as the primary AI provider. See the [requirements checklist](docs/submission/REQUIREMENTS.md) before submitting.
+> **Submission status:** Four fresh synthetic investigations passed through PostgreSQL + Zetaris + Nightshift + Google `gemini-3.5-flash-lite`, including memory drafting, scripted review, persistence and later recall. All 17 business model calls matched Nightshift Runtime explanations. See the [acceptance evidence](docs/submission/NIGHTSHIFT_ACCEPTANCE.md) and the separate [three-feed USL and native data-quality package](docs/submission/ZETARIS_USL.md). Final video, slides, public repository access and HackOS submission remain team tasks; use the [requirements checklist](docs/submission/REQUIREMENTS.md).
 
 ## Start here
 
@@ -36,8 +36,8 @@ flowchart TD
     UI --> API[Fastify API]
     API --> Agent[Bounded investigation controller]
     Agent --> Planner[Model provider adapter]
-    Planner -->|Submission profile: planned, live verification pending| Nightshift[Meterless Nightshift]
-    Nightshift -->|Target route: verify on installed runtime| OpenAI[OpenAI cloud model]
+    Planner -->|Verified synthetic live profile| Nightshift[Meterless Nightshift]
+    Nightshift --> Google[Google Gemini 3.5 Flash Lite]
     Agent --> Tools[Six read-only evidence tools]
     Tools -->|live mode| Zetaris[Zetaris query layer]
     Zetaris --> Views[PostgreSQL source views]
@@ -61,7 +61,7 @@ The controller has a planner and an independent verifier; it is not a swarm of a
 | `ledger` | gl_entries | Inspect payment and fee accounting |
 | `processor_events` | audit_log | Check processing events when needed |
 
-Nine tables are validated on import; `bank_statements` is also included in the data contract but is not independently queried by these six tools. In live mode, investigation evidence passes through Zetaris. Imports and application persistence use PostgreSQL directly. The tested deployment is multiple tables in one PostgreSQL database, not a demonstrated federation across independent enterprise systems.
+Nine tables are validated on import; `bank_statements` is also included in the data contract but is not independently queried by these six tools. In live mode, investigation evidence passes through Zetaris. Imports and application persistence use PostgreSQL directly. These tools query one PostgreSQL source. A separate [USL scoring demonstration](docs/submission/ZETARIS_USL.md) joins three simulated feeds over PostgreSQL, CSV and HTTP; it includes source assets, DDL, six exploration queries, three USL queries, native quality checks and a hand-written comparison. The feeds are synthetic, and the application evidence contract continues to use its existing immutable snapshots.
 
 ## Quick start: no keys or Docker required
 
@@ -104,7 +104,7 @@ All profiles share the same independent verifier. Fixture is the project's offli
 
 ### Competition profile: Nightshift is the primary provider
 
-Follow [NIGHTSHIFT_SETUP.md](docs/submission/NIGHTSHIFT_SETUP.md) and [INTEGRATIONS.md](docs/INTEGRATIONS.md). Configure PostgreSQL and Zetaris, install the official Nightshift runtime with an API endpoint, and configure the intended OpenAI model in Nightshift. Support for that exact OpenAI route must be verified in the installed runtime.
+Follow [NIGHTSHIFT_SETUP.md](docs/submission/NIGHTSHIFT_SETUP.md) and [INTEGRATIONS.md](docs/INTEGRATIONS.md). Configure PostgreSQL and Zetaris, install the official Nightshift runtime with an API endpoint, and configure a supported cloud provider inside Nightshift. The tested Mac route uses Google `gemini-3.5-flash-lite`; verify availability and quota on your own installation.
 
 Copy `.env.example` to `.env.local` only if no local configuration already exists. Set the following values using the actual runtime configuration:
 
@@ -114,17 +114,19 @@ MODEL_PROVIDER=meterless
 METERLESS_BASE_URL=http://127.0.0.1:8088/v1
 METERLESS_RUNTIME_TOKEN=<your Nightshift runtime token>
 METERLESS_MODEL=<model ID exposed by your runtime>
+# Tested demo uses gemini-3.5-flash-lite and 5-second request spacing.
+METERLESS_MIN_REQUEST_INTERVAL_MS=5000
 ```
 
-The base URL above is the documented default, not a verified address on your machine. Keep OpenAI cloud credentials in Nightshift for this route; the FinTrace Meterless adapter uses the Runtime token. Set `DATABASE_URL` and the Zetaris fields as documented, then restart FinTrace. Remove a shell-level fixture override first (`Remove-Item Env:FINTRACE_MODE -ErrorAction SilentlyContinue` in PowerShell).
+The base URL above was verified on the tested Mac; confirm the actual address on your machine. Keep cloud credentials in Nightshift for this route; the FinTrace Meterless adapter uses the Runtime token. Set `DATABASE_URL` and the Zetaris fields as documented, then restart FinTrace. Remove a shell-level fixture override first (`Remove-Item Env:FINTRACE_MODE -ErrorAction SilentlyContinue` in PowerShell).
 
 ```powershell
 npm run preflight:submission
 npm run preflight:submission -- --live
-npm run verify:business -- --connect --repeat=1
+npm run verify:nightshift -- --connect
 ```
 
-The first command checks configuration without connecting. The second contacts the services and makes a billable model request. The third runs real synthetic business scenarios. Successful preflight is not submission certification: correlate a real request with Nightshift's runtime record, verify the underlying model, and record the complete workflow.
+The first command checks configuration without connecting. The second contacts the services and makes a real model request that consumes API quota. The third runs four fresh synthetic business scenarios, a real memory draft, scripted review, application recreation and recall, and checks Runtime explanations. It writes synthetic records and defaults to a separate memory namespace. Successful technical checks do not certify the complete submission.
 
 Direct OpenAI, DeepSeek and NVIDIA adapters remain available for development. They are not the final Nightshift submission route. No automatic direct-provider or fixture fallback occurs when a selected model fails. See [provider configuration](docs/INTEGRATIONS.md#model-provider).
 
@@ -159,7 +161,7 @@ npx tsx third_party/meterless/engines/hmem/conformance/runner.ts
 
 For a real-model H-MEM check, use `FINTRACE_MODE=local-model`, `MODEL_PROVIDER=meterless`, valid Runtime settings, then `npm run verify:hmem -- --connect`. That experiment uses local evidence and does not prove Zetaris integration. Full live evidence requires the separate business checks and UI demonstration.
 
-See [current verification](docs/submission/VALIDATION.md) for exact checks performed in this preparation pass. Historical synthetic results are documented separately: 15/15 live business runs through direct OpenAI, and an H-MEM local-model experiment with 12/12 expected outcomes. These do not prove Nightshift operation, real-world accuracy, generalization, or an advantage over rules. The H-MEM comparison did not reduce total request count and used more tokens.
+See [current verification](docs/submission/VALIDATION.md) for the 189 passing unit/API tests and the complete [Nightshift synthetic acceptance](docs/submission/NIGHTSHIFT_ACCEPTANCE.md). Historical results include 15/15 live business runs through direct OpenAI and an H-MEM local-model experiment with 12/12 expected outcomes. Selected synthetic checks do not establish real-world accuracy, generalization or an advantage over rules. The historical H-MEM comparison did not reduce total request count and used more tokens.
 
 ## Implementation map
 
@@ -175,6 +177,6 @@ See [current verification](docs/submission/VALIDATION.md) for exact checks perfo
 
 Synthetic source data derives from **FinRCA-AI-Bench**, pinned to `76c93ec32536e29826e2ab9e68b58e0351410bc7` (MIT). Meterless H-MEM is pinned to `1742dec56a66e58eef9dda2d2b865823758ca8cd` (Apache-2.0). These are third-party components, not original FinTrace algorithms. See [DATA.md](docs/DATA.md), [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), and the [MIT project license](LICENSE).
 
-FinTrace is a local, single-instance prototype. Production authentication, multi-instance guarantees, real-customer impact, statistically meaningful model comparisons and live Nightshift/NVIDIA acceptance remain unverified. Model traces report requested and returned model identifiers when supplied; a returned alias alone does not independently prove the underlying model.
+FinTrace is a local, single-instance prototype. Production authentication, multi-instance guarantees, real-customer impact, statistically meaningful model comparisons and NVIDIA/Nemotron execution remain unverified. The tested Nightshift route is backed by matching Runtime decisions and model/provider metadata; these explanations are unsigned. A returned model alias alone does not prove the underlying route.
 
 `PUBLIC_FILES.txt` defines the source-release allowlist. Do not upload `.env.local`, `.local/`, `.git/`, personal research, raw runtime reports, credentials, dependencies or build caches. New submission documents are English. Older Chinese technical notes remain historical references; the current submission checklist supersedes their older competition-requirement interpretations. Public repository visibility, final slides, video and HackOS submission are completed by the team.

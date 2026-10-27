@@ -1,12 +1,12 @@
 # Public repository and teammate handoff
 
-The user will create the GitHub repository. No public upload or remote visibility change is performed by this preparation pass.
+The existing [MohanZ0618/GenAI repository](https://github.com/MohanZ0618/GenAI) is public and its README/source were readable signed out on 27 October 2026. The latest local Nightshift/USL changes still need to be synchronized and the resulting public revision checked. This preparation pass did not change remote visibility or upload those changes.
 
 ## Use the prepared source package
 
-The prepared ZIP is built from `PUBLIC_FILES.txt`. It contains source, tests, synthetic samples, configuration placeholders, licenses and English submission documents. It excludes `.git`, `.env.local`, runtime records, dependencies and build caches. Extract the ZIP into a new folder before publishing; do not copy the entire private working directory or its Git history.
+Use `PUBLIC_FILES.txt` to review the source release. It now lists 390 source, test, synthetic sample, configuration-placeholder, license and submission-document files. The earlier ZIP/fresh-copy validation covered 367 files; rebuild and verify the current revision before using a packaged source archive. Exclude `.env.local`, raw runtime records, dependencies and build caches.
 
-Upload the extracted project files to the new **public** repository. Confirm hidden files such as `.gitignore` and `.env.example` are included. Do not upload the ZIP as the only repository file: judges need the source tree and readable README. Do not use a private history as the basis of a new public repository without separately auditing that history.
+Synchronize the reviewed project files to the public repository, including `.gitignore` and `.env.example`. Judges need the source tree and readable README; a ZIP alone is insufficient. If creating a separate source-only repository, extract the current allowlisted package into a new folder and review any history before publishing it.
 
 ## Verify from the public repository
 
@@ -23,7 +23,7 @@ Upload the extracted project files to the new **public** repository. Confirm hid
 - `docs/submission/TEAM_HANDOFF.md`: eight-slide outline, narration and 3:40 recording sequence.
 - `docs/submission/SPONSOR_EXPLANATION.md`: sponsor roles and actual evidence status.
 - `docs/submission/VALIDATION.md`: checks and known issues they must represent accurately.
-- `docs/submission/NIGHTSHIFT_SETUP.md`: remaining live route setup and required screenshots.
+- `docs/submission/NIGHTSHIFT_SETUP.md`: reproduction setup for the verified Google `gemini-3.5-flash-lite` route through Nightshift and required screenshots; actual results are in [NIGHTSHIFT_ACCEPTANCE.md](NIGHTSHIFT_ACCEPTANCE.md).
 
 The team lead uses `SUBMISSION_COPY.md` and `REQUIREMENTS.md`. Complete all placeholders, verify the roster before creating a submission, check the public deck/video links, and retain HackOS's submission confirmation.
 
