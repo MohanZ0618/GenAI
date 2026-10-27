@@ -2121,6 +2121,51 @@ button.button:active:not(:disabled) {
 .resource-remove {
   color: #9c453a;
 }
+.memory-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.memory-card-header .resource-selection {
+  padding: 0;
+  flex-shrink: 0;
+}
+.memory-card-header input {
+  margin: 0;
+}
+.memory-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.memory-card-actions > a {
+  overflow-wrap: anywhere;
+}
+.memory-card-buttons {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+.memory-card-buttons .button {
+  min-height: 40px;
+  margin: 0;
+  font-size: 14px;
+}
+@media (max-width: 600px) {
+  .memory-card-actions {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .memory-card-buttons .button {
+    flex: 1;
+  }
+}
 .dataset-card > .resource-remove {
   margin-top: 12px;
 }

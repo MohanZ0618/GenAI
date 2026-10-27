@@ -1,5 +1,84 @@
 import { test, expect } from "@playwright/test";
 
+test("memory card actions align on desktop and mobile", async ({
+  page,
+}, info) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const memories = ["active", "inactive"].map((status, index) => ({
+    id: `layout-memory-${index}`,
+    content: "Review allocations against bank and ledger evidence.",
+    source: "layout-source",
+    namespace: "workspace",
+    status,
+    scope: "workspace",
+    approvedAt: "2026-10-26T12:00:00Z",
+    generationSource: "manual",
+    conditions: "Payment reconciliation",
+    suggestedTools: ["allocations"],
+    evidenceIds: [],
+  }));
+  await page.route("**/api/memories", (route) =>
+    route.fulfill({ json: { memories } }),
+  );
+  await page.route("**/api/datasets", (route) =>
+    route.fulfill({ json: { datasets: [] } }),
+  );
+  await page.route("**/api/cases?*", (route) =>
+    route.fulfill({ json: { cases: [] } }),
+  );
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "Investigation memories", exact: true })
+    .click();
+  const cards = page.locator(".memory-panel article");
+  await expect(cards).toHaveCount(2);
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    for (const card of await cards.all()) {
+      const buttons = card.locator(".memory-card-buttons .button");
+      const first = await buttons.nth(0).boundingBox();
+      const second = await buttons.nth(1).boundingBox();
+      expect(first).not.toBeNull();
+      expect(second).not.toBeNull();
+      expect(Math.abs(first!.y - second!.y)).toBeLessThan(1);
+      expect(Math.abs(first!.height - second!.height)).toBeLessThan(1);
+      expect(second!.x - first!.x - first!.width).toBeGreaterThanOrEqual(9);
+      const checkbox = await card
+        .locator(".memory-card-header input")
+        .boundingBox();
+      const title = await card
+        .locator(".memory-card-header strong")
+        .boundingBox();
+      expect(
+        Math.abs(
+          checkbox!.y + checkbox!.height / 2 - title!.y - title!.height / 2,
+        ),
+      ).toBeLessThan(1);
+      if (width === 390) {
+        const link = await card
+          .getByRole("link", { name: "Open source investigation" })
+          .boundingBox();
+        expect(first!.y).toBeGreaterThanOrEqual(link!.y + link!.height);
+      }
+    }
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await page.screenshot({
+      path: info.outputPath(`memory-actions-${width}.png`),
+      fullPage: true,
+    });
+  }
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Investigation memories", exact: true })
+    .click();
+  await expect(cards.locator(".memory-card-buttons")).toHaveCount(2);
+});
+
 test("request changes, suggest, accept and correct an existing memory without losing notes", async ({
   page,
   request,
