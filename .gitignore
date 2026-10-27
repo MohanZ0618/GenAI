@@ -24,6 +24,8 @@ evaluation/screenshots/
 data/**/live-smoke.json
 data/**/validation.json
 submission/
+!docs/submission/
+!docs/submission/*.md
 *.pptx
 *.docx
 *.webm

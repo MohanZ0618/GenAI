@@ -4,7 +4,10 @@ import {
   createModelProvider,
   modelConfiguration,
 } from "../apps/api/src/integrations/model.ts";
-import type { Mode } from "../packages/contracts/src/index.ts";
+import type {
+  Mode,
+  ModelRequestTrace,
+} from "../packages/contracts/src/index.ts";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import pg from "pg";
@@ -69,6 +72,7 @@ export async function runPreflight(
   if (connect && mode !== "fixture" && configured.model) {
     try {
       const provider = createModelProvider(modelEnv);
+      const requests: ModelRequestTrace[] = [];
       await provider.next(
         {
           paymentId: "preflight",
@@ -77,11 +81,16 @@ export async function runPreflight(
           memories: [],
         },
         AbortSignal.timeout(90000),
+        async (trace) => {
+          requests.push(trace);
+        },
       );
       checks.model = {
         status: "responded",
         provider: provider.name,
         model: provider.model,
+        returnedModel: requests.at(-1)?.returnedModel ?? null,
+        requests: requests.length,
       };
     } catch {
       checks.model =
@@ -104,14 +113,58 @@ export async function runPreflight(
   };
 }
 
+export async function runSubmissionPreflight(
+  mode: Mode,
+  connect = false,
+  env: NodeJS.ProcessEnv = process.env,
+) {
+  const blockers: string[] = [];
+  if (mode !== "live")
+    blockers.push(
+      "Submission requires live mode with Zetaris evidence retrieval.",
+    );
+  if (env.MODEL_PROVIDER !== "meterless")
+    blockers.push(
+      "Submission requires MODEL_PROVIDER=meterless routed to a real Nightshift runtime.",
+    );
+  // Do not spend model credits or contact services for a known-wrong profile.
+  const preflight = await runPreflight(
+    mode,
+    connect && blockers.length === 0,
+    env,
+  );
+  if (!preflight.ok)
+    blockers.push("Required configuration or connectivity checks failed.");
+  return {
+    ok: blockers.length === 0,
+    stage: blockers.length
+      ? "blocked"
+      : connect
+        ? "connections-checked"
+        : "configuration-only",
+    submissionReady: false,
+    blockers,
+    preflight,
+    remainingEvidence: [
+      "Confirm the configured endpoint belongs to Nightshift and match a real request to its runtime record and underlying model.",
+      "Complete anomaly, normal and insufficient-evidence investigations with Zetaris and Nightshift.",
+      "Show a working H-MEM feature and passing conformance/lifecycle tests.",
+      "Review public repository access, README, 1-4 minute video, slides, sponsor explanation and pre-existing work disclosure.",
+      "Confirm the team roster, primary track and successful HackOS submission.",
+    ],
+    notice:
+      "This is a technical preflight, not a certification of event eligibility or a completed submission.",
+  };
+}
+
 if (
   process.argv[1] &&
   import.meta.url === pathToFileURL(resolve(process.argv[1])).href
 ) {
-  const result = await runPreflight(
-    settings.mode,
-    process.argv.includes("--live"),
-  );
+  const check = process.argv.includes("--submission")
+    ? runSubmissionPreflight
+    : runPreflight;
+  const result = await check(settings.mode, process.argv.includes("--live"));
   console.log(JSON.stringify(result, null, 2));
   if (!result.ok) process.exitCode = 1;
 }

@@ -1,5 +1,7 @@
 # Release validation
 
+> This page records historical release checks. For the current English submission-preparation changes, use [VALIDATION.md](submission/VALIDATION.md); for current event requirements, use [REQUIREMENTS.md](submission/REQUIREMENTS.md). Old file counts and runtime status do not certify the new package.
+
 Validation date: 2026-10-24 (America/Chicago).
 
 This source package preserves the existing repository history. Runtime code was not changed for publication. README and architecture documentation were rewritten from the current implementation; selected manual guides were made portable. Original local materials remain outside this release folder.
@@ -26,7 +28,13 @@ The 2026-10-24 publication checks ran offline or used mocked model requests. A h
 
 On 2026-10-26, a separate local Docker live validation reported PostgreSQL connected, a Zetaris query succeeded, and OpenAI responded. Nine read-only PostgreSQL source views were registered under `FINTRACE`. Two selected synthetic cases then completed: one normal payment returned `No anomaly supported`, and one fee case returned `Issues found`; their activity records included successful Zetaris evidence queries. No credential, raw request trace, or screenshot is included in the repository.
 
-The fixture and live results use synthetic reference data. They do not establish production accuracy, independent statistical generalization, an advantage of model planning over rules, or real-customer deployment readiness. NVIDIA and Meterless Runtime end-to-end operation remain unverified, and the recommended repeated live release matrix has not yet been completed.
+The fixture and live results use synthetic reference data. They do not establish production accuracy, independent statistical generalization, an advantage of model planning over rules, or real-customer deployment readiness. NVIDIA and Meterless Runtime end-to-end operation remain unverified.
+
+## Expanded acceptance on 2026-10-26
+
+After fetching GitHub main at `36acec2`, a reusable business acceptance script was added. Both fixture and live matrices passed 15/15: nine scenario types with normal, duplicate-payment and partial-coverage cases each repeated three times using fresh namespaces. Live used PostgreSQL, Zetaris and OpenAI gpt-5.4-mini, with 65 successful model HTTP requests and all citation checks passing. Raw traces remain ignored local artifacts. This completes the selected repeated acceptance matrix, not the full held-out/model-baseline evaluation.
+
+Type checking, 82 unit/integration tests, the production build and 29 browser tests passed in this checkout. See [the acceptance report](BUSINESS_ACCEPTANCE.zh-CN.md) for outcomes, reproducible commands, current rules and evidence limits. The changes described here are local until separately committed and published.
 
 ## Included and excluded material
 

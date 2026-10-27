@@ -1,5 +1,7 @@
 # Live integration setup
 
+> **Submission update (27 October 2026):** the supplied HackOS Submission Requirements explicitly require a working Meterless Engine **and Nightshift as the primary AI provider**. Direct cloud adapters below remain development options. Use [Nightshift setup](submission/NIGHTSHIFT_SETUP.md), [the current checklist](submission/REQUIREMENTS.md), and `npm run preflight:submission`. Historical direct-OpenAI results are not Nightshift proof.
+
 ## What is already implemented
 
 The app has PostgreSQL storage, a bounded read-only Zetaris query adapter, configurable model inference, and the pinned Meterless H-MEM reference. The original release checks were offline. A later local Docker validation on 2026-10-26 connected PostgreSQL, Zetaris, and OpenAI and completed two selected synthetic live investigations. Credentials and raw runtime traces are not part of the repository.
@@ -47,6 +49,8 @@ For OpenAI with local evidence, use `FINTRACE_MODE=local-model`. This uses local
 
 **Meterless Runtime:** start the official Runtime, enable its OpenAI-compatible endpoint, and set `MODEL_PROVIDER=meterless`, `METERLESS_BASE_URL`, `METERLESS_RUNTIME_TOKEN`, and `METERLESS_MODEL` to the values actually provided by that Runtime. No provider switch is automatic.
 
+The Meterless adapter supplies each operation's JSON schema in the system prompt and validates returned values locally. It does not assume all Runtime models support strict JSON-schema request parameters. Planning, memory suggestions and baseline calls share the selected provider. Authentication errors fail immediately; bounded retries remain on the same endpoint. The preflight reports requested and returned models, when available, but the actual underlying route must also be verified in Nightshift. Cloud keys belong in Nightshift's provider settings for this route; FinTrace uses its Runtime token.
+
 The planner emits a strict typed tool request. Transient model HTTP errors receive one retry. Output that chooses an unknown tool or fails schema validation terminates as a technical failure. Financial outcomes are determined by independent rules, not the model's self-assessment.
 
 Run `npm run preflight` for configuration presence only, or `npm run preflight -- --live` for connection checks. Fixture mode requires and contacts no external services; local-model checks only the selected model; live requires database, Zetaris and the selected model. Model checks consume a small API call. Missing required configuration or failed checks set a nonzero exit code. Preflight never prints credentials or raw provider error bodies. A successful generic query/model call is only an initial check: complete a real investigation to prove the evidence contract.
@@ -61,4 +65,6 @@ Each namespace has its own persistent engine directory and trust ledger. The wra
 
 ## Required live release evidence
 
-After setup, record three consecutive successful runs each for an anomaly, a normal exception, and an evidence-deficient case. Preserve provider/model IDs, actual query IDs, complete source coverage and run exports. Run `npm run evaluate -- heldout` in live mode to execute both the tool-planning loop and same-model one-pass baseline. Live evaluation consumes model calls and may take several minutes per case.
+After setup, record three successful runs each for an anomaly, a normal exception, and an evidence-deficient case. This project acceptance target was met on 2026-10-26 using `npm run verify:business -- --connect --repeat=3` in live mode: duplicate payment, normal payment and partial coverage each passed three fresh runs, alongside six additional scenarios. This is a project validation target, not a claimed competition rule.
+
+Preserve provider/model IDs, source coverage and run exports locally. Current query IDs are application-generated trace IDs; server-issued Zetaris query IDs are not captured. Run `npm run evaluate -- heldout` in live mode for the still-outstanding full reference-set tool-planning and same-model one-pass comparison. Live evaluation consumes model calls and may take several minutes per case.

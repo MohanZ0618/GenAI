@@ -118,10 +118,10 @@ async function requestJson(
   signal: AbortSignal,
   onRequest?: RequestObserver,
 ): Promise<unknown> {
-  // DeepSeek JSON mode guarantees JSON syntax, not schema enforcement. Give
-  // every operation its output contract, then validate the parsed object below.
+  // Gateway models may not support strict JSON Schema parameters. Supply the
+  // contract in the prompt as well, and always validate the parsed result.
   const requestMessages =
-    config.name === "deepseek"
+    config.name === "deepseek" || config.name === "meterless"
       ? messages.map((message) =>
           message.role === "system"
             ? {
