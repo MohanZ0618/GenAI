@@ -4,7 +4,7 @@ FinTrace helps accounts-payable and finance-operations teams answer **why a paym
 
 **Track:** 02 — The Agent That Can Explain Why.
 
-> **Submission status:** Four fresh synthetic investigations passed through PostgreSQL + Zetaris + Nightshift + Google `gemini-3.5-flash-lite`, including memory drafting, scripted review, persistence and later recall. All 17 business model calls matched Nightshift Runtime explanations. See the [acceptance evidence](docs/submission/NIGHTSHIFT_ACCEPTANCE.md) and the separate [three-feed USL and native data-quality package](docs/submission/ZETARIS_USL.md). Final video, slides, public repository access and HackOS submission remain team tasks; use the [requirements checklist](docs/submission/REQUIREMENTS.md).
+> **Submission status:** Four fresh synthetic investigations passed through PostgreSQL + Zetaris + Nightshift + Google `gemini-3.5-flash-lite`, including memory drafting, scripted review, persistence and later recall. All 17 business model calls matched Nightshift Runtime explanations. The published source also passed a [fresh-clone installation and runtime check](docs/submission/VALIDATION.md#public-repository-fresh-clone-verification--27-october-2026). See the [acceptance evidence](docs/submission/NIGHTSHIFT_ACCEPTANCE.md) and separate [three-feed USL/data-quality package](docs/submission/ZETARIS_USL.md). Final video, slides, disclosures and HackOS submission remain team tasks; use the [requirements checklist](docs/submission/REQUIREMENTS.md).
 
 ## Start here
 

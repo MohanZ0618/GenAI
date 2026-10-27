@@ -28,7 +28,7 @@ The tested application calls Nightshift with Google `gemini-3.5-flash-lite`, an 
 |---|---|---|
 | 1–4 minute demo | [TEAM_HANDOFF.md](TEAM_HANDOFF.md): shot list, narration and evidence gates | Classmates record/edit/upload the final video from real runs. |
 | Slide deck | [TEAM_HANDOFF.md](TEAM_HANDOFF.md): eight-slide outline covering every required topic | Classmates build/export/share the deck. |
-| Public GitHub repository | [MohanZ0618/GenAI](https://github.com/MohanZ0618/GenAI) is public and readable signed out; English source, samples and release allowlist are prepared locally. | Synchronize the latest validated changes, then verify a clean clone of the actual public revision. |
+| Public GitHub repository | [MohanZ0618/GenAI](https://github.com/MohanZ0618/GenAI) is public. The Nightshift/USL source and materials were published; a fresh clone passed installation, build, 189 tests and three example workflows. | Keep the source and reproduction instructions consistent with the final recording; see [the validation record](VALIDATION.md). |
 | Sponsor technology explanation | [SPONSOR_EXPLANATION.md](SPONSOR_EXPLANATION.md), including the verified Nightshift route | Use the tested model and scope in final submission copy. |
 | Project name and description | [SUBMISSION_COPY.md](SUBMISSION_COPY.md) | Copy into the actual form; adjust only for its field limits. |
 | Exactly one primary track | Track 02 — The Agent That Can Explain Why | Team lead selects it in HackOS. |
@@ -37,14 +37,14 @@ The tested application calls Nightshift with Google `gemini-3.5-flash-lite`, an 
 
 ## Repository and quality checks
 
-- [ ] Public source opens without an access request; required Colab links are included if applicable (FinTrace currently does not depend on Colab).
-- [ ] README covers clean installation, usage, dependencies, actual Nightshift route and limitations.
-- [ ] Three synthetic examples and expected outputs are available.
-- [ ] Live model traces identify requested/returned models when available; Nightshift records independently identify the actual route.
-- [ ] H-MEM test results and a working feature are included in the evidence package.
-- [ ] `.env.example` contains placeholders only; no cloud/Runtime secrets, real personal records or local credentials are committed or shown.
-- [ ] Offline fallback is documented as `FINTRACE_MODE=fixture`. The source document recommends `SAMPLE_MODE=true`; an additional switch is not needed for this existing fallback.
-- [ ] A clean clone installs, builds and runs offline. Live setup requirements are explicitly documented, including instance-specific Zetaris registration and Nightshift configuration.
+- [x] Public source opens without an access request; required Colab links are included if applicable (FinTrace currently does not depend on Colab).
+- [x] README covers clean installation, usage, dependencies, actual Nightshift route and limitations.
+- [x] Three synthetic examples and expected outputs are available and passed fresh-clone HTTP smoke checks.
+- [x] Live model traces identify requested/returned models when available; Nightshift records independently identify the actual route.
+- [x] H-MEM test results and a working feature are included in the evidence package.
+- [x] `.env.example` contains placeholders only; the bounded public-file credential scan and screenshot review found no credentials or real personal records.
+- [x] Offline fallback is documented as `FINTRACE_MODE=fixture`. The source document recommends `SAMPLE_MODE=true`; an additional switch is not needed for this existing fallback.
+- [x] A clean clone installs, builds and runs offline. Live setup requirements are explicitly documented; connectivity also passed using the existing private local service profile.
 - [ ] Final video, slides and repository links work for a signed-out reviewer.
 - [ ] The real submission screen shows success before the deadline; retain confirmation locally.
 

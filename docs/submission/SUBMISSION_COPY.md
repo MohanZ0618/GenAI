@@ -1,6 +1,6 @@
 # Submission-form copy
 
-This file contains English draft text for the actual HackOS form. Field names/limits may differ. Fill team and media-link placeholders locally. Nightshift live acceptance passed on 27 October 2026; the latest validated source still needs to be synchronized and checked in the public repository.
+This file contains English draft text for the actual HackOS form. Field names/limits may differ. Fill team and media-link placeholders locally. Nightshift live acceptance passed on 27 October 2026; its source and materials were published and the public source passed fresh-clone verification.
 
 ## Project name
 
@@ -67,7 +67,7 @@ Validate with authorized finance reviewers and appropriately permissioned real d
 |---|---|
 | Team name | `[TEAM NAME]` |
 | Team members | `[CONFIRMED ROSTER — CHECK BEFORE FIRST SUBMISSION]` |
-| Public repository | https://github.com/MohanZ0618/GenAI — public access verified; synchronize and verify the latest validated source before submission |
+| Public repository | https://github.com/MohanZ0618/GenAI — source published and fresh-clone installation, build, tests and example workflows verified; see [VALIDATION.md](VALIDATION.md) |
 | Demo video | `[ACCESSIBLE 1–4 MINUTE VIDEO LINK]` |
 | Slide deck | `[ACCESSIBLE DECK LINK]` |
 | Colab | Not applicable: local TypeScript application |

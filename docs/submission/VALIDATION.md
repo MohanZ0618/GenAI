@@ -115,6 +115,31 @@ The separate [Zetaris scoring package](ZETARIS_USL.md) is implemented and exerci
 
 Source contracts, synthetic assets, setup/verification scripts, actual query/result pairs, DQ counts and reflections are included in the allowlisted source package. Full results are in `data/zetaris-scoring/results.json`; first-run and idempotent setup receipts are in its `evidence/` directory. This work completes the local evidence package against the supplied Zetaris scoring summary. The separate complete Nightshift acceptance is recorded above; the USL exercise itself does not prove Nightshift use or organizer acceptance.
 
+## Public repository fresh-clone verification — 27 October 2026
+
+Source commit [`6986c0a`](https://github.com/MohanZ0618/GenAI/commit/6986c0ac3e8d45fafeb0b11911ffde7497c9a8c5) published the Nightshift integration, USL/data-quality package and actual acceptance records. A new shallow clone of the public `main` branch was created directly from GitHub, without copying the original checkout's dependencies, build output, environment files or saved application state. The clone matched that exact commit. The environment used Node.js 26.7.0 and npm 11.19.0 on macOS.
+
+| Fresh-clone check | Actual result |
+|---|---|
+| `npm ci --no-audit --no-fund` | Installed 229 packages successfully |
+| `npm run typecheck` | Passed for API/contracts/scripts and web |
+| `npm run build` | Passed; production frontend served by the cloned API |
+| `npm test` | 189/189 passed across 15 test files |
+| H-MEM reference conformance | 13/13 passed |
+| `scripts/prepare_zetaris_scoring.ts --check` | Source assets and hashes matched; no service connection or source regeneration |
+| Fresh fixture server | Started on loopback port 4317 with 70 built-in datasets; frontend HTTP 200 |
+| README example `Review packet 001` | Completed: `anomaly_supported`, `F06` |
+| README example `Review packet 049` | Completed: `no_anomaly_supported`, `NO_FAILURE` |
+| README example `Coverage packet 001` | Completed: `insufficient_evidence`, `EVIDENCE_GAP` |
+| Example citations and exports | All finding/check citations resolved; JSON, HTML and CSV exports returned successfully for all three cases |
+| Saved history and scripted synthetic review | Three investigations retained; an accepted review saved through the real review API and appeared in history |
+| Browser inspection | Cloned frontend displayed the completed example, evidence references and saved accepted review |
+| Live connectivity from cloned code | PostgreSQL connected, Zetaris query succeeded, and one real Nightshift request returned Google `gemini-3.5-flash-lite` |
+
+The three example investigations used explicit `fixture` mode and made no cloud-model calls. The separate live preflight used the existing ignored private profile from outside the clone; credentials were neither copied into the public tree nor committed. It confirms connectivity from the published code, while the complete sponsor-backed business and memory acceptance remains the distinct four-case run documented above. The browser inspection is a desktop smoke check, not a rerun or pass of the entire browser suite. The 11 known browser limitations remain open.
+
+Before publication, all 390 allowlisted files existed without duplicate or symlink entries; the bounded credential scan found no matches, and the three published USL screenshots were reviewed without finding credentials or account personal information. Raw local test reports and screenshots remain excluded by `.gitignore`. Final video, slide deck, team/disclosure fields and HackOS confirmation are still separate delivery items.
+
 ## Required final evidence
 
 The complete technical workflow is recorded in [NIGHTSHIFT_ACCEPTANCE.md](NIGHTSHIFT_ACCEPTANCE.md). Use [NIGHTSHIFT_SETUP.md](NIGHTSHIFT_SETUP.md) to rehearse the actual configured route, then capture application, Zetaris/Nightshift and H-MEM activity for the final video/deck. Preserve earlier failures separately from the passing run. The sanitized synthetic result is public; keep credentials and raw private diagnostics outside the source package. Repository access, final media, disclosures and HackOS confirmation still require delivery checks.

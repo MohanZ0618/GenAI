@@ -1,10 +1,10 @@
 # Public repository and teammate handoff
 
-The existing [MohanZ0618/GenAI repository](https://github.com/MohanZ0618/GenAI) is public and its README/source were readable signed out on 27 October 2026. The latest local Nightshift/USL changes still need to be synchronized and the resulting public revision checked. This preparation pass did not change remote visibility or upload those changes.
+The existing [MohanZ0618/GenAI repository](https://github.com/MohanZ0618/GenAI) is public. The Nightshift/USL code and materials were published as source commit `6986c0a` on 27 October 2026, then cloned directly from GitHub into a new directory and verified. Installation, type checking, build, 189 unit/API tests, three README examples and real-service connectivity passed; see [the verification record](VALIDATION.md#public-repository-fresh-clone-verification--27-october-2026). This did not change repository visibility.
 
 ## Use the prepared source package
 
-Use `PUBLIC_FILES.txt` to review the source release. It now lists 390 source, test, synthetic sample, configuration-placeholder, license and submission-document files. The earlier ZIP/fresh-copy validation covered 367 files; rebuild and verify the current revision before using a packaged source archive. Exclude `.env.local`, raw runtime records, dependencies and build caches.
+Use `PUBLIC_FILES.txt` to review the source release. Its 390 source, test, synthetic sample, configuration-placeholder, license and submission-document files were checked before publication. The earlier ZIP validation covered 367 files; rebuild any ZIP from the current revision rather than using that old archive. The public repository's current source tree was tested independently by fresh clone. Exclude `.env.local`, raw runtime records, dependencies and build caches.
 
 Synchronize the reviewed project files to the public repository, including `.gitignore` and `.env.example`. Judges need the source tree and readable README; a ZIP alone is insufficient. If creating a separate source-only repository, extract the current allowlisted package into a new folder and review any history before publishing it.
 
