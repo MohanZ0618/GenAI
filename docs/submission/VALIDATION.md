@@ -127,6 +127,8 @@ Source commit [`6986c0a`](https://github.com/MohanZ0618/GenAI/commit/6986c0ac3e8
 | `npm test` | 189/189 passed across 15 test files |
 | H-MEM reference conformance | 13/13 passed |
 | `scripts/prepare_zetaris_scoring.ts --check` | Source assets and hashes matched; no service connection or source regeneration |
+| `FINTRACE_MODE=fixture npm run verify:hmem` in the fresh clone | 12/12 comparisons and lifecycle checks passed; no model calls |
+| Selected desktop Playwright workflow in the fresh clone | Inbox → investigation → evidence → review → export → browser refresh passed on an isolated test server |
 | Fresh fixture server | Started on loopback port 4317 with 70 built-in datasets; frontend HTTP 200 |
 | README example `Review packet 001` | Completed: `anomaly_supported`, `F06` |
 | README example `Review packet 049` | Completed: `no_anomaly_supported`, `NO_FAILURE` |

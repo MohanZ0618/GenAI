@@ -13,6 +13,8 @@ FinTrace helps accounts-payable and finance-operations teams answer **why a paym
 - [Submission-form copy and disclosures](docs/submission/SUBMISSION_COPY.md)
 - [Slides and demo handoff for teammates](docs/submission/TEAM_HANDOFF.md)
 - [Nightshift setup and evidence checklist](docs/submission/NIGHTSHIFT_SETUP.md)
+- [Step-by-step demo recording guide (Chinese)](docs/submission/DEMO_GUIDE_ZH.md)
+- [English demo narration — 3 minutes 40 seconds](docs/submission/DEMO_NARRATION_EN.md)
 - [Current verification record](docs/submission/VALIDATION.md)
 - [Publishing and teammate handoff checklist](docs/submission/PUBLISH_CHECKLIST.md)
 
