@@ -388,5 +388,3 @@ scripts/verify_zetaris_usl.ts
 data/zetaris-scoring/evidence/usl-query.png
 docs/submission/NIGHTSHIFT_ACCEPTANCE.md
 data/nightshift-acceptance/results.json
-docs/submission/DEMO_GUIDE_ZH.md
-docs/submission/DEMO_NARRATION_EN.md

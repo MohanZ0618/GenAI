@@ -2,8 +2,6 @@
 
 Audience: teammates producing the English presentation and demo video. Use the README for the product overview, [SPONSOR_EXPLANATION.md](SPONSOR_EXPLANATION.md) for sponsor details and [VALIDATION.md](VALIDATION.md) for defensible results.
 
-For the exact current recording sequence, use [the Chinese click-by-click guide](DEMO_GUIDE_ZH.md) and [the English narration](DEMO_NARRATION_EN.md). Their default path revisits saved real live investigations and explicitly identifies the acceptance reviewer as scripted; a separate optional section explains new manual review actions.
-
 **Nightshift live acceptance passed using Google `gemini-3.5-flash-lite`.** Use the current live application and matching Runtime records for the sponsor segment. UI footage in fixture mode demonstrates interface behavior separately. Source, evidence and narration are prepared; no final video or deck has been produced.
 
 ## Core story

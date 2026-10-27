@@ -29,3 +29,7 @@ submission/
 *.pptx
 *.docx
 *.webm
+
+# Personal recording instructions remain local.
+/docs/submission/DEMO_GUIDE_ZH.md
+/docs/submission/DEMO_NARRATION_EN.md
